@@ -1,7 +1,7 @@
 <!-- Markdown with HTML -->
 <p align="center">
-  <img alt="refref-logo-dark" src="https://github.com/user-attachments/assets/c000ebf8-6688-477c-a1e1-eb12504cb697#gh-dark-mode-only">
-  <img alt="refref-logo-light" src="https://github.com/user-attachments/assets/05fe8b9a-9be9-4067-b2f8-9247546db9f8#gh-light-mode-only">
+  <img alt="refref-logo-dark" src="https://github.com/user-attachments/assets/7bd0318f-76c2-4978-8eaf-27d316888789#gh-dark-mode-only">
+  <img alt="refref-logo-light" src="https://github.com/user-attachments/assets/3a1d3222-83ad-4559-8d64-734c31130bca#gh-light-mode-only">
 </p>
 <p align="center">
   <a href='http://makeapullrequest.com'>
