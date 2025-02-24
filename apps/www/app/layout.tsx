@@ -4,6 +4,9 @@ import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 import PlausibleProvider from 'next-plausible';
 import { GoogleTagManager } from '@next/third-parties/google'
+import { createMetadata } from '@/lib/metadata';
+
+export const metadata = createMetadata({});
 
 const inter = Inter({
   subsets: ['latin'],
