@@ -20,6 +20,9 @@ importers:
 
   apps/www:
     dependencies:
+      '@next/third-parties':
+        specifier: ^15.1.7
+        version: 15.1.7(next@15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       fumadocs-core:
         specifier: 15.0.11
         version: 15.0.11(@types/react@19.0.10)(next@15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -38,6 +41,9 @@ importers:
       next:
         specifier: 15.1.7
         version: 15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      next-plausible:
+        specifier: ^3.12.4
+        version: 3.12.4(next@15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -565,6 +571,12 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@next/third-parties@15.1.7':
+    resolution: {integrity: sha512-wDAh/gW+WFT7jPYmGEGtNeLC74D8+hu3S6YJOpcfC/6uBMSC7yjh0QW1/RPYKziVnjqe6O4jR0AhbN0uuS8CZw==}
+    peerDependencies:
+      next: ^13.0.0 || ^14.0.0 || ^15.0.0
+      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2738,6 +2750,13 @@ packages:
     resolution: {integrity: sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==}
     engines: {node: '>= 0.4.0'}
 
+  next-plausible@3.12.4:
+    resolution: {integrity: sha512-cD3+ixJxf8yBYvsideTxqli3fvrB7R4BXcvsNJz8Sm2X1QN039WfiXjCyNWkub4h5++rRs6fHhchUMnOuJokcg==}
+    peerDependencies:
+      next: '^11.1.0 || ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 '
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   next-themes@0.4.4:
     resolution: {integrity: sha512-LDQ2qIOJF0VnuVrrMSMLrWGjRMkq+0mpgl6e0juCLqdJ+oo8Q84JRWT6Wh11VDQKkMMe+dVzDKLWs5n87T+PkQ==}
     peerDependencies:
@@ -3383,6 +3402,9 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
 
+  third-party-capital@1.0.20:
+    resolution: {integrity: sha512-oB7yIimd8SuGptespDAZnNkzIz+NWaJCu2RMsbs4Wmp9zSDUM8Nhi3s2OOcqYuv3mN4hitXc8DVx+LyUmbUDiA==}
+
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
 
@@ -3983,6 +4005,12 @@ snapshots:
 
   '@next/swc-win32-x64-msvc@15.1.7':
     optional: true
+
+  '@next/third-parties@15.1.7(next@15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      next: 15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react: 19.0.0
+      third-party-capital: 1.0.20
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -6721,6 +6749,12 @@ snapshots:
 
   netmask@2.0.2: {}
 
+  next-plausible@3.12.4(next@15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      next: 15.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   next-themes@0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
@@ -7548,6 +7582,8 @@ snapshots:
   tailwindcss@4.0.8: {}
 
   tapable@2.2.1: {}
+
+  third-party-capital@1.0.20: {}
 
   through@2.3.8: {}
 
