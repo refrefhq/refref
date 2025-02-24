@@ -19,6 +19,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@refref/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.0.7",
     "@types/mdx": "^2.0.13",
     "@types/node": "22.13.4",

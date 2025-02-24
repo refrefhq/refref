@@ -42,6 +42,9 @@ importers:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
     devDependencies:
+      '@refref/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@tailwindcss/postcss':
         specifier: ^4.0.7
         version: 4.0.8
@@ -117,10 +120,10 @@ importers:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
     devDependencies:
-      '@repo/eslint-config':
+      '@refref/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@repo/typescript-config':
+      '@refref/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@turbo/gen':
