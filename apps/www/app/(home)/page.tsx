@@ -1,19 +1,13 @@
-import Link from 'next/link';
+import { Hero } from "@/components/ui/hero";
+import FaqGeneral from "@/components/ui/faq-general";
+import Cta1 from "@/components/ui/cta-1";
 
 export default function HomePage() {
   return (
-    <main className="flex flex-1 flex-col justify-center text-center">
-      <h1 className="mb-4 text-2xl font-bold">Hello World</h1>
-      <p className="text-fd-muted-foreground">
-        You can open{' '}
-        <Link
-          href="/docs"
-          className="text-fd-foreground font-semibold underline"
-        >
-          /docs
-        </Link>{' '}
-        and see the documentation.
-      </p>
+    <main className="flex flex-1 flex-col">
+      <Hero />
+      <FaqGeneral />
+      <Cta1 />
     </main>
   );
 }
