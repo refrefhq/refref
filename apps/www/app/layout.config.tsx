@@ -30,6 +30,11 @@ export const baseOptions: BaseLayoutProps = {
       active: 'nested-url',
     },
     {
+      text: 'Contact',
+      url: '/contact',
+      active: 'nested-url',
+    },
+    {
       type: 'icon',
       url: '/community',
       text: 'Discord',
