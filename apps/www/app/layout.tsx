@@ -1,7 +1,6 @@
 import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider';
 import { Inter } from 'next/font/google';
-import type { ReactNode } from 'react';
 import PlausibleProvider from 'next-plausible';
 import { GoogleTagManager } from '@next/third-parties/google'
 import { createMetadata } from '@/lib/metadata';
@@ -12,7 +11,7 @@ const inter = Inter({
   subsets: ['latin'],
 });
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head>
