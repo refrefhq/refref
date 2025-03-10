@@ -38,7 +38,7 @@ export function Footer() {
           <div className="md:col-span-4">
             <Link href="/" className="flex items-center gap-2">
               <Image
-                src="/refref-logo.svg"
+                src="/refref-icon.svg"
                 width={24}
                 height={24}
                 alt="RefRef Logo"
