@@ -14,7 +14,7 @@ export const baseOptions: BaseLayoutProps = {
     title: (
       <>
         <Image
-          src="/refref-logo.svg"
+          src="/refref-icon.svg"
           width={24}
           height={24}
           alt="RefRef Logo"
