@@ -84,6 +84,8 @@ async function generate() {
   });
 
   fs.writeFileSync('public/sitemap.xml', formatted);
+  fs.writeFileSync('out/sitemap.xml', formatted);
+
   console.log('✅ Generated sitemap.xml');
 }
 
