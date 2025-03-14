@@ -32,6 +32,18 @@ The script will:
 
 For more details, see the [scripts README](./scripts/README.md).
 
+### Building the Application
+
+The build process includes fetching content from S3:
+
+```bash
+pnpm build
+```
+
+The build will fail if the content fetch fails. This ensures that the site is always built with the latest content and that any issues with the content fetch process are immediately apparent.
+
+To use this in CI/CD environments, make sure to configure the appropriate AWS credentials as environment variables.
+
 ## Learn More
 
 To learn more about Next.js and Fumadocs, take a look at the following

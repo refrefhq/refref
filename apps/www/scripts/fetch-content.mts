@@ -3,22 +3,23 @@
 // Load environment variables from .env files
 import * as dotenv from 'dotenv';
 import path from 'path';
-
-// Try to load .env.local file, but don't fail if it doesn't exist
-try {
-  dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
-} catch (error) {
-  console.warn('Warning: Could not load .env.local file. Using default or environment variables.');
-}
-
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import { createWriteStream, promises as fs } from 'fs';
 import { pipeline } from 'stream/promises';
 
+// Configure dotenv to load environment variables
+dotenv.config();
+
 // Parse command line arguments
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
-const SKIP_ERRORS = args.includes('--skip-errors') || process.env.CI === 'true';
+const SKIP_ERRORS = args.includes('--skip-errors');
+
+// Log environment variables for debugging
+console.log('AWS Credentials:', {
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID ? '****' : undefined,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ? '****' : undefined
+});
 
 // Configuration
 const BUCKET_NAME = process.env.S3_BUCKET_NAME || 'refref-www';
@@ -49,7 +50,9 @@ if (HAS_AWS_CREDENTIALS) {
 } else if (!DRY_RUN) {
   console.warn('Warning: AWS credentials not found. S3 operations will be skipped.');
   if (SKIP_ERRORS) {
-    console.warn('Running with --skip-errors or in CI environment. Will continue build process without fetching content.');
+    console.warn('Running with --skip-errors flag. Will continue without fetching content.');
+  } else {
+    console.error('AWS credentials are required for content fetch. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.');
   }
 }
 
@@ -190,9 +193,11 @@ async function fetchBlogContent(): Promise<void> {
     if (!HAS_AWS_CREDENTIALS && !DRY_RUN) {
       console.log('Skipping S3 operations due to missing credentials.');
       if (SKIP_ERRORS) {
-        console.log('Build process will continue without fetching content.');
+        console.log('Build process will continue without fetching content due to --skip-errors flag.');
+        return;
+      } else {
+        throw new Error('AWS credentials are required for content fetch. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.');
       }
-      return;
     }
 
     // Fetch blog MDX files
@@ -255,7 +260,7 @@ async function fetchBlogContent(): Promise<void> {
   } catch (error) {
     console.error('Error fetching content:', error);
     if (SKIP_ERRORS) {
-      console.warn('Continuing build process despite S3 errors due to --skip-errors flag or CI environment.');
+      console.warn('Continuing build process despite errors due to --skip-errors flag.');
     } else {
       process.exit(1);
     }

@@ -14,7 +14,8 @@ This script fetches blog content and images from the Wasabi S3 bucket (`refref-w
 
 ### Prerequisites
 
-- AWS SDK for JavaScript v3 (`@aws-sdk/client-s3`)
+- AWS SDK for JavaScript v3 (`@aws-sdk/client-s3`) - installed as a devDependency
+- dotenv package - installed as a devDependency
 - Proper S3 credentials configured in your environment
 
 ### Usage
@@ -31,11 +32,23 @@ To test the script without making actual S3 requests (dry run mode):
 pnpm fetch-content -- --dry-run
 ```
 
-To continue the build process even if S3 operations fail (useful for CI/CD environments):
+The `--skip-errors` flag is available for testing purposes, but is not used in the build process:
 
 ```bash
 pnpm fetch-content -- --skip-errors
 ```
+
+### Build Process Behavior
+
+The script is integrated into the build process:
+
+```bash
+pnpm build
+```
+
+The build will fail if the content fetch fails. This ensures that the site is always built with the latest content and that any issues with the content fetch process are immediately apparent.
+
+For CI/CD environments, you must configure the appropriate AWS credentials as environment variables to ensure successful builds.
 
 ### Behavior in Different Environments
 
@@ -54,11 +67,7 @@ The script behaves differently based on the environment:
    - Creates the necessary directories
    - Skips all S3 operations
    - Logs that operations are being skipped
-   - Continues the build process if `--skip-errors` is specified or in CI environments
-
-4. **CI environment** (with `CI=true` environment variable):
-   - Automatically enables `--skip-errors` behavior
-   - If AWS credentials are missing, skips S3 operations and continues the build
+   - The script will exit with an error code, causing the build to fail
 
 ### AWS Credentials
 
@@ -102,6 +111,10 @@ This script cleans up previously downloaded blog content and images.
 
 - Removes the `content/blogs` directory and all its contents
 - Removes the `public/blog` directory and all its contents
+
+### Prerequisites
+
+- rimraf package - installed as a devDependency
 
 ### Usage
 
