@@ -37,12 +37,28 @@ To continue the build process even if S3 operations fail (useful for CI/CD envir
 pnpm fetch-content -- --skip-errors
 ```
 
-In dry run mode, the script will:
-- Log what actions it would take
-- Not make any actual S3 requests
-- Not download any files
-- Use mock data to simulate the S3 bucket contents
-- Still create the necessary directories if they don't exist
+### Behavior in Different Environments
+
+The script behaves differently based on the environment:
+
+1. **Normal mode** (with AWS credentials): Fetches content from S3 as expected.
+
+2. **Dry run mode** (`--dry-run`):
+   - Logs what actions it would take
+   - Does not make actual S3 requests
+   - Does not download any files
+   - Uses mock data to simulate the S3 bucket contents
+   - Still creates the necessary directories if they don't exist
+
+3. **No credentials mode** (missing AWS credentials):
+   - Creates the necessary directories
+   - Skips all S3 operations
+   - Logs that operations are being skipped
+   - Continues the build process if `--skip-errors` is specified or in CI environments
+
+4. **CI environment** (with `CI=true` environment variable):
+   - Automatically enables `--skip-errors` behavior
+   - If AWS credentials are missing, skips S3 operations and continues the build
 
 ### AWS Credentials
 

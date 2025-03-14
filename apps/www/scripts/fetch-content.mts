@@ -30,6 +30,9 @@ const PUBLIC_DIR = path.join(process.cwd(), 'public');
 const LOCAL_BLOG_DIR = path.join(CONTENT_DIR, 'blogs');
 const LOCAL_BLOG_IMAGES_DIR = path.join(PUBLIC_DIR, 'blog');
 
+// Check if we have AWS credentials
+const HAS_AWS_CREDENTIALS = !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+
 // S3 client configuration
 const s3ClientConfig: any = {
   endpoint: ENDPOINT,
@@ -38,20 +41,20 @@ const s3ClientConfig: any = {
 };
 
 // Add credentials if provided via environment variables
-if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+if (HAS_AWS_CREDENTIALS) {
   s3ClientConfig.credentials = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   };
 } else if (!DRY_RUN) {
-  console.warn('Warning: AWS credentials not found. S3 operations will likely fail.');
+  console.warn('Warning: AWS credentials not found. S3 operations will be skipped.');
   if (SKIP_ERRORS) {
-    console.warn('Running with --skip-errors or in CI environment. Will continue build process even if S3 operations fail.');
+    console.warn('Running with --skip-errors or in CI environment. Will continue build process without fetching content.');
   }
 }
 
-// Initialize S3 client
-const s3Client = new S3Client(s3ClientConfig);
+// Initialize S3 client only if we have credentials or in dry run mode
+const s3Client = (HAS_AWS_CREDENTIALS || DRY_RUN) ? new S3Client(s3ClientConfig) : null;
 
 /**
  * Ensures that a directory exists, creating it and all parent directories if necessary
@@ -88,6 +91,12 @@ async function listObjects(prefix: string): Promise<string[]> {
         `${BLOG_IMAGES_PREFIX}diagram.png`,
       ];
     }
+    return [];
+  }
+
+  // Skip S3 operations if we don't have credentials
+  if (!s3Client) {
+    console.log(`Skipping S3 operations for prefix: ${prefix} (no credentials)`);
     return [];
   }
 
@@ -128,6 +137,12 @@ async function downloadFile(key: string, destinationPath: string): Promise<void>
     return;
   }
 
+  // Skip S3 operations if we don't have credentials
+  if (!s3Client) {
+    console.log(`Skipping download of: ${key} (no credentials)`);
+    return;
+  }
+
   try {
     const command = new GetObjectCommand({
       Bucket: BUCKET_NAME,
@@ -156,6 +171,8 @@ async function fetchBlogContent(): Promise<void> {
   console.log('Starting content fetch from S3...');
   if (DRY_RUN) {
     console.log('*** DRY RUN MODE - No files will be downloaded ***');
+  } else if (!HAS_AWS_CREDENTIALS) {
+    console.log('*** NO CREDENTIALS MODE - S3 operations will be skipped ***');
   }
   console.log(`Bucket: ${BUCKET_NAME}`);
   console.log(`Endpoint: ${ENDPOINT}`);
@@ -168,6 +185,15 @@ async function fetchBlogContent(): Promise<void> {
     // Then ensure the specific directories for blogs and images
     await ensureDirectoryExists(LOCAL_BLOG_DIR);
     await ensureDirectoryExists(LOCAL_BLOG_IMAGES_DIR);
+
+    // Skip S3 operations if we don't have credentials
+    if (!HAS_AWS_CREDENTIALS && !DRY_RUN) {
+      console.log('Skipping S3 operations due to missing credentials.');
+      if (SKIP_ERRORS) {
+        console.log('Build process will continue without fetching content.');
+      }
+      return;
+    }
 
     // Fetch blog MDX files
     console.log(`\nFetching blog MDX files from ${BLOG_PREFIX}...`);
