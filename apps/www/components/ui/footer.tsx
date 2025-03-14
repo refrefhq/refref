@@ -1,12 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from 'next/image';
+import { SubscriptionForm } from '@/components/ui/subscription-form';
 
 // SVG components
 const DiscordIcon = () => (
@@ -23,13 +19,6 @@ const GithubIcon = () => (
 );
 
 export function Footer() {
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    setShowSuccess(urlParams.get('submission') === 'true' && urlParams.get('form_type') === 'subscribe');
-  }, []);
-
   return (
     <footer className="py-12 md:py-16">
       <div className="container border-t pt-12 md:pt-16">
@@ -78,28 +67,12 @@ export function Footer() {
                 <DiscordIcon />
               </Link>
             </div>
-            <form action="https://submit-form.com/ZQzighfzx" className="flex flex-col gap-4">
-              <input type="hidden" name="form_name" value="footer_subscription" />
-              <input type="hidden" name="_redirect" value="https://refref.ai/?submission=true&form_type=subscribe" />
-              <div className="flex gap-2">
-                <Input placeholder="Enter your email" type="email" name="email" required />
-                <Button type="submit">Subscribe</Button>
-              </div>
-            </form>
-            <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
-              <DialogContent className="sm:max-w-md">
-                <div className="flex flex-col items-center gap-4 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-                    <CheckCircle2 className="h-8 w-8 text-green-600" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <h3 className="text-lg font-semibold">Successfully Subscribed!</h3>
-                    <p className="text-muted-foreground">We&apos;ll send you updates about RefRef at most once a month.</p>
-                  </div>
-                  <Button onClick={() => setShowSuccess(false)} className="mt-2">Close</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <SubscriptionForm
+              variant="footer"
+              formName="footer_subscription"
+              redirectUrl="https://refref.ai/?submission=true&form_type=subscribe"
+              showHeader={false}
+            />
           </div>
         </div>
       </div>
