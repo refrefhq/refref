@@ -2,7 +2,7 @@
   "extends": "@refref/typescript-config/nextjs.json",
   "compilerOptions": {
     "paths": {
-      "@/.source": ["./.source/index.ts"],
+      "@/.source": ["./.source"],
       "@/*": ["./*"]
     },
     "declaration": false

@@ -5,6 +5,8 @@ import type { ReactNode } from 'react';
 import PlausibleProvider from 'next-plausible';
 import { GoogleTagManager } from '@next/third-parties/google'
 import { createMetadata } from '@/lib/metadata';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
+
 
 export const metadata = createMetadata({});
 
@@ -26,7 +28,11 @@ export default function Layout({ children }: { children: ReactNode }) {
         <GoogleTagManager gtmId="GTM-MZXNF5TX" />
       </head>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider>
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
+        </RootProvider>
       </body>
     </html>
   );
