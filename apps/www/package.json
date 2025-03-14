@@ -3,12 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "next build && pnpm build:sitemap",
+    "build": "pnpm refresh-content && next build && pnpm build:sitemap",
     "build:sitemap": "pnpm exec tsx ./scripts/generate-sitemap.mts",
     "dev": "next dev",
     "start": "next start",
     "postinstall": "fumadocs-mdx",
-    "serve": "serve out -p 3000"
+    "serve": "serve out -p 3000",
+    "fetch-content": "pnpm exec tsx ./scripts/fetch-content.mts",
+    "cleanup-content": "pnpm exec tsx ./scripts/cleanup-content.mts",
+    "refresh-content": "pnpm cleanup-content && pnpm fetch-content"
   },
   "dependencies": {
     "@next/third-parties": "^15.2.0",
@@ -41,13 +44,13 @@
     "remark-math": "^6.0.0",
     "remark-mdx": "^3.1.0",
     "remark-rehype": "^11.1.1",
-    "rimraf": "^6.0.1",
     "shiki": "^1.24.3",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.758.0",
     "@refref/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.0.7",
     "@types/mdx": "^2.0.13",
@@ -55,7 +58,9 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "autoprefixer": "^10.4.20",
+    "dotenv": "^16.4.7",
     "postcss": "^8.5.3",
+    "rimraf": "^6.0.1",
     "serve": "^14.2.4",
     "tailwindcss": "^4.0.7",
     "tsx": "^4.19.3",
