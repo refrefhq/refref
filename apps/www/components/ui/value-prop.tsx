@@ -30,50 +30,56 @@ export function ValueProp() {
     },
     {
       value: "5X",
-      description: "Lower CAC than paid ads—referral customers cost significantly less.",
+      description: "Lower CAC than paid ads - referral customers cost significantly less.",
       source: "HubSpot",
     },
     {
       value: "3X",
-      description: "Higher LTV – Referred customers are more loyal and spend more.",
+      description: "Higher LTV - Referred customers are more loyal and spend more.",
       source: "Harvard Business Review",
     },
   ];
 
   return (
-    <section className="py-10 md:py-32 mt-8">
+    <section className="py-20 md:py-32 mt-16 md:mt-8">
       <div className="container">
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-medium text-gray-900 dark:text-gray-50 sm:text-4xl">
+        {/* First section: Header and value props in a 2-column layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+          {/* Left column: Header and description */}
+          <div className="flex flex-col justify-center">
+            <h2 className="mb-6 text-3xl font-medium text-gray-900 dark:text-gray-50 sm:text-5xl">
               <span className="animate-text-gradient inline-flex bg-gradient-to-r from-neutral-900 via-slate-500 to-neutral-500 bg-[200%_auto] bg-clip-text leading-tight text-transparent dark:from-neutral-100 dark:via-slate-400 dark:to-neutral-400">
-                Unlock a Self-Managed, Low-CAC Growth Engine
+                Unlock a Self-driving, Low-CAC Growth Engine
               </span>
             </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Turn your customers into advocates and grow your business with a powerful referral program.
+            </p>
           </div>
 
-          {/* First row: Value Props in Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-            {valueProps.map((prop, index) => (
-              <Card key={index} className="border border-gray-200 dark:border-gray-800">
-                <CardContent className="flex flex-col items-center text-center gap-2 py-2 px-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                    {prop.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium">{prop.title}</h3>
-                    <p className="text-muted-foreground">{prop.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          {/* Right column: Value props in cards */}
+          <div className="flex items-center justify-center">
+            <div className="grid grid-cols-1 gap-1.5 w-full max-w-md">
+              {valueProps.map((prop, index) => (
+                <Card key={index} className="border border-gray-200 dark:border-gray-800">
+                  <CardContent className="flex items-center">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-md font-medium leading-none">{prop.title}</h3>
+                      <p className="text-sm text-muted-foreground">{prop.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
+        </div>
 
-          {/* Second row: Stats without border cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Stats section with separator */}
+        <div className="border-t border-gray-200 dark:border-gray-800 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
             {stats.map((stat, index) => (
-              <div key={index} className="flex flex-col items-center text-center py-2 px-4">
-                <div className="text-4xl font-bold text-primary mb-2">{stat.value}</div>
+              <div key={index} className="flex flex-col">
+                <div className="text-5xl font-bold mb-2">{stat.value}</div>
                 <p className="text-muted-foreground">{stat.description}</p>
                 <p className="text-sm text-muted-foreground mt-1">- {stat.source}</p>
               </div>
