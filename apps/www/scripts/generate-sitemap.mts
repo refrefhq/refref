@@ -24,6 +24,17 @@ async function generate() {
       .filter(page => !page.includes('/_'))
     );
 
+  // Get blog pages from the build output
+  const blogPages = await globby(['out/blog/**/*.html'])
+    .then(pages => pages
+      .map(page => page
+        .replace('out', '')
+        .replace('/index.html', '')
+        .replace('.html', '')
+      )
+      .filter(page => !page.includes('/_') && !page.includes('/blog/index'))
+    );
+
   const baseUrl = 'https://refref.ai';
 
   const sitemap = `
@@ -69,6 +80,24 @@ async function generate() {
             <loc>${baseUrl}${path}</loc>
             <lastmod>${new Date().toISOString()}</lastmod>
             <changefreq>daily</changefreq>
+            <priority>0.7</priority>
+          </url>
+        `),
+        // Add blog index page
+        `
+          <url>
+            <loc>${baseUrl}/blog</loc>
+            <lastmod>${new Date().toISOString()}</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+          </url>
+        `,
+        // Add blog pages
+        ...blogPages.map((path) => `
+          <url>
+            <loc>${baseUrl}${path}</loc>
+            <lastmod>${new Date().toISOString()}</lastmod>
+            <changefreq>weekly</changefreq>
             <priority>0.7</priority>
           </url>
         `),
