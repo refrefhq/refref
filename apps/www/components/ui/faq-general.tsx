@@ -41,29 +41,31 @@ const faqs = [
 
 const FAQGeneral = () => {
   return (
-    <section className="py-32">
+    <section className="py-20 md:py-32">
       <div className="container">
         <div className="text-center">
-          <Badge className="text-xs font-medium">FAQ</Badge>
-          <h1 className="mt-4 text-4xl font-semibold">
-            Common Questions & Answers
-          </h1>
-          <p className="mt-6 font-medium text-muted-foreground">
+          <Badge variant="secondary" className="mb-6">FAQ</Badge>
+          <h2 className="mb-6 text-3xl font-medium text-gray-900 dark:text-gray-50 sm:text-5xl">
+            <span className="animate-text-gradient inline-flex bg-gradient-to-r from-neutral-900 via-slate-500 to-neutral-500 bg-[200%_auto] bg-clip-text leading-tight text-transparent dark:from-neutral-100 dark:via-slate-400 dark:to-neutral-400">
+              Common Questions & Answers
+            </span>
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground lg:max-w-2xl lg:text-xl mx-auto">
             Get answers to common questions about RefRef's open source referral
             management platform.
           </p>
         </div>
-        <div className="mx-auto mt-14 max-w-screen-sm">
+        <div className="mx-auto mt-16 max-w-screen-sm">
           {faqs.map((faq, index) => (
             <div key={index} className="mb-8 flex gap-4">
               <span className="flex size-6 shrink-0 items-center justify-center rounded-sm bg-secondary font-mono text-xs text-primary">
                 {index + 1}
               </span>
               <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="font-medium">{faq.question}</h3>
+                <div className="mb-2">
+                  <h3 className="text-lg font-medium">{faq.question}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">{faq.answer}</p>
+                <p className="text-base text-muted-foreground">{faq.answer}</p>
               </div>
             </div>
           ))}
