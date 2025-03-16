@@ -1,0 +1,188 @@
+---
+title: Chargebee
+description: Integrating Chargebee with RefRef for subscription management and referral tracking
+---
+RefRef offers a comprehensive integration with Chargebee to track subscriptions, manage recurring billing, and automate referral rewards for subscription-based businesses.
+
+## Overview
+
+The Chargebee integration enables you to:
+
+- Track subscription sign-ups as qualifying events
+- Monitor subscription renewals, upgrades, and downgrades
+- Automatically issue rewards based on subscription activity
+- Sync customer data between platforms
+- Leverage Chargebee's billing capabilities with RefRef's referral tools
+
+## Prerequisites
+
+Before setting up the Chargebee integration, you'll need:
+
+- An active Chargebee account
+- API keys from your Chargebee dashboard
+- Administrator access to your RefRef account
+- Subscription plans configured in Chargebee
+
+## Setting Up the Integration
+
+### Step 1: Connect Your Chargebee Account
+
+1. Navigate to **Integrations** in your RefRef dashboard
+2. Select **Chargebee** from the available integrations
+3. Click **Connect with Chargebee**
+4. Enter your Chargebee site name and API key
+5. Authorize the connection between platforms
+
+### Step 2: Configure Webhook Events
+
+RefRef needs to listen for specific events from Chargebee:
+
+1. In the Chargebee integration settings, review the webhook configuration
+2. Ensure the following events are enabled:
+   - `subscription_created`
+   - `subscription_renewed`
+   - `subscription_changed`
+   - `subscription_cancelled`
+   - `subscription_reactivated`
+   - `payment_succeeded`
+3. Save your webhook configuration
+
+### Step 3: Map Chargebee Plans to Qualifying Events
+
+Connect your Chargebee subscription plans to RefRef qualifying events:
+
+1. Go to **Qualifying Events** in your program settings
+2. Select **Add Chargebee Event**
+3. Choose the subscription plans that should trigger referral conversions
+4. Configure conversion rules and reward values
+5. Set attribution windows and validation criteria
+
+## Tracking Referrals with Chargebee
+
+### Initial Subscriptions
+
+For tracking new subscription sign-ups:
+
+1. Add the referral identifier to the Chargebee checkout or hosted page
+2. RefRef will automatically attribute the subscription to the referrer
+3. Configure reward rules based on subscription plan or value
+
+Example of adding referral data to a Chargebee checkout:
+
+```javascript
+// Adding referral data to Chargebee checkout
+Chargebee.getInstance().openCheckout({
+  hostedPage: hostedPageObj,
+  loaded: function() {
+    console.log("Checkout loaded");
+  },
+  success: function(hostedPageId) {
+    // Handle success
+  },
+  close: function() {
+    // Handle close
+  },
+  step: function(value) {
+    // Handle step change
+  },
+  metadata: {
+    refref_id: "REF123",
+    refref_campaign: "summer_promo"
+  }
+});
+```
+
+### Subscription Lifecycle Events
+
+For ongoing subscription management:
+
+1. Configure which subscription events trigger rewards
+2. Set rules for renewals, upgrades, and downgrades
+3. Define reward structures for different subscription tiers
+4. Establish rules for subscription longevity milestones
+
+## Processing Rewards
+
+RefRef can automatically process rewards based on Chargebee subscription events:
+
+### Monetary Rewards
+
+For cash rewards to referrers:
+
+1. Configure payout methods in RefRef
+2. Set up automatic or manual approval workflows
+3. Define payout schedules and thresholds
+4. Configure notification templates for reward issuance
+
+### Subscription Credits
+
+For subscription-based rewards:
+
+1. Configure subscription credits or discounts
+2. Set up automatic application to Chargebee subscriptions
+3. Define credit application rules and durations
+4. Establish delivery methods for subscription rewards
+
+## Advanced Configuration
+
+### MRR-based Rewards
+
+For rewards based on Monthly Recurring Revenue (MRR):
+
+1. Navigate to **Advanced Rewards** in your integration settings
+2. Configure MRR-based reward tiers
+3. Set up progressive rewards for higher-value subscriptions
+4. Define rules for MRR changes over time
+
+### Multi-plan Campaigns
+
+For businesses with multiple subscription plans:
+
+1. Create plan-specific referral campaigns
+2. Configure different reward structures by plan
+3. Set up targeted promotional materials for each plan
+4. Track performance metrics by subscription tier
+
+## Webhooks and API
+
+### RefRef to Chargebee
+
+RefRef can send data to Chargebee for:
+
+- Creating promotional codes
+- Updating customer information
+- Applying subscription credits
+- Modifying subscription features
+
+### Chargebee to RefRef
+
+Chargebee sends webhook events to RefRef for:
+
+- Subscription creation and activation
+- Renewal and payment processing
+- Plan changes and upgrades
+- Cancellations and reactivations
+
+## Troubleshooting
+
+Common issues and solutions:
+
+- **Missing Webhooks**: Verify webhook configuration in Chargebee
+- **Attribution Errors**: Check referral parameter passing in checkout
+- **Duplicate Events**: Check webhook configuration for duplicate notifications
+- **Data Syncing Issues**: Verify API permissions and field mappings
+
+For detailed troubleshooting, see the [Chargebee Integration Troubleshooting Guide](/docs/chargebee/troubleshooting).
+
+## Best Practices
+
+- Test the integration thoroughly in Chargebee's test environment before going live
+- Use consistent metadata field names across your implementation
+- Implement proper error handling for webhook processing
+- Regularly audit referral attributions and rewards
+- Monitor webhook delivery and processing in both systems
+- Consider subscription lifecycle when designing reward structures
+
+## Use Case: SaaS Growth Strategy
+
+Learn how CloudTools increased their subscriber base by 38% and reduced customer acquisition costs by 42% by implementing a tiered referral program through the RefRef-Chargebee integration, offering both referrers and new subscribers incentives based on subscription plan value.

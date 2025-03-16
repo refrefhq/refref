@@ -1,0 +1,109 @@
+---
+title: Self-Hosting RefRef
+description: Guide to self-hosting the RefRef platform on your own infrastructure
+---
+
+# Self-Hosting RefRef
+
+This guide provides instructions for deploying and maintaining your own instance of RefRef on your infrastructure.
+
+## Why Self-Host RefRef?
+
+Self-hosting RefRef offers several advantages:
+
+- **Complete Data Control** - Keep all your referral and customer data within your own infrastructure
+- **Custom Integrations** - Deeper integration with your existing systems
+- **Compliance Requirements** - Meet specific regulatory or industry requirements
+- **White-Labeling** - Full customization of the platform appearance
+- **Cost Efficiency** - Potentially lower costs for high-volume usage
+
+## System Requirements
+
+### Minimum Requirements
+
+- **CPU**: 2 cores
+- **RAM**: 4GB
+- **Storage**: 20GB SSD
+- **Database**: PostgreSQL 13+, Redis
+- **Node.js**: v16+
+- **Docker**: 20.10+ (if using containerized deployment)
+
+### Recommended for Production
+
+- **CPU**: 4+ cores
+- **RAM**: 8GB+
+- **Storage**: 50GB+ SSD
+- **Database**: PostgreSQL 14+ with replication
+- **Load Balancer**: For high-availability setups
+- **Monitoring**: Prometheus/Grafana stack
+
+## Deployment Options
+
+### Docker Deployment
+
+For Docker-based deployments, please refer to our [Docker Setup Guide](/docs/platform/self-hosting/docker).
+
+### Manual Installation
+
+For environments without Docker:
+
+1. Clone the RefRef repository
+2. Install dependencies with `npm install`
+3. Configure environment variables
+4. Set up the database
+5. Build the application
+6. Start the server
+
+## Configuration
+
+RefRef is configured primarily through environment variables:
+
+- **Database Connection**: Configure PostgreSQL connection details
+- **Authentication**: Set up authentication providers
+- **Email**: Configure SMTP settings for notifications
+- **Storage**: Set up file storage options
+- **API Keys**: Configure integration credentials
+
+A complete configuration reference is available in our [configuration documentation](/docs/self-hosting/configuration).
+
+## Upgrading
+
+To upgrade your self-hosted RefRef instance:
+
+1. Back up your database and configuration
+2. Pull the latest version or download the new release
+3. Apply any necessary database migrations
+4. Restart the application
+
+We recommend testing upgrades in a staging environment before applying to production.
+
+## Security Considerations
+
+When self-hosting RefRef, consider these security best practices:
+
+- Run RefRef behind a reverse proxy with SSL/TLS
+- Implement proper network segmentation
+- Use strong, unique database credentials
+- Regularly apply security updates
+- Implement proper backup procedures
+- Consider using a Web Application Firewall (WAF)
+
+## Troubleshooting
+
+Common issues and their solutions:
+
+- **Database Connection Errors**: Check connection strings and network access
+- **Email Sending Failures**: Verify SMTP configuration and credentials
+- **Performance Issues**: Review resource allocation and database indexing
+- **Integration Problems**: Validate API keys and endpoint configurations
+
+For more detailed troubleshooting, consult our [troubleshooting guide](/docs/self-hosting/troubleshooting).
+
+## Community Support
+
+As an open-source project, RefRef has an active community of users and contributors:
+
+- **GitHub Issues**: Report bugs or request features
+- **Discord Community**: Get help from other self-hosters
+- **Documentation**: Contribute improvements to our guides
+- **Enterprise Support**: Commercial support options available for mission-critical deployments

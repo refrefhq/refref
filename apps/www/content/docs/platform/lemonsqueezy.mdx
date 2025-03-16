@@ -1,0 +1,167 @@
+---
+title: LemonSqueezy
+description: Integrating LemonSqueezy with RefRef for payment processing and referral tracking
+---
+RefRef offers a seamless integration with LemonSqueezy to track purchases, manage subscriptions, and automate referral rewards for your digital products and services.
+
+## Overview
+
+The LemonSqueezy integration enables you to:
+
+- Track product purchases as qualifying events for referrals
+- Monitor subscription sign-ups and renewals
+- Automatically issue rewards based on purchase activity
+- Sync customer data between platforms
+- Leverage LemonSqueezy's affiliate system alongside RefRef
+
+## Prerequisites
+
+Before setting up the LemonSqueezy integration, you'll need:
+
+- An active LemonSqueezy account
+- API keys from your LemonSqueezy dashboard
+- Administrator access to your RefRef account
+- Products or subscriptions set up in LemonSqueezy
+
+## Setting Up the Integration
+
+### Step 1: Connect Your LemonSqueezy Account
+
+1. Navigate to **Integrations** in your RefRef dashboard
+2. Select **LemonSqueezy** from the available integrations
+3. Click **Connect with LemonSqueezy**
+4. Enter your LemonSqueezy API key
+5. Authorize the connection between platforms
+
+### Step 2: Configure Webhook Events
+
+RefRef needs to listen for specific events from LemonSqueezy:
+
+1. In the LemonSqueezy integration settings, review the webhook configuration
+2. Ensure the following events are enabled:
+   - `order_created`
+   - `subscription_created`
+   - `subscription_updated`
+   - `subscription_cancelled`
+   - `subscription_resumed`
+3. Save your webhook configuration
+
+### Step 3: Map LemonSqueezy Products to Qualifying Events
+
+Connect your LemonSqueezy products and subscriptions to RefRef qualifying events:
+
+1. Go to **Qualifying Events** in your program settings
+2. Select **Add LemonSqueezy Event**
+3. Choose the products or subscriptions that should trigger referral conversions
+4. Configure conversion rules and reward values
+5. Set attribution windows and validation criteria
+
+## Tracking Referrals with LemonSqueezy
+
+### One-time Purchases
+
+For tracking one-time product purchases:
+
+1. Add the referral identifier to the checkout URL or custom data
+2. RefRef will automatically attribute the purchase to the referrer
+3. Configure reward rules based on product or purchase amount
+
+Example of adding referral data to a LemonSqueezy checkout URL:
+
+```
+https://[store].lemonsqueezy.com/checkout/buy/[product]?checkout[custom][refref_id]=REF123
+```
+
+### Subscription Tracking
+
+For subscription-based products:
+
+1. Configure which subscription events trigger conversions
+2. Set rules for initial subscription vs. recurring payments
+3. Define reward structures for different subscription tiers
+4. Establish rules for subscription upgrades or downgrades
+
+## Processing Rewards
+
+RefRef can automatically process rewards based on LemonSqueezy transactions:
+
+### Cash Rewards
+
+For monetary rewards to referrers:
+
+1. Configure payout methods in RefRef
+2. Set up automatic or manual approval workflows
+3. Define payout schedules and thresholds
+4. Configure notification templates for reward issuance
+
+### Product Rewards
+
+For product-based rewards:
+
+1. Configure discount codes or free product access
+2. Set up automatic license key generation if applicable
+3. Define product access rules and durations
+4. Establish delivery methods for digital product rewards
+
+## Advanced Configuration
+
+### Custom Data Mapping
+
+Map custom fields between LemonSqueezy and RefRef:
+
+1. Navigate to **Data Mapping** in your integration settings
+2. Define how customer data should sync between platforms
+3. Configure custom field mappings for enhanced tracking
+4. Set up data transformation rules if needed
+
+### Multi-product Campaigns
+
+For businesses with multiple products:
+
+1. Create product-specific referral campaigns
+2. Configure different reward structures by product
+3. Set up targeted promotional materials for each product
+4. Track performance metrics by product category
+
+## Webhooks and API
+
+### RefRef to LemonSqueezy
+
+RefRef can send data to LemonSqueezy for:
+
+- Creating discount codes
+- Updating customer information
+- Generating license keys
+- Modifying subscription features
+
+### LemonSqueezy to RefRef
+
+LemonSqueezy sends webhook events to RefRef for:
+
+- Order confirmation
+- Subscription status changes
+- Refund processing
+- Customer updates
+
+## Troubleshooting
+
+Common issues and solutions:
+
+- **Missing Webhooks**: Verify webhook configuration in LemonSqueezy
+- **Attribution Errors**: Check referral parameter passing in checkout URLs
+- **Duplicate Events**: Check webhook configuration for duplicate notifications
+- **Data Syncing Issues**: Verify API permissions and field mappings
+
+For detailed troubleshooting, see the [LemonSqueezy Integration Troubleshooting Guide](/docs/lemonsqueezy/troubleshooting).
+
+## Best Practices
+
+- Test the integration thoroughly in LemonSqueezy's test mode before going live
+- Use consistent naming conventions for custom fields
+- Implement proper error handling for webhook processing
+- Regularly audit referral attributions and rewards
+- Monitor webhook delivery and processing in both systems
+
+## Use Case: Digital Product Creator
+
+Learn how DesignAssets Pro increased their digital product sales by 47% by implementing a referral program through the RefRef-LemonSqueezy integration, offering a 30% commission to referrers and a 15% discount to referred customers.

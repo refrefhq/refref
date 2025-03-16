@@ -1,0 +1,182 @@
+---
+title: PayPal
+description: Integrating PayPal with RefRef for payment processing and referral rewards
+---
+RefRef offers a seamless integration with PayPal to track purchases, process referral rewards, and manage payouts for your referral and affiliate programs.
+
+## Overview
+
+The PayPal integration enables you to:
+
+- Track PayPal purchases as qualifying events for referrals
+- Process commission payments to referrers and affiliates
+- Offer PayPal as a payout method for program participants
+- Sync transaction data between platforms
+- Leverage PayPal's global payment infrastructure with RefRef's referral tools
+
+## Prerequisites
+
+Before setting up the PayPal integration, you'll need:
+
+- An active PayPal Business account
+- API credentials from your PayPal developer dashboard
+- Administrator access to your RefRef account
+- PayPal Webhook capabilities enabled
+
+## Setting Up the Integration
+
+### Step 1: Connect Your PayPal Account
+
+1. Navigate to **Integrations** in your RefRef dashboard
+2. Select **PayPal** from the available integrations
+3. Click **Connect with PayPal**
+4. Enter your PayPal API credentials
+5. Authorize the connection between platforms
+
+### Step 2: Configure Webhook Events
+
+RefRef needs to listen for specific events from PayPal:
+
+1. In the PayPal integration settings, review the webhook configuration
+2. Ensure the following events are enabled:
+   - `PAYMENT.SALE.COMPLETED`
+   - `PAYMENT.CAPTURE.COMPLETED`
+   - `BILLING.SUBSCRIPTION.CREATED`
+   - `BILLING.SUBSCRIPTION.ACTIVATED`
+   - `BILLING.SUBSCRIPTION.PAYMENT.SUCCEEDED`
+3. Save your webhook configuration
+
+### Step 3: Configure Tracking Parameters
+
+Set up how RefRef will track referrals through PayPal:
+
+1. Go to **Tracking Configuration** in your integration settings
+2. Configure custom field mapping for referral identifiers
+3. Set up attribution rules for PayPal transactions
+4. Define conversion criteria for different payment types
+
+## Tracking Referrals with PayPal
+
+### One-time Purchases
+
+For tracking standard PayPal purchases:
+
+1. Add the referral identifier to the PayPal checkout flow
+2. RefRef will automatically attribute the purchase to the referrer
+3. Configure reward rules based on purchase amount or product
+
+Example of adding referral data to PayPal checkout:
+
+```javascript
+// Adding referral data to PayPal checkout
+paypal.Buttons({
+  createOrder: function(data, actions) {
+    return actions.order.create({
+      purchase_units: [{
+        amount: {
+          value: '19.99'
+        },
+        custom_id: 'refref_id=REF123&refref_campaign=summer_promo'
+      }]
+    });
+  },
+  onApprove: function(data, actions) {
+    // Handle successful payment
+  }
+}).render('#paypal-button-container');
+```
+
+### Subscription Tracking
+
+For PayPal subscription products:
+
+1. Configure which subscription events trigger conversions
+2. Set rules for initial subscription vs. recurring payments
+3. Define reward structures for different subscription values
+4. Establish rules for subscription changes
+
+## Processing Rewards Through PayPal
+
+RefRef can automatically process rewards and commissions through PayPal:
+
+### Affiliate Payouts
+
+For paying referrers and affiliates:
+
+1. Configure PayPal as a payout method in RefRef
+2. Set up automatic or manual approval workflows
+3. Define payout schedules and thresholds
+4. Configure notification templates for payout processing
+
+### Mass Payouts
+
+For efficiently managing multiple payouts:
+
+1. Navigate to **Mass Payouts** in your integration settings
+2. Configure batch payout settings
+3. Set up approval workflows for batch processing
+4. Define notification and reporting preferences
+
+## Advanced Configuration
+
+### Multi-currency Support
+
+For businesses operating internationally:
+
+1. Navigate to **Currency Settings** in your integration settings
+2. Configure currency conversion rules for tracking and payouts
+3. Set up default currencies for different regions
+4. Define currency-specific payout thresholds
+
+### Custom Checkout Experience
+
+For businesses with custom checkout flows:
+
+1. Use the RefRef JavaScript SDK with PayPal integration
+2. Implement custom tracking parameters
+3. Configure server-side verification
+4. Set up webhook handling for custom implementations
+
+## Webhooks and API
+
+### RefRef to PayPal
+
+RefRef can send data to PayPal for:
+
+- Creating payout transactions
+- Processing mass payouts
+- Generating invoices
+- Verifying account information
+
+### PayPal to RefRef
+
+PayPal sends webhook events to RefRef for:
+
+- Payment completion
+- Subscription status changes
+- Payout processing status
+- Refund notifications
+
+## Troubleshooting
+
+Common issues and solutions:
+
+- **Missing Webhooks**: Verify webhook configuration in PayPal
+- **Attribution Errors**: Check custom field formatting in checkout
+- **Payout Failures**: Verify recipient PayPal account information
+- **Currency Mismatches**: Check currency configuration in both platforms
+
+For detailed troubleshooting, see the [PayPal Integration Troubleshooting Guide](/docs/paypal/troubleshooting).
+
+## Best Practices
+
+- Test the integration thoroughly in PayPal's sandbox environment before going live
+- Use consistent parameter naming in custom fields
+- Implement proper error handling for webhook processing
+- Regularly audit referral attributions and payouts
+- Monitor webhook delivery and processing in both systems
+- Consider international payment regulations when designing payout structures
+
+## Use Case: Global Affiliate Program
+
+Learn how WorldMarket expanded their affiliate program to 25 countries by implementing the RefRef-PayPal integration, enabling automated commission payments to international affiliates while maintaining compliance with local regulations.

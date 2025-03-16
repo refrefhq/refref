@@ -1,0 +1,365 @@
+openapi: 3.0.0
+info:
+  title: RefRef API
+  description: API for accessing RefRef programs and participants data
+  version: 1.0.0
+  contact:
+    name: RefRef Support
+    email: support@refref.com
+
+servers:
+  - url: https://api.refref.com/v1
+    description: Production server
+  - url: https://api-staging.refref.com/v1
+    description: Staging server
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: api-key
+      description: API key authentication
+    ApiKeyQueryAuth:
+      type: apiKey
+      in: query
+      name: api-key
+      description: API key authentication via query parameter
+
+  schemas:
+    Program:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the program
+        name:
+          type: string
+          description: Name of the program
+        description:
+          type: string
+          description: Description of the program
+        startDate:
+          type: string
+          format: date
+          description: Start date of the program
+        endDate:
+          type: string
+          format: date
+          description: End date of the program
+        status:
+          type: string
+          enum: [active, inactive, completed]
+          description: Current status of the program
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the program was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the program was last updated
+      required:
+        - id
+        - name
+        - status
+        - createdAt
+        - updatedAt
+
+    Participant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the participant
+        programId:
+          type: string
+          format: uuid
+          description: ID of the program the participant is enrolled in
+        firstName:
+          type: string
+          description: First name of the participant
+        lastName:
+          type: string
+          description: Last name of the participant
+        email:
+          type: string
+          format: email
+          description: Email address of the participant
+        status:
+          type: string
+          enum: [active, inactive, completed]
+          description: Current status of the participant
+        joinedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the participant joined
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the participant record was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the participant record was last updated
+      required:
+        - id
+        - programId
+        - email
+        - status
+        - createdAt
+        - updatedAt
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Error code
+        message:
+          type: string
+          description: Error message
+      required:
+        - code
+        - message
+
+paths:
+  /programs:
+    get:
+      summary: Get all programs
+      description: Retrieve a list of all programs
+      operationId: getPrograms
+      parameters:
+        - name: status
+          in: query
+          description: Filter programs by status
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive, completed]
+        - name: limit
+          in: query
+          description: Maximum number of programs to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of programs to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Program'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        description: Total number of programs
+                      limit:
+                        type: integer
+                        description: Maximum number of programs returned
+                      offset:
+                        type: integer
+                        description: Number of programs skipped
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ApiKeyAuth: []
+        - ApiKeyQueryAuth: []
+
+  /programs/{programId}:
+    get:
+      summary: Get program by ID
+      description: Retrieve a specific program by its ID
+      operationId: getProgramById
+      parameters:
+        - name: programId
+          in: path
+          description: ID of the program to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Program'
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Program not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ApiKeyAuth: []
+        - ApiKeyQueryAuth: []
+
+  /participants:
+    get:
+      summary: Get all participants
+      description: Retrieve a list of all participants
+      operationId: getParticipants
+      parameters:
+        - name: programId
+          in: query
+          description: Filter participants by program ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter participants by status
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive, completed]
+        - name: limit
+          in: query
+          description: Maximum number of participants to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of participants to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participant'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        description: Total number of participants
+                      limit:
+                        type: integer
+                        description: Maximum number of participants returned
+                      offset:
+                        type: integer
+                        description: Number of participants skipped
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ApiKeyAuth: []
+        - ApiKeyQueryAuth: []
+
+  /participants/{participantId}:
+    get:
+      summary: Get participant by ID
+      description: Retrieve a specific participant by their ID
+      operationId: getParticipantById
+      parameters:
+        - name: participantId
+          in: path
+          description: ID of the participant to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Participant'
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Participant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ApiKeyAuth: []
+        - ApiKeyQueryAuth: []
