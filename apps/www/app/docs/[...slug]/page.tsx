@@ -1,4 +1,4 @@
-import { source } from '@/lib/source';
+import { source, openapi } from '@/lib/source';
 import {
   DocsPage,
   DocsBody,
@@ -18,11 +18,22 @@ export default async function Page(props: {
   const MDX = page.data.body;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage
+      toc={page.data.toc}
+      tableOfContent={{
+        style: 'clerk',
+      }}
+      full={page.data.full}
+      editOnGithub={{
+      owner: 'refrefhq',
+      repo: 'refref',
+      sha: 'main',
+      path: `apps/www/content/docs/${page.file.path}`,
+      }}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX components={{ ...defaultMdxComponents }} />
+        <MDX components={{ ...defaultMdxComponents, APIPage: openapi.APIPage }} />
       </DocsBody>
     </DocsPage>
   );

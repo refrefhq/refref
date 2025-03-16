@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "pnpm refresh-content && next build && pnpm build:sitemap",
+    "build": "pnpm refresh-content && pnpm build:docs && next build && pnpm build:sitemap",
     "build:sitemap": "pnpm exec tsx ./scripts/generate-sitemap.mts",
+    "build:docs": "node ./scripts/generate-docs.mjs",
     "dev": "next dev",
     "start": "next start",
     "postinstall": "fumadocs-mdx",

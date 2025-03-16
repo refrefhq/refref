@@ -1,0 +1,173 @@
+---
+title: Stripe
+description: Integrating Stripe with RefRef for payment processing and referral tracking
+---
+RefRef offers seamless integration with Stripe to handle payment processing, subscription management, and referral tracking for your programs.
+
+## Overview
+
+The Stripe integration enables you to:
+
+- Track purchases and subscriptions as qualifying events
+- Process commission payments to referrers and affiliates
+- Sync customer data between systems
+- Implement revenue sharing models
+- Automate reward distribution
+
+## Prerequisites
+
+Before setting up the Stripe integration, you'll need:
+
+- An active Stripe account
+- API keys from your Stripe dashboard
+- Administrator access to your RefRef account
+- Basic understanding of Stripe's product structure
+
+## Setting Up the Integration
+
+### Step 1: Connect Your Stripe Account
+
+1. Navigate to **Integrations** in your RefRef dashboard
+2. Select **Stripe** from the available integrations
+3. Click **Connect with Stripe**
+4. Authenticate with your Stripe credentials
+5. Grant the necessary permissions for RefRef
+
+### Step 2: Configure Webhook Events
+
+RefRef needs to listen for specific events from Stripe:
+
+1. In the Stripe integration settings, review the webhook configuration
+2. Ensure the following events are enabled:
+   - `checkout.session.completed`
+   - `invoice.paid`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `charge.succeeded`
+3. Save your webhook configuration
+
+### Step 3: Map Stripe Products to Qualifying Events
+
+Connect your Stripe products and plans to RefRef qualifying events:
+
+1. Go to **Qualifying Events** in your program settings
+2. Select **Add Stripe Event**
+3. Choose the Stripe products or plans that should trigger referral conversions
+4. Configure conversion rules and reward values
+5. Set attribution windows and validation criteria
+
+## Tracking Referrals with Stripe
+
+### One-time Purchases
+
+For tracking one-time purchases:
+
+1. Add the referral identifier to Stripe checkout metadata
+2. RefRef will automatically attribute the purchase to the referrer
+3. Configure reward rules based on purchase amount or product
+
+Example code for adding referral data to Stripe checkout:
+
+```javascript
+const session = await stripe.checkout.sessions.create({
+  line_items: [...],
+  mode: 'payment',
+  metadata: {
+    refref_referral_id: 'REF123',
+    refref_campaign: 'summer_promo'
+  },
+  ...
+});
+```
+
+### Subscription Tracking
+
+For subscription-based businesses:
+
+1. Configure which subscription events trigger conversions
+2. Set rules for initial subscription vs. recurring payments
+3. Define reward structures for subscription tiers
+4. Establish rules for subscription upgrades or downgrades
+
+## Processing Rewards Through Stripe
+
+RefRef can automatically process rewards and commissions through Stripe:
+
+### Stripe Connect
+
+For affiliate and partner payments:
+
+1. Enable Stripe Connect in your integration settings
+2. Configure payout schedules and thresholds
+3. Set up tax form collection if required
+4. Define commission structures and tiers
+
+### Customer Credits and Discounts
+
+For customer rewards:
+
+1. Configure customer reward types in RefRef
+2. Set up automatic discount application
+3. Define credit application rules for future purchases
+4. Configure notification templates for reward issuance
+
+## Advanced Configuration
+
+### Custom Events
+
+Create custom qualifying events based on specific Stripe webhook data:
+
+1. Navigate to **Custom Events** in your integration settings
+2. Define event criteria using Stripe webhook data
+3. Set up reward rules for these custom events
+4. Test the configuration with sample webhook data
+
+### Multi-currency Support
+
+For businesses operating in multiple currencies:
+
+1. Configure currency settings in your integration
+2. Set up currency conversion rules
+3. Define reward values for different currencies
+4. Establish payout preferences by currency
+
+## Webhooks and API
+
+### RefRef to Stripe
+
+RefRef can send data to Stripe for:
+
+- Creating promotional codes
+- Applying discounts
+- Updating customer metadata
+- Managing subscription features
+
+### Stripe to RefRef
+
+Stripe sends webhook events to RefRef for:
+
+- Purchase confirmation
+- Subscription status changes
+- Payment success or failure
+- Customer updates
+
+## Troubleshooting
+
+Common issues and solutions:
+
+- **Missing Webhooks**: Verify webhook configuration in Stripe
+- **Attribution Errors**: Check referral parameter passing in checkout
+- **Payout Failures**: Verify Stripe Connect account setup
+- **Duplicate Events**: Check webhook configuration for duplicate notifications
+
+For detailed troubleshooting, see the [Stripe Integration Troubleshooting Guide](/docs/stripe/troubleshooting).
+
+## Best Practices
+
+- Test the integration thoroughly in Stripe's test mode before going live
+- Implement proper error handling for webhook processing
+- Regularly audit referral attributions and payouts
+- Keep your Stripe API version updated in RefRef
+- Monitor webhook delivery and processing in both systems
+
+By leveraging the RefRef-Stripe integration, you can create powerful, automated referral programs that seamlessly track conversions and distribute rewards.

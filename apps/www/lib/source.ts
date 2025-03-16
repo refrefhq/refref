@@ -21,3 +21,5 @@ export const blog = loader({
   baseUrl: '/blog',
   source: createMDXSource(blogPosts, meta),
 });
+
+export const openapi = createOpenAPI();

@@ -1,0 +1,108 @@
+---
+title: Docker Setup
+description: Using docker compose to setup RefRef
+---
+
+# Docker Deployment for RefRef
+
+Docker provides the simplest way to deploy RefRef on your infrastructure. This guide walks you through the process of setting up RefRef using Docker containers.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- Docker 20.10+ installed on your host system
+- Docker Compose for multi-container deployment
+- At least 2GB of RAM and 2 CPU cores available
+- Basic understanding of Docker concepts
+
+## Quick Start
+
+The fastest way to get RefRef running is using our official Docker images:
+
+```bash
+# Pull the latest RefRef image
+docker pull refref/refref:latest
+
+# Create a docker-compose.yml file with the necessary configuration
+# Start the containers
+docker-compose up -d
+```
+
+## Sample Docker Compose Configuration
+
+Create a `docker-compose.yml` file with the following content:
+
+```yaml
+version: '3.8'
+
+services:
+  refref:
+    image: refref/refref:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/refref
+      - REDIS_URL=redis://redis:6379
+      # Add other environment variables as needed
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:14
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=refref
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+## Production Considerations
+
+For production deployments, consider these additional steps:
+
+1. **Use Specific Versions**: Pin to specific image versions rather than using `latest`
+2. **External Database**: Consider using a managed PostgreSQL service for better reliability
+3. **Persistent Storage**: Configure proper volume mounts for data persistence
+4. **Networking**: Set up proper network isolation
+5. **Monitoring**: Add container monitoring with Prometheus/Grafana
+6. **Backups**: Implement regular database backups
+
+## Upgrading
+
+To upgrade your Docker-based RefRef deployment:
+
+```bash
+# Pull the latest image (or specific version)
+docker pull refref/refref:latest
+
+# Restart your containers
+docker-compose down
+docker-compose up -d
+```
+
+Always back up your data before upgrading.
+
+## Troubleshooting Docker Deployments
+
+Common issues with Docker deployments:
+
+- **Container fails to start**: Check logs with `docker-compose logs refref`
+- **Database connection issues**: Verify network connectivity between containers
+- **Performance problems**: Check resource allocation and container limits
+
+For more detailed information on self-hosting RefRef, refer to our [main self-hosting documentation](/docs/platform/self-hosting).
