@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { Geist } from 'next/font/google';
+import { join } from 'path';
+import { readFileSync } from 'fs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-static';
@@ -17,11 +19,15 @@ const geist = Geist({
 });
 
 export default async function Image() {
+  const logoPath = join(process.cwd(), 'public', 'refref-logo-dark@3x.png');
+  const logoData = readFileSync(logoPath);
+  const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`;
+
   return new ImageResponse(
     (
       <div
         style={{
-          background: 'linear-gradient(to bottom right, #000000, #1a1a1a)',
+          background: ' #000000',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -31,37 +37,24 @@ export default async function Image() {
           padding: '40px',
         }}
       >
+        <img
+          src={logoBase64}
+          alt="RefRef Logo"
+          style={{
+            width: '400px',
+            marginBottom: '32px',
+          }}
+        />
         <div
           style={{
-            fontSize: 60,
-            fontWeight: 'bold',
-            color: 'white',
-            marginBottom: '20px',
+            fontSize: 38,
+            color: '#a0a0a0',
             textAlign: 'center',
+            maxWidth: '800px',
             fontFamily: geist.style.fontFamily,
           }}
         >
-          RefRef
-        </div>
-        <div
-          style={{
-            fontSize: 32,
-            color: '#888888',
-            textAlign: 'center',
-            maxWidth: '800px',
-          }}
-        >
           Open Source Referral Management Platform
-        </div>
-        <div
-          style={{
-            fontSize: 24,
-            color: '#666666',
-            marginTop: '20px',
-            textAlign: 'center',
-          }}
-        >
-          Launch your referral program in minutes
         </div>
       </div>
     ),

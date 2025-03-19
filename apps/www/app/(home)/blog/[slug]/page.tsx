@@ -19,17 +19,17 @@ export async function generateMetadata(props: {
   if (!page) notFound();
 
   return {
-    title: `${page.data.title} | RefRef`,
+    title: `${page.data.title}`,
     description: page.data.description ?? 'A blog about RefRef and user-led growth.',
     openGraph: {
-      title: `${page.data.title} | RefRef`,
+      title: `${page.data.title}`,
       description: page.data.description ?? 'A blog about RefRef and user-led growth.',
       type: 'article',
       images: page.data.image ? [{ url: page.data.image }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${page.data.title} | RefRef`,
+      title: `${page.data.title}`,
       description: page.data.description ?? 'A blog about RefRef and user-led growth.',
       images: page.data.image ? [page.data.image] : undefined,
     },
