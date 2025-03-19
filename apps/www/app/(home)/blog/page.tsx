@@ -7,6 +7,12 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { SubscriptionForm } from '@/components/ui/subscription-form';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description: "A blog about RefRef and user-led growth.",
+}
 
 export default function Page(): React.ReactElement {
   const posts = [...blog.getPages()].sort(

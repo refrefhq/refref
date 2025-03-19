@@ -5,12 +5,36 @@ import Image from 'next/image';
 import { InlineTOC } from 'fumadocs-ui/components/inline-toc';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { blog } from '@/lib/source';
-import { createMetadata } from '@/lib/metadata';
-import { Control } from './page.client';
 import { File, Files, Folder } from 'fumadocs-ui/components/files';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
+  const page = blog.getPage([params.slug]);
+
+  if (!page) notFound();
+
+  return {
+    title: `${page.data.title} | RefRef`,
+    description: page.data.description ?? 'A blog about RefRef and user-led growth.',
+    openGraph: {
+      title: `${page.data.title} | RefRef`,
+      description: page.data.description ?? 'A blog about RefRef and user-led growth.',
+      type: 'article',
+      images: page.data.image ? [{ url: page.data.image }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${page.data.title} | RefRef`,
+      description: page.data.description ?? 'A blog about RefRef and user-led growth.',
+      images: page.data.image ? [page.data.image] : undefined,
+    },
+  };
+}
 
 export default async function Page(props: {
   params: Promise<{ slug: string }>;
@@ -69,21 +93,6 @@ export default async function Page(props: {
       </article>
     </>
   );
-}
-
-export async function generateMetadata(props: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const params = await props.params;
-  const page = blog.getPage([params.slug]);
-
-  if (!page) notFound();
-
-  return createMetadata({
-    title: page.data.title,
-    description:
-      page.data.description ?? 'Launch a Referral Program for your product in minutes',
-  });
 }
 
 export function generateStaticParams(): { slug: string }[] {
