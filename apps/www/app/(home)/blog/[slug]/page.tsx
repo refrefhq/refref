@@ -19,7 +19,9 @@ export async function generateMetadata(props: {
   if (!page) notFound();
 
   return {
-    title: `${page.data.title}`,
+    title: {
+      absolute: `${page.data.title} | RefRef`
+    },
     description: page.data.description ?? 'A blog about RefRef and user-led growth.',
     openGraph: {
       title: `${page.data.title}`,
