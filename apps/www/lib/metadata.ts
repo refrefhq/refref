@@ -8,7 +8,7 @@ export function createMetadata(metadata: Metadata): Metadata {
   return {
     ...metadata,
     title: {
-      template: '%s | RefRef',
+      template: '%s | RefRef - Open Source Referral Management Platform',
       default: 'RefRef - Open Source Referral Management Platform',
     },
     description: 'Open Source Referral Management Platform. Launch your referral program in minutes.',
