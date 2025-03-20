@@ -5,6 +5,7 @@
   <source media="(prefers-color-scheme: light)" srcset="https://refref.ai/github-readme-header-light.png">
   <img alt="RefRef" src="https://refref.ai/github-readme-header-light.png">
 </picture>
+</div>
 
 <p align="center">
   <a href='http://makeapullrequest.com'>
@@ -36,22 +37,35 @@
 
 ## 🔮 Overview
 
-RefRef is an open source platform to launch your Referral Program in minutes!
+Build powerful referral programs for your products with RefRef's open source referral management platform.
 
 ## ✨ Features
 
-* Referral attribution
-* Referrer rewards
-* Referree rewards
-* Referral tracking portal
-* Personalized landing page
-* Performance analytics
-* Engagement analytics
-* Payment provider integrations
-* Multi-currency support
-* Affiliate program management
-* Fraud detection
-* API
+`Referral Attribution`: JS snippet for tracking referrals, enabling accurate attribution of referrals to referrers
+
+`Customizable Rewards`: Flexible reward system for different referral programs
+
+`Referrer Portal`: UI components for referrers to refer and track rewards
+
+`Partner Portal`: Dedicated interface for affiliates
+
+`Personalized Pages`: Automatic personalization of referral landing pages
+
+`Nudges`: Automated reminders to boost referral engagement
+
+`Fraud Monitoring`: Detect and prevent fraudulent referral activity
+
+`Manual Reward Approval`: Review and approve rewards manually
+
+`Automatic Reward Approval`: Set rules for automatic reward validation
+
+`Manual Reward Dispersal`: Control when rewards are sent out
+
+`Automatic Reward Dispersal`: Schedule automated reward payments
+
+`Engagement Analytics`: Track referral program performance metrics
+
+`Testing Environment`: Sandbox for testing referral programs
 
 ## 🔰 Tech Stack
 
