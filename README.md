@@ -1,8 +1,11 @@
 <!-- Markdown with HTML -->
-<p align="center">
-  <img alt="refref-logo-dark" src="https://github.com/user-attachments/assets/7bd0318f-76c2-4978-8eaf-27d316888789#gh-dark-mode-only">
-  <img alt="refref-logo-light" src="https://github.com/user-attachments/assets/3a1d3222-83ad-4559-8d64-734c31130bca#gh-light-mode-only">
-</p>
+<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://refref.ai/github-readme-header-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://refref.ai/github-readme-header-light.png">
+  <img alt="RefRef" src="https://refref.ai/github-readme-header-light.png">
+</picture>
+
 <p align="center">
   <a href='http://makeapullrequest.com'>
     <img alt='PRs Welcome' src='https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=shields'/>
