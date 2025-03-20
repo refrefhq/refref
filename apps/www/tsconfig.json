@@ -14,6 +14,6 @@
     ".next/types/**/*.ts",
     "src/lib/dom/build/rrwebRecorderScript.cjs",
     "src/env.ts"
-  ],
+, "scripts/lint.mts"  ],
   "exclude": ["node_modules"]
 }
