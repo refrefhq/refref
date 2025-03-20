@@ -1,7 +1,7 @@
 <!-- Markdown with HTML -->
 <p align="center">
-  <img alt="refref-logo-dark" src="https://refref.ai/github-repo-cover-image.png#gh-dark-mode-only">
-  <img alt="refref-logo-light" src="https://refref.ai/github-readme-header-light.png#gh-light-mode-only">
+  <img alt="refref-logo-dark" src="https://refref.ai/refref-github-repo-cover-dark-transparent.png#gh-dark-mode-only">
+  <img alt="refref-logo-light" src="https://refref.ai/refref-github-repo-cover-light-transparent.png#gh-light-mode-only">
 </p>
 <p align="center">
   <a href='http://makeapullrequest.com'>
