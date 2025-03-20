@@ -41,31 +41,31 @@ Build powerful referral programs for your products with RefRef's open source ref
 
 ## ✨ Features
 
-`Referral Attribution`: JS snippet for tracking referrals, enabling accurate attribution of referrals to referrers
+* **Referral Attribution**: JS snippet for tracking referrals, enabling accurate attribution of referrals to referrers
 
-`Customizable Rewards`: Flexible reward system for different referral programs
+* **Customizable Rewards**: Flexible reward system for different referral programs
 
-`Referrer Portal`: UI components for referrers to refer and track rewards
+* **Referrer Portal**: UI components for referrers to refer and track rewards
 
-`Partner Portal`: Dedicated interface for affiliates
+* **Partner Portal**: Dedicated interface for affiliates
 
-`Personalized Pages`: Automatic personalization of referral landing pages
+* **Personalized Pages**: Automatic personalization of referral landing pages
 
-`Nudges`: Automated reminders to boost referral engagement
+* **Nudges**: Automated reminders to boost referral engagement
 
-`Fraud Monitoring`: Detect and prevent fraudulent referral activity
+* **Fraud Monitoring**: Detect and prevent fraudulent referral activity
 
-`Manual Reward Approval`: Review and approve rewards manually
+* **Manual Reward Approval**: Review and approve rewards manually
 
-`Automatic Reward Approval`: Set rules for automatic reward validation
+* **Automatic Reward Approval**: Set rules for automatic reward validation
 
-`Manual Reward Dispersal`: Control when rewards are sent out
+* **Manual Reward Dispersal**: Control when rewards are sent out
 
-`Automatic Reward Dispersal`: Schedule automated reward payments
+* **Automatic Reward Dispersal**: Schedule automated reward payments
 
-`Engagement Analytics`: Track referral program performance metrics
+* **Engagement Analytics**: Track referral program performance metrics
 
-`Testing Environment`: Sandbox for testing referral programs
+* **Testing Environment**: Sandbox for testing referral programs
 
 ## 🔰 Tech Stack
 
