@@ -1,6 +1,6 @@
 <!-- Markdown with HTML -->
 <p align="center">
-  <img alt="refref-logo-dark" src="https://refref.ai/github-readme-header-dark.png#gh-dark-mode-only">
+  <img alt="refref-logo-dark" src="https://refref.ai/github-repo-cover-image.png#gh-dark-mode-only">
   <img alt="refref-logo-light" src="https://refref.ai/github-readme-header-light.png#gh-light-mode-only">
 </p>
 <p align="center">
