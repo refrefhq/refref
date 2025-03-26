@@ -28,7 +28,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         <GoogleTagManager gtmId="GTM-MZXNF5TX" />
       </head>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>
+        <RootProvider
+          theme={{
+            defaultTheme: 'dark',
+          }}>
           <TooltipProvider>
             {children}
           </TooltipProvider>

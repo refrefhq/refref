@@ -10,6 +10,7 @@ import Image from 'next/image';
  */
 export const baseOptions: BaseLayoutProps = {
   githubUrl: 'https://github.com/refrefhq/refref',
+  disableThemeSwitch: true,
   nav: {
     title: (
       <>

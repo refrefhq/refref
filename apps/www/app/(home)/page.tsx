@@ -1,4 +1,4 @@
-import { Hero } from "@/components/ui/hero";
+import { Hero2 } from "@/components/ui/hero2";
 import FaqGeneral from "@/components/ui/faq-general";
 import Cta1 from "@/components/ui/cta-1";
 import { ValueProp } from "@/components/ui/value-prop";
@@ -11,7 +11,7 @@ import { SetupSteps } from "@/components/ui/setup-steps";
 export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col">
-      <Hero />
+      <Hero2 />
       <ValueProp />
       <WhyOSS />
       <FeatureBento1 />
