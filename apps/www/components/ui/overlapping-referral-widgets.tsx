@@ -29,12 +29,12 @@ export default function OverlappingReferralWidgets() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[800px] p-4 overflow-hidden">
-      <div className="relative w-full max-w-6xl h-[700px]">
+    <div className="flex items-center justify-center min-h-[800px] p-0 sm:p-4 overflow-hidden">
+      <div className="relative w-full max-w-full sm:max-w-6xl min-h-[700px] sm:h-[700px]">
         {/* Decorative elements */}
-        <div className="absolute top-10 left-10 text-amber-400 text-4xl">✧</div>
-        <div className="absolute top-20 right-20 text-blue-400 text-3xl">★</div>
-        <div className="absolute bottom-20 left-20 text-green-400">
+        <div className="absolute top-10 left-4 sm:left-10 text-amber-400 text-4xl">✧</div>
+        <div className="absolute top-20 right-4 sm:right-20 text-blue-400 text-3xl">★</div>
+        <div className="absolute bottom-20 left-4 sm:left-20 text-green-400">
           <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M10,60 Q60,10 110,60" stroke="#4ADE80" strokeWidth="2" />
           </svg>
@@ -57,12 +57,12 @@ export default function OverlappingReferralWidgets() {
           </svg>
         </div>
 
-        {/* First Card - Refer & Earn (Left, overlapping right column by 10%) */}
+        {/* First Card - Refer & Earn */}
         <div
-          className={`absolute transition-all duration-500 ease-in-out cursor-pointer ${
+          className={`transition-all duration-500 ease-in-out cursor-pointer mb-4 sm:mb-0 ${
             activeCard === 0
-              ? "z-30 top-[20%] left-[15%] rotate-0 scale-100"
-              : "z-10 top-[20%] left-[15%] rotate-0 scale-95 "
+              ? "z-30 sm:absolute sm:top-[20%] sm:left-[15%] rotate-0 scale-100"
+              : "z-10 sm:absolute sm:top-[20%] sm:left-[15%] rotate-0 scale-95"
           }`}
           onClick={() => bringToFront(0)}
         >
@@ -152,12 +152,12 @@ export default function OverlappingReferralWidgets() {
           </Card>
         </div>
 
-        {/* Second Card - Review and Earn (Top Right) */}
+        {/* Second Card - Review and Earn */}
         <div
-          className={`absolute transition-all duration-500 ease-in-out cursor-pointer ${
+          className={`transition-all duration-500 ease-in-out cursor-pointer mb-4 sm:mb-0 ${
             activeCard === 1
-              ? "z-30 top-[10%] left-[50%] rotate-0 scale-100"
-              : "z-10 top-[10%] left-[50%] rotate-0 scale-95"
+              ? "z-30 sm:absolute sm:top-[10%] sm:left-[50%] rotate-0 scale-100"
+              : "z-10 sm:absolute sm:top-[10%] sm:left-[50%] rotate-0 scale-95"
           }`}
           onClick={() => bringToFront(1)}
         >
@@ -203,12 +203,12 @@ export default function OverlappingReferralWidgets() {
           </Card>
         </div>
 
-        {/* Third Card - 20% Off (Bottom Right, slightly overlapping with Refer & Earn) */}
+        {/* Third Card - 20% Off */}
         <div
-          className={`absolute transition-all duration-500 ease-in-out cursor-pointer ${
+          className={`transition-all duration-500 ease-in-out cursor-pointer mb-4 sm:mb-0 ${
             activeCard === 2
-              ? "z-30 top-[40%] left-[48%] rotate-0 scale-100"
-              : "z-10 top-[40%] left-[48%] rotate-0 scale-95"
+              ? "z-30 sm:absolute sm:top-[40%] sm:left-[48%] rotate-0 scale-100"
+              : "z-10 sm:absolute sm:top-[40%] sm:left-[48%] rotate-0 scale-95"
           }`}
           onClick={() => bringToFront(2)}
         >
