@@ -29,6 +29,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       </head>
       <body className="flex flex-col min-h-screen">
         <RootProvider
+          search={{
+            options: {
+              type: 'static',
+              }
+          }}
           theme={{
             defaultTheme: 'dark',
           }}>
