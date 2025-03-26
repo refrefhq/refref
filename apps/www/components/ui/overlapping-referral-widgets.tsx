@@ -10,10 +10,10 @@ export default function OverlappingReferralWidgets() {
   const [activeCard, setActiveCard] = useState(0)
   const [copiedStates, setCopiedStates] = useState([false, false, false])
 
-  const referralLinks = ["acme.refref.ai/r/th5tdf", "acme.com/r/xyz789", "acme.com/r/xyz789"]
+  const referralLinks: string[] = ["acme.refref.ai/r/th5tdf", "acme.com/r/xyz789", "acme.com/r/xyz789"]
 
   const copyToClipboard = (index: number) => {
-    navigator.clipboard.writeText(referralLinks[index])
+    navigator.clipboard.writeText(referralLinks[index] as string)
     const newCopiedStates = [...copiedStates]
     newCopiedStates[index] = true
     setCopiedStates(newCopiedStates)
