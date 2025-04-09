@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/github/license/refrefhq/refref?logo=opensourceinitiative&logoColor=white&label=License&color=8A2BE2" alt="license">
   </a>
   <br>
-  <a href="https://refref.ai/discord">
+  <a href="https://refref.ai/community">
     <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square&logo=discord" alt="discord" style="height: 20px;">
   </a>
 </p>
