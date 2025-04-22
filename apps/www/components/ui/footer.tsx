@@ -64,7 +64,7 @@ export function Footer() {
               <h4 className="mb-3 text-sm font-semibold">Resources</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/docs">Docs</Link></li>
-                <li><Link href="mailto:support@refref.ai">Contact</Link></li>
+                <li><Link href="/changelog">Changelog</Link></li>
               </ul>
             </div>
           </div>

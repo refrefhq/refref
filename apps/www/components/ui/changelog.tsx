@@ -90,7 +90,7 @@ export const defaultChangelogData: ChangelogEntry[] = [
   {
     version: "Version 0.1.0",
     date: "28 April 2025",
-    title: "RefRef 0.1 Coming soon!",
+    title: "RefRef 0.1 coming soon!",
     description:
       "First version of RefRef is coming soon by end of April 2025! What to expect:",
     items: [
