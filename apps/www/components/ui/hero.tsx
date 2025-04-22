@@ -32,7 +32,7 @@ export function Hero() {
                   <AnimatedGradientText>⭐ Star us on Github</AnimatedGradientText>
                 </Link>{' '}
                 <span className="animate-text-gradient inline-flex bg-gradient-to-r from-neutral-900 via-slate-500 to-neutral-500 bg-[200%_auto] bg-clip-text leading-tight text-transparent dark:from-neutral-100 dark:via-slate-400 dark:to-neutral-400">
-                  Open Source Referral Management
+                  Open Source Referral Marketing
                 </span>
               </h2>
               <p className="text-muted-foreground lg:text-xl">

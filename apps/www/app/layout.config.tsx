@@ -36,6 +36,11 @@ export const baseOptions: BaseLayoutProps = {
       active: 'nested-url',
     },
     {
+      text: 'Changelog',
+      url: '/changelog',
+      active: 'nested-url',
+    },
+    {
       type: 'icon',
       url: '/community',
       text: 'Discord',
