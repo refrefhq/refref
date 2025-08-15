@@ -1,0 +1,46 @@
+{
+  "name": "@refref/attribution-script",
+  "version": "0.1.0",
+  "description": "Attribution script for tracking referral sources and managing attribution data",
+  "type": "module",
+  "main": "./dist/attribution-script.umd.js",
+  "module": "./dist/attribution-script.es.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/attribution-script.es.js",
+      "require": "./dist/attribution-script.umd.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "clean": "rm -rf dist src/**/*.js src/**/*.js.map",
+    "lint": "eslint . --report-unused-disable-directives",
+    "test": "jest",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "attribution",
+    "referral",
+    "tracking",
+    "analytics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@refref/eslint-config": "workspace:*",
+    "@refref/typescript-config": "workspace:*",
+    "@types/jest": "^29.5.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.3.3",
+    "vite-plugin-dts": "^3.7.0"
+  }
+}
