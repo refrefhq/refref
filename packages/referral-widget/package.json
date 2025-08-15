@@ -1,0 +1,50 @@
+{
+  "name": "@refref/referral-widget",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/referral-widget.umd.js",
+  "module": "./dist/referral-widget.es.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/referral-widget.es.js",
+      "require": "./dist/referral-widget.umd.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:widget": "tsc && vite build --out-dir dist/widget --mode development",
+    "build:widget:production": "tsc && vite build --out-dir dist/widget --mode production",
+    "lint": "eslint . --report-unused-disable-directives",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@refref/ui": "workspace:*",
+    "lucide-react": "^0.483.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.3",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.2",
+    "@refref/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@refref/eslint-config": "workspace:*",
+    "@refref/typescript-config": "workspace:*",
+    "@tailwindcss/vite": "^4.0.14",
+    "@types/react": "^19.0.4",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.8.2",
+    "vite": "^6.3.3",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vite-plugin-dts": "^3.7.0"
+  }
+}
