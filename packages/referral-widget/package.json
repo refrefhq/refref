@@ -39,10 +39,10 @@
     "@refref/eslint-config": "workspace:*",
     "@refref/typescript-config": "workspace:*",
     "@tailwindcss/vite": "^4.0.14",
-    "@types/react": "^19.0.4",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.2.1",
-    "typescript": "^5.8.2",
+    "typescript": "^5.9.2",
     "vite": "^6.3.3",
     "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-dts": "^3.7.0"

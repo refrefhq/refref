@@ -21,5 +21,5 @@ export interface FormOptions {
 }
 
 export interface FormElement extends HTMLFormElement {
-  [key: string]: any;
+  [key: string]: unknown;
 }

@@ -20,7 +20,7 @@ export type ProgramTemplateStepConfigType = z.infer<
 export const programTemplateConfigSchema = z.object({
   schemaVersion: z.number(),
   steps: z.array(programTemplateStepConfigSchema),
-  meta: z.record(z.unknown()).optional(),
+  meta: z.record(z.string(), z.unknown()).optional(),
 });
 export type ProgramTemplateConfigType = z.infer<
   typeof programTemplateConfigSchema
@@ -43,7 +43,7 @@ const trackingConfigSchema = z.object({
   urlSettings: z
     .object({
       allowCustom: z.boolean().optional(),
-      domain: z.string().url().optional(),
+      domain: z.string().url({ message: "Invalid URL" }).optional(),
     })
     .optional(),
 });

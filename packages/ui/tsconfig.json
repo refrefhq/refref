@@ -3,10 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
       "@refref/ui/*": ["./src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["."],
   "exclude": ["node_modules", "dist"]
 }

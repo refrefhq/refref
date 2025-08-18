@@ -97,13 +97,7 @@ export function ReferralWidgetContent({
         </div>
 
         {/* Share Buttons */}
-        <div className="flex flex-col gap-2">
-          <label
-            className="text-sm font-medium opacity-80"
-            style={{ color: config.textColor }}
-          >
-            Share with friends
-          </label>
+        <div className="flex justify-center">
           <ShareButtons config={config} referralLink={config.referralLink} />
         </div>
       </CardContent>

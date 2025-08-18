@@ -32,6 +32,6 @@ export const rewardMetadataV1Schema = z.object({
   minPurchaseAmount: z.number().optional(),
   // General
   notes: z.string().optional(),
-  customData: z.record(z.unknown()).optional(),
+  customData: z.record(z.string(), z.unknown()).optional(),
 });
 export type RewardMetadataV1Type = z.infer<typeof rewardMetadataV1Schema>;
