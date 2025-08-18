@@ -1,0 +1,36 @@
+{
+  "name": "@refref/coredb",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/seeds/seed-templates.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "build": "tsc",
+    "type:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@refref/types": "workspace:*",
+    "drizzle-orm": "^0.33.0",
+    "postgres": "^3.4.5",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@refref/typescript-config": "workspace:*",
+    "@types/node": "^24.3.0",
+    "drizzle-kit": "^0.24.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.2"
+  }
+}
