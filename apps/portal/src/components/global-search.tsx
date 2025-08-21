@@ -2,7 +2,12 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { IconUsers, IconListDetails, IconSearch } from "@tabler/icons-react";
+import {
+  IconUsers,
+  IconListDetails,
+  IconSearch,
+  IconSettings,
+} from "@tabler/icons-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -24,9 +29,9 @@ export function GlobalSearch() {
     { query: debouncedSearch || "" },
     {
       enabled: Boolean(
-        open && debouncedSearch && debouncedSearch.trim().length > 0,
+        open && debouncedSearch && debouncedSearch.trim().length > 0
       ),
-    },
+    }
   );
 
   React.useEffect(() => {
@@ -62,9 +67,9 @@ export function GlobalSearch() {
   };
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
       <CommandInput
-        placeholder="Search participants and programs..."
+        placeholder="Search participants, programs, and settings..."
         value={search}
         onValueChange={setSearch}
       />
@@ -85,7 +90,9 @@ export function GlobalSearch() {
                 {searchResults.participants.map((participant) => (
                   <CommandItem
                     key={participant.id}
-                    onSelect={() => handleSelect(`/participants`)}
+                    onSelect={() =>
+                      handleSelect(`/participants/${participant.id}`)
+                    }
                   >
                     <IconUsers className="mr-2 h-4 w-4" />
                     <div className="flex flex-col">
@@ -113,8 +120,25 @@ export function GlobalSearch() {
               </CommandGroup>
             )}
 
+            {searchResults.settingsPages &&
+              searchResults.settingsPages.length > 0 && (
+                <CommandGroup heading="Settings">
+                  {searchResults.settingsPages.map((setting) => (
+                    <CommandItem
+                      key={setting.id}
+                      onSelect={() => handleSelect(setting.href)}
+                    >
+                      <IconSettings className="mr-2 h-4 w-4" />
+                      <span>{setting.name}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+
             {searchResults.participants.length === 0 &&
-              searchResults.programs.length === 0 && (
+              searchResults.programs.length === 0 &&
+              (!searchResults.settingsPages ||
+                searchResults.settingsPages.length === 0) && (
                 <CommandEmpty>No results found.</CommandEmpty>
               )}
           </>

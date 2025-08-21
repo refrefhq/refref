@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db, schema } from "@/server/db";
-const { participant } = schema;
-import { and, ilike, sql } from "drizzle-orm";
+const { participant, referral, referralLink, event } = schema;
+import { and, count, eq, ilike, sql } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export const participantsRouter = createTRPCRouter({
   /**
@@ -22,7 +23,7 @@ export const participantsRouter = createTRPCRouter({
               value: z.union([z.string(), z.array(z.string())]),
               variant: z.string(),
               operator: z.string(),
-            }),
+            })
           )
           .optional(),
         sort: z
@@ -31,7 +32,7 @@ export const participantsRouter = createTRPCRouter({
             direction: z.enum(["asc", "desc"]),
           })
           .optional(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, filters, sort } = input;
@@ -66,7 +67,7 @@ export const participantsRouter = createTRPCRouter({
               // Add more filter types/fields as needed
               return undefined;
             })
-            .filter(Boolean),
+            .filter(Boolean)
         );
       }
 
@@ -97,5 +98,65 @@ export const participantsRouter = createTRPCRouter({
         .limit(pageSize)
         .offset((page - 1) * pageSize);
       return { data, total };
+    }),
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+
+      // Get participant with project validation
+      const [participantData] = await ctx.db
+        .select()
+        .from(participant)
+        .where(eq(participant.id, id))
+        .limit(1);
+
+      if (!participantData) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Participant not found",
+        });
+      }
+
+      // Get referral link for this participant
+      const [referralLinkData] = await ctx.db
+        .select()
+        .from(referralLink)
+        .where(eq(referralLink.participantId, id))
+        .limit(1);
+
+      // Get referral count (how many people this participant has referred)
+      const [referralCountResult] = await ctx.db
+        .select({ count: count() })
+        .from(referral)
+        .where(eq(referral.referrerId, id));
+
+      // Get events count for this participant
+      const [eventsCountResult] = await ctx.db
+        .select({ count: count() })
+        .from(event)
+        .where(eq(event.participantId, id));
+
+      // Get recent referrals (last 5)
+      const recentReferrals = await ctx.db
+        .select({
+          id: referral.id,
+          name: referral.name,
+          email: referral.email,
+          externalId: referral.externalId,
+          createdAt: referral.createdAt,
+        })
+        .from(referral)
+        .where(eq(referral.referrerId, id))
+        .orderBy(sql`${referral.createdAt} DESC`)
+        .limit(5);
+
+      return {
+        ...participantData,
+        referralLink: referralLinkData,
+        referralCount: referralCountResult?.count ?? 0,
+        eventsCount: eventsCountResult?.count ?? 0,
+        recentReferrals,
+      };
     }),
 });

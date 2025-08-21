@@ -1,5 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@refref/ui/components/data-table/data-table-column-header";
+import Link from "next/link";
 
 export interface Participant {
   id: string;
@@ -32,10 +33,18 @@ export function getParticipantsTableColumns(): ColumnDef<Participant>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Email" />
       ),
-      cell: ({ row }) =>
-        row.getValue("email") || (
-          <span className="text-muted-foreground italic">No email</span>
-        ),
+      cell: ({ row }) => {
+        const email = row.getValue("email") as string | null;
+        const participantId = row.original.id;
+
+        return (
+          <Link href={`/participants/${participantId}`}>
+            {email || (
+              <span className="text-muted-foreground italic">No email</span>
+            )}
+          </Link>
+        );
+      },
       enableSorting: true,
       enableColumnFilter: true,
       meta: {
