@@ -18,10 +18,12 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().min(1).default("google_client_secret"),
     REFERRAL_PROGRAM_CLIENT_ID: z
       .string()
-      .min(1),
+      .min(1)
+      .default("referral_program_client_id"),
     REFERRAL_PROGRAM_CLIENT_SECRET: z
       .string()
-      .min(1),
+      .min(1)
+      .default("referral_program_client_secret"),
   },
 
   /**
@@ -31,13 +33,15 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
-    NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
+    NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
     NEXT_PUBLIC_REFREF_PROJECT_ID: z
       .string()
-      .min(1),
+      .min(1)
+      .default("refref_project_id"),
     NEXT_PUBLIC_REFREF_PROGRAM_ID: z
       .string()
-      .min(1),
+      .min(1)
+      .default("refref_program_id"),
   },
 
   /**
