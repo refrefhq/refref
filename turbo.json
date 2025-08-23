@@ -1,13 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION", "S3_BUCKET_NAME", "S3_ENDPOINT"],
+  "globalEnv": ["BETTER_AUTH_SECRET","DATABASE_URL","NEXT_PUBLIC_APP_URL","BETTER_AUTH_URL","NODE_ENV","RESEND_API_KEY","GOOGLE_CLIENT_ID","GOOGLE_CLIENT_SECRET","REFERRAL_PROGRAM_CLIENT_ID","REFERRAL_PROGRAM_CLIENT_SECRET","NEXT_PUBLIC_REFREF_PROJECT_ID","NEXT_PUBLIC_REFREF_PROGRAM_ID"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"],
-      "env": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION", "S3_BUCKET_NAME", "S3_ENDPOINT"]
+      "env": []
     },
     "lint": {
       "dependsOn": ["^lint"]
