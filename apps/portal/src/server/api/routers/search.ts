@@ -3,14 +3,37 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db, schema } from "@/server/db";
 import { and, ilike, or, eq } from "drizzle-orm";
 
-const { participant, program } = schema;
+const { participant, program, referralLink } = schema;
+
+const settingsPages = [
+  {
+    id: "profile-settings",
+    name: "Profile",
+    href: `/settings/profile`,
+  },
+  {
+    id: "project-settings",
+    name: "Project",
+    href: `/settings/project`,
+  },
+  {
+    id: "appearance-settings",
+    name: "Appearance",
+    href: `/settings/appearance`,
+  },
+  {
+    id: "members-settings",
+    name: "Members",
+    href: "/settings/members",
+  },
+];
 
 export const searchRouter = createTRPCRouter({
   global: protectedProcedure
     .input(
       z.object({
         query: z.string().min(0).max(100),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       const { query } = input;
@@ -34,6 +57,10 @@ export const searchRouter = createTRPCRouter({
             name: participant.name,
           })
           .from(participant)
+          .leftJoin(
+            referralLink,
+            eq(participant.id, referralLink.participantId)
+          )
           .where(
             and(
               eq(participant.projectId, projectId),
@@ -41,8 +68,10 @@ export const searchRouter = createTRPCRouter({
                 ilike(participant.email, searchPattern),
                 ilike(participant.id, searchPattern),
                 ilike(participant.name, searchPattern),
-              ),
-            ),
+                ilike(participant.externalId, searchPattern),
+                ilike(referralLink.slug, searchPattern)
+              )
+            )
           )
           .limit(5),
 
@@ -55,15 +84,22 @@ export const searchRouter = createTRPCRouter({
           .where(
             and(
               eq(program.projectId, projectId),
-              ilike(program.name, searchPattern),
-            ),
+              ilike(program.name, searchPattern)
+            )
           )
           .limit(5),
       ]);
+      const filteredSettingsPages = settingsPages.filter((page) => {
+        return (
+          page.name.toLowerCase().includes(query.toLowerCase()) ||
+          page.href.toLowerCase().includes(query.toLowerCase())
+        );
+      });
 
       return {
         participants,
         programs,
+        settingsPages: filteredSettingsPages,
       };
     }),
 });

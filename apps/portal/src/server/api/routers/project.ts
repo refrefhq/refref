@@ -8,6 +8,7 @@ import { randomBytes } from "crypto";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { appTypes, paymentProviders } from "@/lib/validations/onboarding";
+import { eq } from "drizzle-orm";
 
 const slugGenerator = init({
   length: 7,
@@ -26,6 +27,12 @@ const createProjectWithOnboardingSchema = z.object({
   appType: z.enum(appTypes),
   paymentProvider: z.enum(paymentProviders),
   otherPaymentProvider: z.string().optional(),
+});
+
+// Input validation schema for updating project
+const updateProjectSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  url: z.string().url({ message: "Invalid URL" }),
 });
 
 export const projectRouter = createTRPCRouter({
@@ -136,5 +143,49 @@ export const projectRouter = createTRPCRouter({
         clientId: secrets.clientId,
         clientSecret: secrets.clientSecret, // Only returned once during creation
       };
+    }),
+
+  // Get current project data
+  getCurrent: onboardingProcedure.query(async ({ ctx }) => {
+    if (!ctx.activeProjectId) {
+      throw new Error("No active project");
+    }
+
+    const currentProject = await ctx.db
+      .select()
+      .from(project)
+      .where(eq(project.id, ctx.activeProjectId))
+      .limit(1);
+
+    if (!currentProject.length) {
+      throw new Error("Project not found");
+    }
+
+    return currentProject[0];
+  }),
+
+  // Update project information
+  update: onboardingProcedure
+    .input(updateProjectSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.activeProjectId) {
+        throw new Error("No active project");
+      }
+
+      const [updatedProject] = await ctx.db
+        .update(project)
+        .set({
+          name: input.name,
+          url: input.url,
+          updatedAt: new Date(),
+        })
+        .where(eq(project.id, ctx.activeProjectId))
+        .returning();
+
+      if (!updatedProject) {
+        throw new Error("Failed to update project");
+      }
+
+      return updatedProject;
     }),
 });
