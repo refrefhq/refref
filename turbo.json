@@ -18,6 +18,11 @@
     "dev": {
       "cache": false,
       "persistent": true
-    }
+    },
+    "db:generate": {},
+    "db:migrate": {},
+    "db:push": {},
+    "db:seed": {},
+    "db:studio": {}
   }
 }
