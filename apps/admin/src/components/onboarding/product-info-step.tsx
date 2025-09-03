@@ -1,55 +1,114 @@
 "use client";
 
-import { Input } from "@refref/ui/components/input";
-import { Label } from "@refref/ui/components/label";
-import type { ProductInfoFormData } from "@/lib/validations/onboarding";
-import { useFormContext } from "react-hook-form";
+import { withFieldGroup } from "@/lib/forms/onboarding-form";
+import { productInfoSchema } from "@/lib/validations/onboarding";
+import { Button } from "@refref/ui/components/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function ProductInfoStep() {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<ProductInfoFormData>();
+export const ProductInfoStep = withFieldGroup({
+  // These values are only used for type-checking, not at runtime
+  defaultValues: {
+    projectName: "",
+    projectUrl: "",
+  },
+  props: {
+    onNext: () => {},
+    onPrevious: () => {},
+    isFirstStep: false,
+    isLastStep: false,
+    isSubmitting: false,
+  },
+  render: function Render({
+    group,
+    onNext,
+    onPrevious,
+    isFirstStep,
+    isLastStep,
+    isSubmitting,
+  }) {
+    const onSubmit = async () => {
+      const errors = await group.validateAllFields("submit");
+      if (errors.length > 0) {
+        return;
+      }
+      onNext();
+    };
 
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold">Tell us about your product</h2>
-        <p className="text-muted-foreground">
-          We'll use this information to tailor your setup process
-        </p>
-      </div>
+    const onBefore = () => {
+      // ! important otherwise if we go to previous step, the errors from next step will still be present
+      Object.values(group.fieldsMap).forEach((field) => {
+        console.log("field is ", field);
+        group.form.setFieldMeta(field, (m) => ({
+          ...m,
+          errors: [],
+          errorMap: {},
+        }));
+      });
 
-      <div className="space-y-4">
+      onPrevious();
+    };
+
+    return (
+      <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="projectName">Product name</Label>
-          <Input
-            id="projectName"
-            placeholder="Enter your product name"
-            {...register("projectName")}
-          />
-          {errors.projectName && (
-            <p className="text-sm text-destructive">
-              {errors.projectName.message}
-            </p>
-          )}
+          <h2 className="text-2xl font-semibold">Tell us about your product</h2>
+          <p className="text-muted-foreground">
+            We'll use this information to tailor your setup process
+          </p>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="projectUrl">Website URL</Label>
-          <Input
-            id="projectUrl"
-            type="url"
-            placeholder="https://your-product.com"
-            {...register("projectUrl")}
-          />
-          {errors.projectUrl && (
-            <p className="text-sm text-destructive">
-              {errors.projectUrl.message}
-            </p>
-          )}
+        <div className="space-y-4">
+          <group.AppField
+            name="projectName"
+            validators={{
+              onChange: productInfoSchema.shape.projectName,
+            }}
+          >
+            {(field) => (
+              <field.TextField
+                label="Product name"
+                placeholder="Enter your product name"
+              />
+            )}
+          </group.AppField>
+
+          <group.AppField
+            name="projectUrl"
+            validators={{
+              onChange: productInfoSchema.shape.projectUrl,
+            }}
+          >
+            {(field) => (
+              <field.TextField
+                label="Website URL"
+                placeholder="example.com or https://example.com"
+                type="text"
+              />
+            )}
+          </group.AppField>
+        </div>
+        {/* Navigation Buttons */}
+        <div className="flex justify-between pt-6 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBefore}
+            disabled={isFirstStep}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+
+          <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
+            {isLastStep
+              ? isSubmitting
+                ? "Creating..."
+                : "Complete Setup"
+              : "Next"}
+            {!isLastStep && <ChevronRight className="h-4 w-4 ml-2" />}
+          </Button>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  },
+});

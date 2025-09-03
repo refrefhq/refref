@@ -1,76 +1,128 @@
 "use client";
 
-import { Label } from "@refref/ui/components/label";
-import { RadioGroup, RadioGroupItem } from "@refref/ui/components/radio-group";
-import { Input } from "@refref/ui/components/input";
+import { withFieldGroup } from "@/lib/forms/onboarding-form";
 import {
-  paymentProviders,
   paymentProviderLabels,
-  type PaymentProviderFormData,
+  paymentProviders,
+  paymentProviderSchema,
 } from "@/lib/validations/onboarding";
-import { useFormContext, Controller } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@refref/ui/components/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function PaymentProviderStep() {
-  const {
-    control,
-    register,
-    watch,
-    formState: { errors },
-  } = useFormContext<PaymentProviderFormData>();
+export const PaymentProviderStep = withFieldGroup({
+  defaultValues: {
+    paymentProvider: undefined as unknown as
+      | (typeof paymentProviders)[number]
+      | undefined,
+    otherPaymentProvider: undefined as unknown as string | undefined,
+  },
+  props: {
+    onNext: () => {},
+    onPrevious: () => {},
+    isFirstStep: false,
+    isLastStep: false,
+    isSubmitting: false,
+  },
+  render: function Render({
+    group,
+    onNext,
+    onPrevious,
+    isFirstStep,
+    isLastStep,
+    isSubmitting,
+  }) {
+    const onSubmit = async () => {
+      const errors = await group.validateAllFields("submit");
+      // If any field returned an error, stop here
+      if (errors.length > 0) {
+        return;
+      }
+      onNext();
+    };
 
-  const selectedProvider = watch("paymentProvider");
+    const onBefore = () => {
+      // ! important otherwise if we go to previous step, the errors from next step will still be present
+      Object.values(group.fieldsMap).forEach((field) => {
+        console.log("field is ", field);
+        group.form.setFieldMeta(field, (m) => ({
+          ...m,
+          errors: [],
+          errorMap: {},
+        }));
+      });
 
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold">Payment provider</h2>
-        <p className="text-muted-foreground">
-          Select your payment processing platform
-        </p>
-      </div>
+      onPrevious();
+    };
 
-      <div className="space-y-4">
-        <Controller
-          name="paymentProvider"
-          control={control}
-          render={({ field }) => (
-            <RadioGroup
-              value={field.value}
-              onValueChange={field.onChange}
-              className="space-y-3"
-            >
-              {paymentProviders.map((provider) => (
-                <Label
-                  key={provider}
-                  htmlFor={provider}
-                  className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-muted/50 cursor-pointer transition-colors"
-                >
-                  <RadioGroupItem value={provider} id={provider} />
-                  <span className="flex-1">
-                    {paymentProviderLabels[provider]}
-                  </span>
-                </Label>
-              ))}
-            </RadioGroup>
-          )}
-        />
-        {errors.paymentProvider && (
-          <p className="text-sm text-destructive">
-            {errors.paymentProvider.message}
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold">Payment provider</h2>
+          <p className="text-muted-foreground">
+            Select your payment processing platform
           </p>
-        )}
+        </div>
 
-        {selectedProvider === "other" && (
-          <div className="space-y-2 mt-4">
-            <Label htmlFor="otherPaymentProvider">Please specify</Label>
-            <Input
-              id="otherPaymentProvider"
-              placeholder="Enter your payment provider"
-              {...register("otherPaymentProvider")}
-            />
-          </div>
-        )}
+        <div className="space-y-4">
+          <group.AppField
+            name="paymentProvider"
+            validators={{
+              onChange: paymentProviderSchema.shape.paymentProvider,
+            }}
+          >
+            {(field) => (
+              <field.RadioField
+                options={paymentProviders}
+                labels={paymentProviderLabels}
+              />
+            )}
+          </group.AppField>
+
+          <group.Subscribe selector={(s) => s.values.paymentProvider}>
+            {(paymentProvider) =>
+              paymentProvider === "other" && (
+                <group.AppField
+                  name="otherPaymentProvider"
+                  validators={{
+                    onChange: z
+                      .string()
+                      .min(1, "Please specify your payment provider"),
+                  }}
+                >
+                  {(field) => (
+                    <field.OptionalTextField
+                      label="Please specify"
+                      placeholder="Enter your payment provider"
+                    />
+                  )}
+                </group.AppField>
+              )
+            }
+          </group.Subscribe>
+        </div>
+        {/* Navigation Buttons */}
+        <div className="flex justify-between pt-6 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBefore}
+            disabled={isFirstStep}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+
+          <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
+            {isLastStep
+              ? isSubmitting
+                ? "Creating..."
+                : "Complete Setup"
+              : "Next"}
+            {!isLastStep && <ChevronRight className="h-4 w-4 ml-2" />}
+          </Button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  },
+});

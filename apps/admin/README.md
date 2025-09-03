@@ -37,16 +37,19 @@ This project implements a comprehensive authentication system with multiple laye
 ### Route Protection Layers
 
 1. **Middleware Protection (Server-side)**
+
    - Implemented in `src/middleware.ts`
    - Intercepts all requests and verifies authentication status
    - Redirects unauthenticated users from protected routes
    - Redirects authenticated users from auth pages
 
 2. **Layout Route Groups (Server-side)**
+
    - Protected routes use the `(dashboard)` route group with auth verification
    - Auth routes use the `auth` route group with redirect-if-authenticated logic
 
 3. **Client Components (Client-side)**
+
    - `<ProtectedClientRoute>` - Component wrapper for client pages that need auth
    - `<PublicClientRoute>` - Component wrapper to redirect authenticated users
 

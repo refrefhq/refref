@@ -23,7 +23,7 @@ export const participantsRouter = createTRPCRouter({
               value: z.union([z.string(), z.array(z.string())]),
               variant: z.string(),
               operator: z.string(),
-            })
+            }),
           )
           .optional(),
         sort: z
@@ -32,7 +32,7 @@ export const participantsRouter = createTRPCRouter({
             direction: z.enum(["asc", "desc"]),
           })
           .optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, filters, sort } = input;
@@ -67,7 +67,7 @@ export const participantsRouter = createTRPCRouter({
               // Add more filter types/fields as needed
               return undefined;
             })
-            .filter(Boolean)
+            .filter(Boolean),
         );
       }
 

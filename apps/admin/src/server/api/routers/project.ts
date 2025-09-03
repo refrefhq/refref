@@ -21,13 +21,29 @@ const createProjectSchema = z.object({
 });
 
 // Input validation schema for creating a project with onboarding data
-const createProjectWithOnboardingSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  url: z.string().url({ message: "Invalid URL" }),
-  appType: z.enum(appTypes),
-  paymentProvider: z.enum(paymentProviders),
-  otherPaymentProvider: z.string().optional(),
-});
+export const createProjectWithOnboardingSchema = z
+  .object({
+    name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+    url: z.string().min(1, "URL is required"),
+    appType: z.enum(appTypes),
+    paymentProvider: z.enum(paymentProviders),
+    otherPaymentProvider: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.paymentProvider === "other") {
+        return (
+          data.otherPaymentProvider &&
+          data.otherPaymentProvider.trim().length > 0
+        );
+      }
+      return true;
+    },
+    {
+      message: "Please specify your payment provider",
+      path: ["otherPaymentProvider"],
+    },
+  );
 
 // Input validation schema for updating project
 const updateProjectSchema = z.object({

@@ -4,10 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@refref/ui/components/button";
 import { signOut, useSession } from "@/lib/auth-client";
-import { useForm, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent } from "@refref/ui/components/card";
-import { LogOut, ChevronRight, ChevronLeft } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import {
@@ -21,34 +19,26 @@ import { ProductInfoStep } from "@/components/onboarding/product-info-step";
 import { AppTypeStep } from "@/components/onboarding/app-type-step";
 import { PaymentProviderStep } from "@/components/onboarding/payment-provider-step";
 import {
-  onboardingSchema,
-  type OnboardingFormData,
-  productInfoSchema,
-  appTypeSchema,
-  paymentProviderSchema,
-} from "@/lib/validations/onboarding";
+  OnboardingFormValues,
+  useOnboardingForm,
+} from "@/lib/forms/onboarding-form";
+import { onboardingSchema } from "@/lib/validations/onboarding";
+import z from "zod";
+import { appTypes } from "@/lib/validations/onboarding";
+import { paymentProviders } from "@/lib/validations/onboarding";
 
 const steps = [
   {
     id: 1,
     title: "Product Info",
-    component: ProductInfoStep,
-    fields: ["projectName", "projectUrl"] as const,
-    schema: productInfoSchema,
   },
   {
     id: 2,
     title: "App Type",
-    component: AppTypeStep,
-    fields: ["appType"] as const,
-    schema: appTypeSchema,
   },
   {
     id: 3,
     title: "Payment Provider",
-    component: PaymentProviderStep,
-    fields: ["paymentProvider", "otherPaymentProvider"] as const,
-    schema: paymentProviderSchema,
   },
 ];
 
@@ -68,37 +58,40 @@ export default function OnboardingPage() {
     },
   });
 
-  const form = useForm<OnboardingFormData>({
-    resolver: zodResolver(onboardingSchema),
+  const form = useOnboardingForm({
     defaultValues: {
       projectName: "",
       projectUrl: "",
-      appType: undefined,
-      paymentProvider: undefined,
+      appType: "saas",
+      paymentProvider: "stripe",
       otherPaymentProvider: "",
+    } as z.input<typeof onboardingSchema>,
+    validators: {
+      onSubmit: onboardingSchema,
     },
-    mode: "onTouched",
+    onSubmit: async ({ value }) => {
+      // Transform URL if needed
+      let url = value.projectUrl;
+      if (!url.match(/^https?:\/\//)) {
+        url = `https://${url}`;
+      }
+
+      createProject.mutate({
+        name: value.projectName,
+        url,
+        appType: value.appType,
+        paymentProvider: value.paymentProvider,
+        otherPaymentProvider: value.otherPaymentProvider,
+      });
+    },
   });
 
   const handleNext = async () => {
-    const currentStepData = steps[currentStep - 1];
-    if (currentStepData && currentStepData.schema) {
-      const fieldsToValidate = currentStepData.fields;
-      const isValid = await form.trigger(fieldsToValidate as any);
-
-      if (!isValid) {
-        return;
-      }
-    }
-
-    // Clear errors for next step's fields to prevent showing errors prematurely
-    const nextStepData = steps[currentStep];
-    if (nextStepData) {
-      form.clearErrors(nextStepData.fields as any);
-    }
-
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
+    } else {
+      // Final submission
+      form.handleSubmit();
     }
   };
 
@@ -106,16 +99,6 @@ export default function OnboardingPage() {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
-  };
-
-  const handleSubmit = async (data: OnboardingFormData) => {
-    createProject.mutate({
-      name: data.projectName,
-      url: data.projectUrl,
-      appType: data.appType,
-      paymentProvider: data.paymentProvider,
-      otherPaymentProvider: data.otherPaymentProvider,
-    });
   };
 
   function handleLogout() {
@@ -127,8 +110,6 @@ export default function OnboardingPage() {
       },
     });
   }
-
-  const CurrentStepComponent = steps[currentStep - 1]?.component;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -180,47 +161,45 @@ export default function OnboardingPage() {
           {/* Form Content Card */}
           <Card className="shadow-lg">
             <CardContent className="p-8">
-              <FormProvider {...form}>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (currentStep < steps.length) {
-                      handleNext();
-                    } else {
-                      form.handleSubmit(handleSubmit)();
-                    }
+              {currentStep === 1 && (
+                <ProductInfoStep
+                  form={form}
+                  fields={{
+                    projectName: "projectName",
+                    projectUrl: "projectUrl",
                   }}
-                  className="space-y-6"
-                >
-                  {CurrentStepComponent && <CurrentStepComponent />}
-
-                  {/* Navigation Buttons */}
-                  <div className="flex justify-between pt-6 border-t">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handlePrevious}
-                      disabled={currentStep === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4 mr-2" />
-                      Previous
-                    </Button>
-
-                    {currentStep < steps.length ? (
-                      <Button type="submit">
-                        Next
-                        <ChevronRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    ) : (
-                      <Button type="submit" disabled={createProject.isPending}>
-                        {createProject.isPending
-                          ? "Creating..."
-                          : "Complete Setup"}
-                      </Button>
-                    )}
-                  </div>
-                </form>
-              </FormProvider>
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
+                  isFirstStep={true}
+                  isLastStep={false}
+                  isSubmitting={createProject.isPending}
+                />
+              )}
+              {currentStep === 2 && (
+                <AppTypeStep
+                  form={form}
+                  fields={{ appType: "appType" }}
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
+                  isFirstStep={false}
+                  isLastStep={false}
+                  isSubmitting={createProject.isPending}
+                />
+              )}
+              {currentStep === 3 && (
+                <PaymentProviderStep
+                  form={form}
+                  fields={{
+                    paymentProvider: "paymentProvider",
+                    otherPaymentProvider: "otherPaymentProvider",
+                  }}
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
+                  isFirstStep={false}
+                  isLastStep={true}
+                  isSubmitting={createProject.isPending}
+                />
+              )}
             </CardContent>
           </Card>
         </div>

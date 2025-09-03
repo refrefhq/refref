@@ -1,56 +1,103 @@
 "use client";
 
-import { Label } from "@refref/ui/components/label";
-import { RadioGroup, RadioGroupItem } from "@refref/ui/components/radio-group";
+import React from "react";
+import { withFieldGroup } from "@/lib/forms/onboarding-form";
 import {
-  appTypes,
   appTypeLabels,
-  type AppTypeFormData,
+  appTypes,
+  appTypeSchema,
 } from "@/lib/validations/onboarding";
-import { useFormContext, Controller } from "react-hook-form";
+import { Button } from "@refref/ui/components/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function AppTypeStep() {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext<AppTypeFormData>();
+export const AppTypeStep = withFieldGroup({
+  // These values are only used for type-checking, not at runtime
+  defaultValues: {
+    appType: undefined as unknown as (typeof appTypes)[number] | undefined,
+  },
+  props: {
+    onNext: () => {},
+    onPrevious: () => {},
+    isFirstStep: false,
+    isLastStep: false,
+    isSubmitting: false,
+  },
+  render: function Render({
+    group,
+    onNext,
+    onPrevious,
+    isFirstStep,
+    isLastStep,
+    isSubmitting,
+  }) {
+    const onSubmit = async () => {
+      // ! important otherwise if we go to previous step, the errors from next step will still be present
+      group.form.setFieldMeta("*", (m) => ({ ...m, errors: [] }));
+      const errors = await group.validateAllFields("change");
+      // If any field returned an error, stop here
+      if (errors.length > 0) {
+        return;
+      }
+      onNext();
+    };
 
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold">Type of application</h2>
-        <p className="text-muted-foreground">
-          Select the type that best describes your product
-        </p>
+    const onBefore = () => {
+      // ! important otherwise if we go to previous step, the errors from next step will still be present
+      Object.values(group.fieldsMap).forEach((field) => {
+        console.log("field is ", field);
+        group.form.setFieldMeta(field, (m) => ({
+          ...m,
+          errors: [],
+          errorMap: {},
+        }));
+      });
+
+      onPrevious();
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold">Type of application</h2>
+          <p className="text-muted-foreground">
+            Select the type that best describes your product
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <group.AppField
+            name="appType"
+            validators={{
+              onChange: appTypeSchema.shape.appType,
+            }}
+          >
+            {(field) => (
+              <field.RadioField options={appTypes} labels={appTypeLabels} />
+            )}
+          </group.AppField>
+        </div>
+        {/* Navigation Buttons */}
+        <div className="flex justify-between pt-6 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBefore}
+            disabled={isFirstStep}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+
+          <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
+            {isLastStep
+              ? isSubmitting
+                ? "Creating..."
+                : "Complete Setup"
+              : "Next"}
+            {!isLastStep && <ChevronRight className="h-4 w-4 ml-2" />}
+          </Button>
+        </div>
       </div>
-
-      <div className="space-y-4">
-        <Controller
-          name="appType"
-          control={control}
-          render={({ field }) => (
-            <RadioGroup
-              value={field.value}
-              onValueChange={field.onChange}
-              className="space-y-3"
-            >
-              {appTypes.map((type) => (
-                <Label
-                  key={type}
-                  htmlFor={type}
-                  className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-muted/50 cursor-pointer transition-colors"
-                >
-                  <RadioGroupItem value={type} id={type} />
-                  <span className="flex-1">{appTypeLabels[type]}</span>
-                </Label>
-              ))}
-            </RadioGroup>
-          )}
-        />
-        {errors.appType && (
-          <p className="text-sm text-destructive">{errors.appType.message}</p>
-        )}
-      </div>
-    </div>
-  );
-}
+    );
+  },
+});

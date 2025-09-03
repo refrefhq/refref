@@ -33,7 +33,7 @@ export const searchRouter = createTRPCRouter({
     .input(
       z.object({
         query: z.string().min(0).max(100),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { query } = input;
@@ -59,7 +59,7 @@ export const searchRouter = createTRPCRouter({
           .from(participant)
           .leftJoin(
             referralLink,
-            eq(participant.id, referralLink.participantId)
+            eq(participant.id, referralLink.participantId),
           )
           .where(
             and(
@@ -69,9 +69,9 @@ export const searchRouter = createTRPCRouter({
                 ilike(participant.id, searchPattern),
                 ilike(participant.name, searchPattern),
                 ilike(participant.externalId, searchPattern),
-                ilike(referralLink.slug, searchPattern)
-              )
-            )
+                ilike(referralLink.slug, searchPattern),
+              ),
+            ),
           )
           .limit(5),
 
@@ -84,8 +84,8 @@ export const searchRouter = createTRPCRouter({
           .where(
             and(
               eq(program.projectId, projectId),
-              ilike(program.name, searchPattern)
-            )
+              ilike(program.name, searchPattern),
+            ),
           )
           .limit(5),
       ]);

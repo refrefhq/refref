@@ -29,9 +29,9 @@ export function GlobalSearch() {
     { query: debouncedSearch || "" },
     {
       enabled: Boolean(
-        open && debouncedSearch && debouncedSearch.trim().length > 0
+        open && debouncedSearch && debouncedSearch.trim().length > 0,
       ),
-    }
+    },
   );
 
   React.useEffect(() => {
