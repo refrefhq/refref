@@ -13,7 +13,7 @@ export const env = createEnv({
       .default("development"),
     BETTER_AUTH_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.url().default("http://localhost:3000"),
-    RESEND_API_KEY: z.string().default("test_key"),
+    RESEND_API_KEY: z.string().optional(),
     GOOGLE_CLIENT_ID: z.string().min(1).default("google_client_id"),
     GOOGLE_CLIENT_SECRET: z.string().min(1).default("google_client_secret"),
     REFERRAL_PROGRAM_CLIENT_ID: z

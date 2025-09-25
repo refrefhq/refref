@@ -58,6 +58,7 @@ docker-compose up
 That's it! 🎉 The admin portal will be available at http://localhost:3000
 
 Docker Compose automatically handles:
+
 - PostgreSQL database setup
 - Database migrations
 - Initial data seeding
@@ -100,10 +101,12 @@ The admin portal will be available at http://localhost:3000
 ### Environment Variables
 
 #### Required
+
 - `DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://user:password@localhost:5432/refref`)
 - `BETTER_AUTH_SECRET` - Authentication secret key (generate with `openssl rand -base64 32`)
 
 #### Optional
+
 - `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - For Google OAuth authentication
 - `RESEND_API_KEY` - For sending emails via Resend
 - `BETTER_AUTH_URL` - Authentication URL (defaults to http://localhost:3000)
