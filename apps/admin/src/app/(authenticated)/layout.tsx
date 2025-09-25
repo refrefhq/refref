@@ -1,7 +1,3 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@refref/ui/components/sidebar";
-import { ReferralWidgetInit } from "@/components/referral-widget-init";
-
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";

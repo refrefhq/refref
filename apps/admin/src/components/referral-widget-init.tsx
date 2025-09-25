@@ -12,10 +12,20 @@ declare global {
 
 export function ReferralWidgetInit() {
   const isInitialized = useRef(false);
-  const { data } = api.referral.getWidgetToken.useQuery();
+
+  // Check if referral credentials are configured
+  const isConfigured = Boolean(
+    env.NEXT_PUBLIC_REFREF_PROJECT_ID && env.NEXT_PUBLIC_REFREF_PROGRAM_ID,
+  );
+
+  // Only query for token if configured
+  const { data } = api.referral.getWidgetToken.useQuery(undefined, {
+    enabled: isConfigured,
+  });
 
   useEffect(() => {
-    if (!data || isInitialized.current) return;
+    // Skip initialization if not configured or no data
+    if (!isConfigured || !data || isInitialized.current) return;
 
     // Initialize window.RefRef if it doesn't exist
     window.RefRef = window.RefRef || [];
@@ -32,7 +42,7 @@ export function ReferralWidgetInit() {
     ]);
 
     isInitialized.current = true;
-  }, [data]);
+  }, [data, isConfigured]);
 
   return null;
 }

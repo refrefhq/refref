@@ -13,17 +13,11 @@ export const env = createEnv({
       .default("development"),
     BETTER_AUTH_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.url().default("http://localhost:3000"),
-    RESEND_API_KEY: z.string().default("test_key"),
+    RESEND_API_KEY: z.string().optional(),
     GOOGLE_CLIENT_ID: z.string().min(1).default("google_client_id"),
     GOOGLE_CLIENT_SECRET: z.string().min(1).default("google_client_secret"),
-    REFERRAL_PROGRAM_CLIENT_ID: z
-      .string()
-      .min(1)
-      .default("referral_program_client_id"),
-    REFERRAL_PROGRAM_CLIENT_SECRET: z
-      .string()
-      .min(1)
-      .default("referral_program_client_secret"),
+    REFERRAL_PROGRAM_CLIENT_ID: z.string().optional(),
+    REFERRAL_PROGRAM_CLIENT_SECRET: z.string().optional(),
   },
 
   /**
@@ -34,14 +28,8 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
-    NEXT_PUBLIC_REFREF_PROJECT_ID: z
-      .string()
-      .min(1)
-      .default("refref_project_id"),
-    NEXT_PUBLIC_REFREF_PROGRAM_ID: z
-      .string()
-      .min(1)
-      .default("refref_program_id"),
+    NEXT_PUBLIC_REFREF_PROJECT_ID: z.string().optional(),
+    NEXT_PUBLIC_REFREF_PROGRAM_ID: z.string().optional(),
   },
 
   /**

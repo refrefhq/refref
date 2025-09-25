@@ -10,6 +10,18 @@ export async function GET() {
     "Content-Type": "application/javascript",
   };
 
+  // Check if referral program IDs are configured
+  const isConfigured =
+    env.NEXT_PUBLIC_REFREF_PROJECT_ID && env.NEXT_PUBLIC_REFREF_PROGRAM_ID;
+
+  // Return no-op if not configured
+  if (!isConfigured) {
+    return new NextResponse(
+      "// RefRef widget not loaded: project/program IDs not configured",
+      { headers },
+    );
+  }
+
   try {
     if (env.NODE_ENV === "development") {
       // In dev, always read the latest bundle from disk
