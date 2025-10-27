@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, schema } from "@/server/db";
-const { referralLink, participant } = schema;
+const { referralLink, participant, project } = schema;
 import { eq } from "drizzle-orm";
-
-// Fixed redirect URL (update logic later as needed)
-const REDIRECT_URL = "http://localhost:3000/auth/sign-in";
 
 /**
  * Handles GET requests to /api/r/[id].
@@ -38,6 +35,23 @@ export async function GET(
       return new NextResponse("Participant not found", { status: 404 });
     }
 
+    // Look up the project to get the redirect URL
+    const projectRecord = await db.query.project.findFirst({
+      where: eq(project.id, participantRecord.projectId),
+    });
+
+    // Use project URL if available, otherwise fallback to environment variable
+    const redirectUrl = projectRecord?.url;
+
+    if (!redirectUrl) {
+      console.error("No redirect URL configured", {
+        projectId: participantRecord.projectId,
+      });
+      return new NextResponse("Redirect URL not configured for this project", {
+        status: 500,
+      });
+    }
+
     // Helper to encode and only add non-empty values
     const encode = (value: string | null | undefined) =>
       value ? Buffer.from(value, "utf-8").toString("base64") : undefined;
@@ -54,9 +68,9 @@ export async function GET(
     });
     searchParams.set("rfc", id);
 
-    // Redirect with 307 to the fixed URL with encoded params
+    // Redirect with 307 to the project URL with encoded params
     return NextResponse.redirect(
-      `${REDIRECT_URL}?${searchParams.toString()}`,
+      `${redirectUrl}?${searchParams.toString()}`,
       307,
     );
   } catch (error) {
