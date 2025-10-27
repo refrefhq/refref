@@ -41,6 +41,10 @@ export default async function AuthPage({
             </div>
           }
           className="w-full border shadow-lg p-8"
+          //! the width part for the separator or continue with was having issues
+          classNames={{
+            separator: "data-[orientation=horizontal]:!w-auto",
+          }}
         />
       </div>
     </main>
