@@ -18,6 +18,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().min(1).default("google_client_secret"),
     REFERRAL_PROGRAM_CLIENT_ID: z.string().optional(),
     REFERRAL_PROGRAM_CLIENT_SECRET: z.string().optional(),
+    NOTIFICATIONS_EMAIL_FROM: z.string().default("RefRef <notifications@mail.refref.ai>")
   },
 
   /**
@@ -75,6 +76,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_ENABLE_MAGIC_LINK_AUTH,
     NEXT_PUBLIC_ENABLED_SOCIAL_AUTH:
       process.env.NEXT_PUBLIC_ENABLED_SOCIAL_AUTH,
+    NOTIFICATIONS_EMAIL_FROM: process.env.NOTIFICATIONS_EMAIL_FROM,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

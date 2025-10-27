@@ -12,7 +12,7 @@ import { magicLinkTemplate, invitationTemplate } from "./templates";
 class EmailService {
   private resend: Resend | null = null;
   private isDevelopmentMode = false;
-  private defaultFrom = "RefRef <notifications@mail.refref.ai>";
+  private defaultFrom = env.NOTIFICATIONS_EMAIL_FROM;
 
   constructor(apiKey?: string) {
     if (apiKey) {
