@@ -18,27 +18,26 @@ const FeatureBento1 = ({
   description = "RefRef is built with the following core features to help you get started with your referral program.",
   feature1 = {
     title: "Advanced Attribution",
-    description:
-      "First-touch, last-touch, multi-touch tracking.",
-    image: "https://placehold.co/800x400/3b82f6/ffffff?text=Advanced+Attribution",
+    description: "First-touch, last-touch, multi-touch tracking.",
+    image:
+      "https://placehold.co/800x400/3b82f6/ffffff?text=Advanced+Attribution",
   },
   feature2 = {
     title: "Seamless Tracking",
-    description:
-      "Let referrers track their own referral status.",
+    description: "Let referrers track their own referral status.",
     image: "https://placehold.co/600x400/6366f1/ffffff?text=Seamless+Tracking",
   },
   feature3 = {
     title: "Custom Rewards",
-    description:
-      "Offer cash, store credits, discounts, or physical goods.",
+    description: "Offer cash, store credits, discounts, or physical goods.",
     image: "https://placehold.co/600x400/8b5cf6/ffffff?text=Custom+Rewards",
   },
   feature4 = {
     title: "Personalized Landing Pages",
     description:
       "Auto-generate unique referral pages that are personalized to your referrers",
-    image: "https://placehold.co/800x400/ec4899/ffffff?text=Personalized+Landing+Pages",
+    image:
+      "https://placehold.co/800x400/ec4899/ffffff?text=Personalized+Landing+Pages",
   },
 }: FeatureBento1Props) => {
   return (

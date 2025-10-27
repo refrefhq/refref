@@ -11,7 +11,8 @@ const items = [
   },
   {
     title: "Store Credits & Discounts – Drive repeat purchases & engagement.",
-    image: "https://placehold.co/600x400/6366f1/ffffff?text=Store+Credits+%26+Discounts",
+    image:
+      "https://placehold.co/600x400/6366f1/ffffff?text=Store+Credits+%26+Discounts",
   },
   {
     title: "Physical Goods – Offer exclusive merchandise or gifts.",
@@ -56,11 +57,11 @@ const FeatureRewardTypes = () => {
                   >
                     <div>
                       <h3 className="text-xl font-medium leading-tight">
-                        {item.title.split('–')[0]?.trim() || item.title}
+                        {item.title.split("–")[0]?.trim() || item.title}
                       </h3>
-                      {item.title.includes('–') && (
+                      {item.title.includes("–") && (
                         <p className="text-sm text-muted-foreground mt-1">
-                          {item.title.split('–').slice(1).join('–').trim()}
+                          {item.title.split("–").slice(1).join("–").trim()}
                         </p>
                       )}
                     </div>

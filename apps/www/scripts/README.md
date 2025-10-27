@@ -57,6 +57,7 @@ The script behaves differently based on the environment:
 1. **Normal mode** (with AWS credentials): Fetches content from S3 as expected.
 
 2. **Dry run mode** (`--dry-run`):
+
    - Logs what actions it would take
    - Does not make actual S3 requests
    - Does not download any files
@@ -74,12 +75,14 @@ The script behaves differently based on the environment:
 To use this script, you need to have AWS credentials configured. You can do this in several ways:
 
 1. Environment variables:
+
    ```
    AWS_ACCESS_KEY_ID=your_access_key
    AWS_SECRET_ACCESS_KEY=your_secret_key
    ```
 
 2. AWS credentials file (`~/.aws/credentials`):
+
    ```
    [default]
    aws_access_key_id = your_access_key

@@ -3,16 +3,16 @@ import {
   defineDocs,
   defineCollections,
   frontmatterSchema,
-} from 'fumadocs-mdx/config';
-import { z } from 'zod';
+} from "fumadocs-mdx/config";
+import { z } from "zod";
 
 export const { docs, meta } = defineDocs({
-  dir: 'content/docs',
+  dir: "content/docs",
 });
 
 export const blog = defineCollections({
-  type: 'doc',
-  dir: 'content/blogs',
+  type: "doc",
+  dir: "content/blogs",
   async: true,
   schema: frontmatterSchema.extend({
     author: z.string(),

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { Toaster } from "sonner";
 
 /**
  * Auth layout that redirects authenticated users to the dashboard
@@ -15,14 +16,15 @@ export default async function AuthLayout({
     headers: await headers(),
   });
 
-  // Redirect to dashboard if user is already authenticated
+  // Redirect to home if user is already authenticated (will redirect to project)
   if (session) {
-    redirect("/dashboard");
+    redirect("/");
   }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      {children}
-    </div>
+    <>
+      <Toaster />
+      <div className="bg-muted/30 min-h-screen w-full">{children}</div>
+    </>
   );
 }

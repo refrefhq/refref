@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 export default async function CommunityPage() {
-    redirect('https://github.com/refrefhq/refref')
+  redirect("https://github.com/refrefhq/refref");
 }

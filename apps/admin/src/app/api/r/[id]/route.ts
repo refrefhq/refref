@@ -4,7 +4,7 @@ const { referralLink, participant } = schema;
 import { eq } from "drizzle-orm";
 
 // Fixed redirect URL (update logic later as needed)
-const REDIRECT_URL = "http://localhost:3000/auth/signin";
+const REDIRECT_URL = "http://localhost:3000/auth/sign-in";
 
 /**
  * Handles GET requests to /api/r/[id].

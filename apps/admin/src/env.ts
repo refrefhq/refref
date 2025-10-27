@@ -30,6 +30,26 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
     NEXT_PUBLIC_REFREF_PROJECT_ID: z.string().optional(),
     NEXT_PUBLIC_REFREF_PROGRAM_ID: z.string().optional(),
+    NEXT_PUBLIC_ENABLE_PASSWORD_AUTH: z
+      .enum(["true", "false"])
+      .default("true")
+      .transform((val) => val === "true"),
+    NEXT_PUBLIC_ENABLE_MAGIC_LINK_AUTH: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((val) => val === "true"),
+    NEXT_PUBLIC_ENABLED_SOCIAL_AUTH: z
+      .string()
+      .optional()
+      .default("")
+      .transform((val) =>
+        val
+          ? val
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [],
+      ),
   },
 
   /**
@@ -49,6 +69,12 @@ export const env = createEnv({
     REFERRAL_PROGRAM_CLIENT_SECRET: process.env.REFERRAL_PROGRAM_CLIENT_SECRET,
     NEXT_PUBLIC_REFREF_PROJECT_ID: process.env.NEXT_PUBLIC_REFREF_PROJECT_ID,
     NEXT_PUBLIC_REFREF_PROGRAM_ID: process.env.NEXT_PUBLIC_REFREF_PROGRAM_ID,
+    NEXT_PUBLIC_ENABLE_PASSWORD_AUTH:
+      process.env.NEXT_PUBLIC_ENABLE_PASSWORD_AUTH,
+    NEXT_PUBLIC_ENABLE_MAGIC_LINK_AUTH:
+      process.env.NEXT_PUBLIC_ENABLE_MAGIC_LINK_AUTH,
+    NEXT_PUBLIC_ENABLED_SOCIAL_AUTH:
+      process.env.NEXT_PUBLIC_ENABLED_SOCIAL_AUTH,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

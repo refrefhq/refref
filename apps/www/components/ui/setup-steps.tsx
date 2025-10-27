@@ -37,26 +37,31 @@ const SetupSteps = ({
   },
   features = [
     {
-      image: "https://placehold.co/800x400/3b82f6/ffffff?text=Add+RefRef+to+your+website",
+      image:
+        "https://placehold.co/800x400/3b82f6/ffffff?text=Add+RefRef+to+your+website",
       title: "Add RefRef to your website",
       description:
         "Add RefRef to your website by adding a simple script to your website.",
     },
     {
-      image: "https://placehold.co/800x400/6366f1/ffffff?text=Setup+your+Program",
+      image:
+        "https://placehold.co/800x400/6366f1/ffffff?text=Setup+your+Program",
       title: "Setup your Program in the RefRef app",
       description:
         "Customise your Referral Program to your liking, with a range of options to choose from.",
     },
     {
-      image: "https://placehold.co/800x400/8b5cf6/ffffff?text=Setup+Reward+Integrations",
+      image:
+        "https://placehold.co/800x400/8b5cf6/ffffff?text=Setup+Reward+Integrations",
       title: "Setup your reward integrations",
-      description: "Connect your RefRef to your reward integrations to automate disbursements.",
+      description:
+        "Connect your RefRef to your reward integrations to automate disbursements.",
     },
     {
       image: "https://placehold.co/800x400/ec4899/ffffff?text=That's+it!",
       title: "That's it!",
-      description: "Your users can get their refrreal link wiht a click of the button and track their referral and reward status in app",
+      description:
+        "Your users can get their refrreal link wiht a click of the button and track their referral and reward status in app",
     },
   ],
 }: Timeline3Props) => {

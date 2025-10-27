@@ -1,12 +1,12 @@
-import { source, openapi } from '@/lib/source';
+import { source, openapi } from "@/lib/source";
 import {
   DocsPage,
   DocsBody,
   DocsDescription,
   DocsTitle,
-} from 'fumadocs-ui/page';
-import { notFound } from 'next/navigation';
-import defaultMdxComponents from 'fumadocs-ui/mdx';
+} from "fumadocs-ui/page";
+import { notFound } from "next/navigation";
+import defaultMdxComponents from "fumadocs-ui/mdx";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -21,19 +21,22 @@ export default async function Page(props: {
     <DocsPage
       toc={page.data.toc}
       tableOfContent={{
-        style: 'clerk',
+        style: "clerk",
       }}
       full={page.data.full}
       editOnGithub={{
-      owner: 'refrefhq',
-      repo: 'refref',
-      sha: 'main',
-      path: `apps/www/content/docs/${page.file.path}`,
-      }}>
+        owner: "refrefhq",
+        repo: "refref",
+        sha: "main",
+        path: `apps/www/content/docs/${page.file.path}`,
+      }}
+    >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX components={{ ...defaultMdxComponents, APIPage: openapi.APIPage }} />
+        <MDX
+          components={{ ...defaultMdxComponents, APIPage: openapi.APIPage }}
+        />
       </DocsBody>
     </DocsPage>
   );

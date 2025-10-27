@@ -30,12 +30,14 @@ export function ValueProp() {
     },
     {
       value: "5X",
-      description: "Lower CAC than paid ads - referral customers cost significantly less.",
+      description:
+        "Lower CAC than paid ads - referral customers cost significantly less.",
       source: "HubSpot",
     },
     {
       value: "3X",
-      description: "Higher LTV - Referred customers are more loyal and spend more.",
+      description:
+        "Higher LTV - Referred customers are more loyal and spend more.",
       source: "Harvard Business Review",
     },
   ];
@@ -53,7 +55,8 @@ export function ValueProp() {
               </span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Turn your customers into advocates and grow your business with a powerful referral program.
+              Turn your customers into advocates and grow your business with a
+              powerful referral program.
             </p>
           </div>
 
@@ -61,11 +64,18 @@ export function ValueProp() {
           <div className="flex items-center justify-center">
             <div className="grid grid-cols-1 gap-1.5 w-full max-w-md">
               {valueProps.map((prop, index) => (
-                <Card key={index} className="border border-gray-200 dark:border-gray-800">
+                <Card
+                  key={index}
+                  className="border border-gray-200 dark:border-gray-800"
+                >
                   <CardContent className="flex items-center">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-md font-medium leading-none">{prop.title}</h3>
-                      <p className="text-sm text-muted-foreground">{prop.description}</p>
+                      <h3 className="text-md font-medium leading-none">
+                        {prop.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {prop.description}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -81,7 +91,9 @@ export function ValueProp() {
               <div key={index} className="flex flex-col">
                 <div className="text-5xl font-bold mb-2">{stat.value}</div>
                 <p className="text-muted-foreground">{stat.description}</p>
-                <p className="text-sm text-muted-foreground mt-1">- {stat.source}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  - {stat.source}
+                </p>
               </div>
             ))}
           </div>

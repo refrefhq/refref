@@ -105,7 +105,7 @@ export default function OnboardingPage() {
     signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/auth/signin");
+          router.push("/auth/sign-in");
         },
       },
     });

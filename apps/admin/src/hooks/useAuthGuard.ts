@@ -14,7 +14,7 @@ type UseAuthGuardOptions = {
   /**
    * Path to redirect to if conditions are met
    * Defaults to "/dashboard" for unauthorized redirects
-   * Defaults to "/auth/signin" for authenticated redirects
+   * Defaults to "/auth/sign-in" for authenticated redirects
    */
   redirectTo?: string;
 };
@@ -46,7 +46,7 @@ export function useAuthGuard({
       router.replace(redirectTo || "/dashboard");
     } else if (!redirectIfAuthenticated && !session) {
       // Redirect unauthenticated users (from protected pages)
-      router.replace(redirectTo || "/auth/signin");
+      router.replace(redirectTo || "/auth/sign-in");
     }
   }, [session, isPending, redirectIfAuthenticated, redirectTo, router]);
 

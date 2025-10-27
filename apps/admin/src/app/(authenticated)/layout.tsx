@@ -13,7 +13,7 @@ export default async function MainLayout({
 
   // Server-side redirect if no session is found
   if (!session) {
-    redirect("/auth/signin");
+    redirect("/auth/sign-in");
   }
 
   return <>{children}</>;

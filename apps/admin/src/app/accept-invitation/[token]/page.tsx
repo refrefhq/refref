@@ -15,7 +15,7 @@ export default async function AcceptInvitationPage({
   });
   if (!session?.user) {
     // Redirect to signin but keep the token in the URL for after signin
-    redirect(`/auth/signin?callbackUrl=/accept-invitation/${token}`);
+    redirect(`/auth/sign-in?callbackUrl=/accept-invitation/${token}`);
   }
 
   try {

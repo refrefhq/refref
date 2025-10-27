@@ -20,33 +20,42 @@ import Link from "next/link";
 const industryCards = [
   {
     title: "B2B SaaS",
-    description: "Drive growth with partner and customer referral programs for your SaaS platform.",
+    description:
+      "Drive growth with partner and customer referral programs for your SaaS platform.",
     imageSrc: "https://placehold.co/600x400/3b82f6/ffffff?text=B2B+SaaS",
   },
   {
     title: "B2C Subscription",
-    description: "Increase subscriber acquisition with viral referral campaigns that reward loyal customers.",
-    imageSrc: "https://placehold.co/600x400/6366f1/ffffff?text=B2C+Subscription",
+    description:
+      "Increase subscriber acquisition with viral referral campaigns that reward loyal customers.",
+    imageSrc:
+      "https://placehold.co/600x400/6366f1/ffffff?text=B2C+Subscription",
   },
   {
     title: "FinTech",
-    description: "Secure, compliant referral solutions tailored for financial technology companies.",
+    description:
+      "Secure, compliant referral solutions tailored for financial technology companies.",
     imageSrc: "https://placehold.co/600x400/8b5cf6/ffffff?text=FinTech",
   },
   {
     title: "Marketplaces",
-    description: "Two-sided referral programs that grow both your supply and demand sides simultaneously.",
+    description:
+      "Two-sided referral programs that grow both your supply and demand sides simultaneously.",
     imageSrc: "https://placehold.co/600x400/ec4899/ffffff?text=Marketplaces",
   },
   {
     title: "Online Education",
-    description: "Expand your student base with referral programs that reward learning communities.",
-    imageSrc: "https://placehold.co/600x400/f59e0b/ffffff?text=Online+Education",
+    description:
+      "Expand your student base with referral programs that reward learning communities.",
+    imageSrc:
+      "https://placehold.co/600x400/f59e0b/ffffff?text=Online+Education",
   },
   {
     title: "ECommerce & D2C",
-    description: "Turn customers into advocates with referral programs that boost direct sales and brand loyalty.",
-    imageSrc: "https://placehold.co/600x400/10b981/ffffff?text=ECommerce+%26+D2C",
+    description:
+      "Turn customers into advocates with referral programs that boost direct sales and brand loyalty.",
+    imageSrc:
+      "https://placehold.co/600x400/10b981/ffffff?text=ECommerce+%26+D2C",
   },
 ];
 
@@ -59,7 +68,9 @@ const FeatureIndustryTypes = () => {
             Support For Every Business Model
           </h1>
           <p className="text-center text-lg font-medium text-muted-foreground md:max-w-4xl lg:text-xl">
-            RefRef provides tailored referral solutions for a wide range of industries, helping businesses of all types grow through word-of-mouth marketing.
+            RefRef provides tailored referral solutions for a wide range of
+            industries, helping businesses of all types grow through
+            word-of-mouth marketing.
           </p>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -17,7 +17,10 @@ export function Hero() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    setShowSuccess(urlParams.get('submission') === 'true' && urlParams.get('form_type') === 'demo');
+    setShowSuccess(
+      urlParams.get("submission") === "true" &&
+        urlParams.get("form_type") === "demo",
+    );
   }, []);
 
   return (
@@ -28,21 +31,32 @@ export function Hero() {
           <div className="z-10 flex flex-col items-center gap-6 text-center">
             <div>
               <h2 className="mb-6 text-center text-3xl font-medium text-gray-900 dark:text-gray-50 sm:text-6xl">
-                <Link href="https://github.com/refrefhq/refref" target="_blank" rel="noopener noreferrer" className="inline-block mb-6">
-                  <AnimatedGradientText>⭐ Star us on Github</AnimatedGradientText>
-                </Link>{' '}
+                <Link
+                  href="https://github.com/refrefhq/refref"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mb-6"
+                >
+                  <AnimatedGradientText>
+                    ⭐ Star us on Github
+                  </AnimatedGradientText>
+                </Link>{" "}
                 <span className="animate-text-gradient inline-flex bg-gradient-to-r from-neutral-900 via-slate-500 to-neutral-500 bg-[200%_auto] bg-clip-text leading-tight text-transparent dark:from-neutral-100 dark:via-slate-400 dark:to-neutral-400">
                   Open Source Referral Marketing
                 </span>
               </h2>
               <p className="text-muted-foreground lg:text-xl">
-                Build powerful referral programs with RefRef's free, community-driven platform. Track referrals, automate rewards, and grow your user base through word-of-mouth marketing.
+                Build powerful referral programs with RefRef's free,
+                community-driven platform. Track referrals, automate rewards,
+                and grow your user base through word-of-mouth marketing.
               </p>
             </div>
             <div className="mt-4 w-full max-w-md">
               <div className="flex justify-center gap-4">
                 <Button className="bg-primary hover:bg-primary/90">
-                  <Link href="https://github.com/refrefhq/refref">Get Started</Link>
+                  <Link href="https://github.com/refrefhq/refref">
+                    Get Started
+                  </Link>
                 </Button>
                 <Button variant="outline">
                   <Link href="/docs">Docs</Link>
@@ -72,9 +86,14 @@ export function Hero() {
             </div>
             <div className="flex flex-col gap-2">
               <h3 className="text-lg font-semibold">Request Received!</h3>
-              <p className="text-muted-foreground">Thank you for your interest in RefRef. We'll get back to you shortly.</p>
+              <p className="text-muted-foreground">
+                Thank you for your interest in RefRef. We'll get back to you
+                shortly.
+              </p>
             </div>
-            <Button onClick={() => setShowSuccess(false)} className="mt-2">Close</Button>
+            <Button onClick={() => setShowSuccess(false)} className="mt-2">
+              Close
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

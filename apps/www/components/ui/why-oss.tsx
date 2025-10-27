@@ -1,8 +1,4 @@
-import {
-  GitPullRequest,
-  RadioTower,
-  WandSparkles,
-} from "lucide-react";
+import { GitPullRequest, RadioTower, WandSparkles } from "lucide-react";
 
 interface Reason {
   title: string;
@@ -55,7 +51,9 @@ const WhyOSS = ({
                 {reason.icon}
               </div>
               <h3 className="mb-2 text-xl font-medium">{reason.title}</h3>
-              <p className="text-base text-muted-foreground">{reason.description}</p>
+              <p className="text-base text-muted-foreground">
+                {reason.description}
+              </p>
             </div>
           ))}
         </div>

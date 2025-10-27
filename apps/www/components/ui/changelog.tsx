@@ -33,11 +33,11 @@ const Changelog = ({
           </p>
         </div>
         <SubscriptionForm
-        variant="blog"
-        formName="changelog_subscription"
-        redirectUrl="https://refref.ai/changelog?submission=true&form_type=subscribe"
-        showHeader={false}
-      />
+          variant="blog"
+          formName="changelog_subscription"
+          redirectUrl="https://refref.ai/changelog?submission=true&form_type=subscribe"
+          showHeader={false}
+        />
         <div className="mx-auto mt-16 max-w-3xl space-y-16 md:mt-24 md:space-y-24">
           {entries.map((entry, index) => (
             <div
@@ -101,6 +101,7 @@ export const defaultChangelogData: ChangelogEntry[] = [
       "Referral tracking",
       "Rewards tracking",
     ],
-    image: "https://placehold.co/1200x600/6b46c1/ffffff?text=Announcing+RefRef+0.1",
-  }
+    image:
+      "https://placehold.co/1200x600/6b46c1/ffffff?text=Announcing+RefRef+0.1",
+  },
 ];

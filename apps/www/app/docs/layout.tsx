@@ -1,8 +1,8 @@
-import { DocsLayout, type DocsLayoutProps } from 'fumadocs-ui/layouts/docs';
-import type { ReactNode } from 'react';
-import { baseOptions } from '@/app/layout.config';
-import 'fumadocs-twoslash/twoslash.css';
-import { source } from '@/lib/source';
+import { DocsLayout, type DocsLayoutProps } from "fumadocs-ui/layouts/docs";
+import type { ReactNode } from "react";
+import { baseOptions } from "@/app/layout.config";
+import "fumadocs-twoslash/twoslash.css";
+import { source } from "@/lib/source";
 
 const docsOptions: DocsLayoutProps = {
   ...baseOptions,
@@ -33,9 +33,5 @@ const docsOptions: DocsLayoutProps = {
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
-  return (
-    <DocsLayout {...docsOptions}>
-      {children}
-    </DocsLayout>
-  );
+  return <DocsLayout {...docsOptions}>{children}</DocsLayout>;
 }

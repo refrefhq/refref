@@ -1,4 +1,21 @@
-import { Code, GitBranch, List, Sparkles, Target, Cookie, Gift, Layout, ShieldCheck, Network, BarChart3, Share2, Users, Star, Bell, CreditCard } from "lucide-react";
+import {
+  Code,
+  GitBranch,
+  List,
+  Sparkles,
+  Target,
+  Cookie,
+  Gift,
+  Layout,
+  ShieldCheck,
+  Network,
+  BarChart3,
+  Share2,
+  Users,
+  Star,
+  Bell,
+  CreditCard,
+} from "lucide-react";
 
 const features = [
   {
@@ -72,7 +89,8 @@ const FeatureListGeneral = () => {
             Full featured Referral Management Platform
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-3xl">
-            Everything you need to manage and grow your referral program in one place.
+            Everything you need to manage and grow your referral program in one
+            place.
           </p>
         </div>
         <div className="flex flex-wrap items-start justify-between pb-16">

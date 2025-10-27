@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import { AuthUIProvider } from "@/components/providers/auth-ui-provider";
 
 export const metadata: Metadata = {
   title: "RefRef - Referral Management Platform",
@@ -57,7 +58,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TRPCReactProvider>
-            <NuqsAdapter>{children}</NuqsAdapter>
+            <AuthUIProvider>
+              <NuqsAdapter>{children}</NuqsAdapter>
+            </AuthUIProvider>
           </TRPCReactProvider>
         </ThemeProvider>
       </body>

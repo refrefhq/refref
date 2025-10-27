@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ const Contact = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    setShowSuccess(urlParams.get('submission') === 'true');
+    setShowSuccess(urlParams.get("submission") === "true");
   }, []);
 
   return (
@@ -26,17 +26,24 @@ const Contact = () => {
             Contact Us
           </h1>
           <p className="text-lg text-muted-foreground">
-            Get in touch with the authors of RefRef for any questions or support.
+            Get in touch with the authors of RefRef for any questions or
+            support.
           </p>
         </div>
         <div className="flex justify-center">
-          <div className={cn(
-            "mx-auto flex w-full flex-col gap-6 rounded-lg p-10 md:max-w-[464px]",
-            "bg-muted dark:bg-muted/30 dark:border dark:border-border"
-          )}>
+          <div
+            className={cn(
+              "mx-auto flex w-full flex-col gap-6 rounded-lg p-10 md:max-w-[464px]",
+              "bg-muted dark:bg-muted/30 dark:border dark:border-border",
+            )}
+          >
             <form action="https://submit-form.com/ZQzighfzx">
               <input type="hidden" name="form_name" value="contact_form" />
-              <input type="hidden" name="_redirect" value="https://refref.ai/contact?submission=true" />
+              <input
+                type="hidden"
+                name="_redirect"
+                value="https://refref.ai/contact?submission=true"
+              />
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid w-full items-center gap-1.5">
                   <Label htmlFor="firstname">
@@ -98,12 +105,17 @@ const Contact = () => {
                   className="text-sm font-medium leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   I agree to the
-                  <a href="/privacy" className="ml-1 underline hover:text-foreground">
+                  <a
+                    href="/privacy"
+                    className="ml-1 underline hover:text-foreground"
+                  >
                     privacy policy
                   </a>
                 </label>
               </div>
-              <Button type="submit" className="w-full mt-6">Submit</Button>
+              <Button type="submit" className="w-full mt-6">
+                Submit
+              </Button>
             </form>
             <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
               <DialogContent className="sm:max-w-md">
@@ -113,9 +125,17 @@ const Contact = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <h3 className="text-lg font-semibold">Message Sent!</h3>
-                    <p className="text-muted-foreground">Thank you for reaching out. We&apos;ll get back to you shortly.</p>
+                    <p className="text-muted-foreground">
+                      Thank you for reaching out. We&apos;ll get back to you
+                      shortly.
+                    </p>
                   </div>
-                  <Button onClick={() => setShowSuccess(false)} className="mt-2">Close</Button>
+                  <Button
+                    onClick={() => setShowSuccess(false)}
+                    className="mt-2"
+                  >
+                    Close
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
