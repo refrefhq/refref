@@ -9,7 +9,9 @@
         "../../packages/ui/src/*"
       ]
     },
-    "disableSizeLimit": false
+    "disableSizeLimit": false,
+    "declaration": false,
+    "declarationMap": false
   },
   "include": [
     "**/*.ts",
