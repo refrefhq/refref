@@ -82,6 +82,8 @@
     "nuqs": "2.4.3",
     "plugins": "link:better-auth/client/plugins",
     "postgres": "^3.4.5",
+    "posthog-js": "^1.281.0",
+    "posthog-node": "^5.10.4",
     "react": "^19.0.0",
     "react-aria-components": "^1.8.0",
     "react-day-picker": "8.10.1",
