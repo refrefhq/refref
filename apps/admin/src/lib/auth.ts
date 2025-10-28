@@ -6,6 +6,7 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 import { logger } from "@/lib/logger";
 import { emailService } from "@/lib/email";
+import { posthog } from "@/lib/posthog";
 
 // Build social providers object dynamically based on enabled providers
 const socialProviders = env.NEXT_PUBLIC_ENABLED_SOCIAL_AUTH.reduce(
@@ -127,8 +128,21 @@ export const auth = betterAuth({
     }),
     apiKey(),
   ],
-  /**
-   * This hook creates a new organization for the user if they don't have any org associations.
-   * Also ensures we have an active organization set for the user.
-   */
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Track user signup event
+          posthog.capture({
+            distinctId: user.id,
+            event: "user_sign_up",
+            properties: {
+              email: user.email,
+              name: user.name || undefined,
+            },
+          });
+        },
+      },
+    },
+  },
 });
