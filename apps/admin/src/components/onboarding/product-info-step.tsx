@@ -17,6 +17,9 @@ export const ProductInfoStep = withFieldGroup({
     isFirstStep: false,
     isLastStep: false,
     isSubmitting: false,
+    submitButtonRef: {
+      current: null,
+    } as React.RefObject<HTMLButtonElement | null>,
   },
   render: function Render({
     group,
@@ -25,6 +28,7 @@ export const ProductInfoStep = withFieldGroup({
     isFirstStep,
     isLastStep,
     isSubmitting,
+    submitButtonRef,
   }) {
     const onSubmit = async () => {
       const errors = await group.validateAllFields("submit");
@@ -37,7 +41,6 @@ export const ProductInfoStep = withFieldGroup({
     const onBefore = () => {
       // ! important otherwise if we go to previous step, the errors from next step will still be present
       Object.values(group.fieldsMap).forEach((field) => {
-        console.log("field is ", field);
         group.form.setFieldMeta(field, (m) => ({
           ...m,
           errors: [],
@@ -99,7 +102,12 @@ export const ProductInfoStep = withFieldGroup({
             Previous
           </Button>
 
-          <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
+          <Button
+            ref={submitButtonRef}
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting}
+          >
             {isLastStep
               ? isSubmitting
                 ? "Creating..."

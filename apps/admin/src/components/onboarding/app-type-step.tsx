@@ -21,6 +21,9 @@ export const AppTypeStep = withFieldGroup({
     isFirstStep: false,
     isLastStep: false,
     isSubmitting: false,
+    submitButtonRef: {
+      current: null,
+    } as React.RefObject<HTMLButtonElement | null>,
   },
   render: function Render({
     group,
@@ -29,6 +32,7 @@ export const AppTypeStep = withFieldGroup({
     isFirstStep,
     isLastStep,
     isSubmitting,
+    submitButtonRef,
   }) {
     const onSubmit = async () => {
       // ! important otherwise if we go to previous step, the errors from next step will still be present
@@ -88,7 +92,12 @@ export const AppTypeStep = withFieldGroup({
             Previous
           </Button>
 
-          <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
+          <Button
+            ref={submitButtonRef}
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting}
+          >
             {isLastStep
               ? isSubmitting
                 ? "Creating..."

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@refref/ui/components/button";
 import { signOut, useSession } from "@/lib/auth-client";
@@ -85,6 +85,27 @@ export default function OnboardingPage() {
       });
     },
   });
+
+  // Ref for the submit button to enable Enter key submission.
+  // We use a ref to programmatically click the button because the validation logic
+  // lives inside each step component's onSubmit handler. This ensures we reuse the
+  // same validation → progression flow rather than duplicating validation logic here.
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Handle Enter key press to submit form
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        // Trigger the button click. The button's disabled state already prevents
+        // double-submission, so no need to check isPending here.
+        submitButtonRef.current?.click();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleNext = async () => {
     if (currentStep < steps.length) {
@@ -173,6 +194,7 @@ export default function OnboardingPage() {
                   isFirstStep={true}
                   isLastStep={false}
                   isSubmitting={createProject.isPending}
+                  submitButtonRef={submitButtonRef}
                 />
               )}
               {currentStep === 2 && (
@@ -184,6 +206,7 @@ export default function OnboardingPage() {
                   isFirstStep={false}
                   isLastStep={false}
                   isSubmitting={createProject.isPending}
+                  submitButtonRef={submitButtonRef}
                 />
               )}
               {currentStep === 3 && (
@@ -198,6 +221,7 @@ export default function OnboardingPage() {
                   isFirstStep={false}
                   isLastStep={true}
                   isSubmitting={createProject.isPending}
+                  submitButtonRef={submitButtonRef}
                 />
               )}
             </CardContent>

@@ -23,6 +23,9 @@ export const PaymentProviderStep = withFieldGroup({
     isFirstStep: false,
     isLastStep: false,
     isSubmitting: false,
+    submitButtonRef: {
+      current: null,
+    } as React.RefObject<HTMLButtonElement | null>,
   },
   render: function Render({
     group,
@@ -31,6 +34,7 @@ export const PaymentProviderStep = withFieldGroup({
     isFirstStep,
     isLastStep,
     isSubmitting,
+    submitButtonRef,
   }) {
     const onSubmit = async () => {
       const errors = await group.validateAllFields("submit");
@@ -113,7 +117,12 @@ export const PaymentProviderStep = withFieldGroup({
             Previous
           </Button>
 
-          <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
+          <Button
+            ref={submitButtonRef}
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting}
+          >
             {isLastStep
               ? isSubmitting
                 ? "Creating..."
