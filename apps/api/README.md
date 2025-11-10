@@ -12,8 +12,8 @@ pnpm install
 pnpm dev
 
 # Run tests
-pnpm test              # Run tests in watch mode
-pnpm test:run          # Run tests once
+pnpm test              # Run tests once
+pnpm test:watch        # Run tests in watch mode
 pnpm test:ui           # Run tests with UI
 
 # Type checking

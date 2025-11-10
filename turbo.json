@@ -15,6 +15,12 @@
     "type:check": {
       "dependsOn": ["^build", "^type:check"]
     },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:run": {
+      "dependsOn": ["^build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
 export async function healthHandler(
-  request: FastifyRequest,
+  _request: FastifyRequest,
   reply: FastifyReply
 ) {
   return reply.send({
