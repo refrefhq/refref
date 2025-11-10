@@ -47,3 +47,5 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          SKIP_ENV_VALIDATION: true
