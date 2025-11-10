@@ -8,17 +8,7 @@ on:
 
 env:
   PNPM_VERSION: 10.4.1
-  DATABASE_URL: 'na'
-  BETTER_AUTH_SECRET: 'na'
-  BETTER_AUTH_URL: 'http://localhost:3000'
-  NEXT_PUBLIC_APP_URL: 'http://localhost:3000'
-  RESEND_API_KEY: 'na'
-  GOOGLE_CLIENT_ID: 'na'
-  GOOGLE_CLIENT_SECRET: 'na'
-  REFERRAL_PROGRAM_CLIENT_ID: 'na'
-  REFERRAL_PROGRAM_CLIENT_SECRET: 'na'
-  NEXT_PUBLIC_REFREF_PROJECT_ID: 'na'
-  NEXT_PUBLIC_REFREF_PROGRAM_ID: 'na'
+  SKIP_ENV_VALIDATION: true
 
 jobs:
   build:
@@ -56,5 +46,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-        env:
-          SKIP_ENV_VALIDATION: true
