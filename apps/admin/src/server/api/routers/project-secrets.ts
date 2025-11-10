@@ -4,8 +4,6 @@ import { db, schema } from "@/server/db";
 const { project, projectSecrets } = schema;
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { createId } from "@paralleldrive/cuid2";
-import { randomBytes } from "crypto";
 
 export const projectSecretsRouter = createTRPCRouter({
   get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {

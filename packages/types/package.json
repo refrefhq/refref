@@ -12,7 +12,8 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "type:check": "tsc --noEmit"
   },
   "devDependencies": {
     "@refref/typescript-config": "workspace:*",

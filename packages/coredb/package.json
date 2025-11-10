@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
+    "@refref/id": "workspace:*",
     "@refref/types": "workspace:*",
     "drizzle-orm": "^0.33.0",
     "postgres": "^3.4.5",

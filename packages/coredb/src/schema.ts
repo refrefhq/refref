@@ -13,7 +13,8 @@ import {
   unique,
   index,
 } from "drizzle-orm/pg-core";
-import { createId } from "@paralleldrive/cuid2";
+import { createId as createCuid } from "@paralleldrive/cuid2";
+import { createId, isValidEntityType } from "@refref/id";
 import type {
   ProgramTemplateConfigType,
   ProgramConfigV1Type,
@@ -24,20 +25,26 @@ import type {
 } from "@refref/types";
 
 // Base table for common fields
-export const baseFields = {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => createId()),
-  createdAt: timestamp("created_at")
-    .notNull()
-    .default(sql`now()`),
-  updatedAt: timestamp("updated_at")
-    .notNull()
-    .default(sql`now()`),
+export const baseFields = (entityType: string) => {
+  return {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() =>
+        entityType && isValidEntityType(entityType)
+          ? createId(entityType)
+          : createCuid()
+      ),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .default(sql`now()`),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .default(sql`now()`),
+  };
 };
 
 export const user = pgTable("user", {
-  ...baseFields,
+  ...baseFields("user"),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull(),
@@ -49,7 +56,7 @@ export const user = pgTable("user", {
 });
 
 export const session = pgTable("session", {
-  ...baseFields,
+  ...baseFields("session"),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
   ipAddress: text("ip_address"),
@@ -62,7 +69,7 @@ export const session = pgTable("session", {
 });
 
 export const account = pgTable("account", {
-  ...baseFields,
+  ...baseFields("account"),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
@@ -78,14 +85,14 @@ export const account = pgTable("account", {
 });
 
 export const verification = pgTable("verification", {
-  ...baseFields,
+  ...baseFields("verification"),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
 });
 
 export const project = pgTable("project", {
-  ...baseFields,
+  ...baseFields("project"),
   name: text("name").notNull(),
   slug: text("slug").unique(),
   logo: text("logo"),
@@ -98,7 +105,7 @@ export const project = pgTable("project", {
 });
 
 export const projectUser = pgTable("project_user", {
-  ...baseFields,
+  ...baseFields("projectUser"),
   projectId: text("project_id")
     .notNull()
     .references(() => project.id, { onDelete: "cascade" }),
@@ -109,7 +116,7 @@ export const projectUser = pgTable("project_user", {
 });
 
 export const invitation = pgTable("invitation", {
-  ...baseFields,
+  ...baseFields("invitation"),
   projectId: text("project_id")
     .notNull()
     .references(() => project.id, { onDelete: "cascade" }),
@@ -123,7 +130,7 @@ export const invitation = pgTable("invitation", {
 });
 
 export const apikey = pgTable("apikey", {
-  ...baseFields,
+  ...baseFields("apikey"),
   name: text("name"),
   start: text("start"),
   prefix: text("prefix"),
@@ -147,7 +154,7 @@ export const apikey = pgTable("apikey", {
 });
 
 export const programTemplate = pgTable("program_template", {
-  ...baseFields,
+  ...baseFields("programTemplate"),
   templateName: text("template_name").notNull(),
   description: text("description").notNull(),
   // Assuming config is part of the template definition based on ProgramConfigV1 type usage elsewhere
@@ -155,7 +162,7 @@ export const programTemplate = pgTable("program_template", {
 });
 
 export const program = pgTable("program", {
-  ...baseFields,
+  ...baseFields("program"),
   projectId: text("project_id")
     .notNull()
     .references(() => project.id, { onDelete: "cascade" }),
@@ -170,7 +177,7 @@ export const program = pgTable("program", {
 });
 
 export const eventDefinition = pgTable("event_definition", {
-  ...baseFields,
+  ...baseFields("eventDefinition"),
   name: text("name").notNull(),
   type: text("type").notNull().unique(),
   description: text("description"),
@@ -180,7 +187,7 @@ export const eventDefinition = pgTable("event_definition", {
 export const participant = pgTable(
   "participant",
   {
-    ...baseFields,
+    ...baseFields("participant"),
     name: text("name"),
     email: text("email"),
     projectId: text("project_id")
@@ -201,7 +208,7 @@ export const participant = pgTable(
 export const rewardRule = pgTable(
   "reward_rule",
   {
-    ...baseFields,
+    ...baseFields("rewardRule"),
     programId: text("program_id")
       .notNull()
       .references(() => program.id, { onDelete: "cascade" }),
@@ -223,7 +230,7 @@ export const rewardRule = pgTable(
 export const reward = pgTable(
   "reward",
   {
-    ...baseFields,
+    ...baseFields("reward"),
     participantId: text("participant_id")
       .notNull()
       .references(() => participant.id, { onDelete: "cascade" }),
@@ -254,7 +261,7 @@ export const reward = pgTable(
 
 // Project secrets for JWT generation
 export const projectSecrets = pgTable("project_secrets", {
-  ...baseFields,
+  ...baseFields("projectSecrets"),
   projectId: text("project_id")
     .notNull()
     .references(() => project.id, { onDelete: "cascade" }),
@@ -263,7 +270,7 @@ export const projectSecrets = pgTable("project_secrets", {
 });
 
 export const referralLink = pgTable("referral_link", {
-  ...baseFields,
+  ...baseFields("referralLink"),
   // Core relationships
   participantId: text("participant_id")
     .notNull()
@@ -280,7 +287,7 @@ export const programRelations = relations(program, ({ one }) => ({
 }));
 
 export const referral = pgTable("referral", {
-  ...baseFields,
+  ...baseFields("referral"),
   referrerId: text("referrer_id")
     .notNull()
     .references(() => participant.id, { onDelete: "cascade" }),
@@ -293,7 +300,7 @@ export const referral = pgTable("referral", {
 export const event = pgTable(
   "event",
   {
-    ...baseFields,
+    ...baseFields("event"),
     projectId: text("project_id")
       .notNull()
       .references(() => project.id, { onDelete: "cascade" }),

@@ -18,7 +18,7 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "type:check": "tsc --noEmit"
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "^3.2.6",
@@ -55,6 +55,7 @@
     "@radix-ui/react-toggle": "^1.1.2",
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
+    "@refref/id": "workspace:*",
     "@refref/types": "workspace:*",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tabler/icons-react": "^3.31.0",

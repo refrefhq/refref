@@ -23,7 +23,8 @@
     "build:widget": "tsc && vite build --out-dir dist/widget --mode development",
     "build:widget:production": "tsc && vite build --out-dir dist/widget --mode production",
     "lint": "eslint . --report-unused-disable-directives",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type:check": "tsc --noEmit"
   },
   "dependencies": {
     "@refref/ui": "workspace:*",

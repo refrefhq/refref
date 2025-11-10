@@ -13,7 +13,8 @@
     "fetch-content": "pnpm exec tsx ./scripts/fetch-content.mts",
     "cleanup-content": "pnpm exec tsx ./scripts/cleanup-content.mts",
     "refresh-content": "pnpm cleanup-content && pnpm fetch-content",
-    "lint": "fumadocs-mdx && tsx ./scripts/lint.mts"
+    "lint": "fumadocs-mdx && tsx ./scripts/lint.mts",
+    "type:check": "tsc --noEmit"
   },
   "dependencies": {
     "@next/third-parties": "^15.2.0",
