@@ -13,7 +13,7 @@ env:
   SKIP_ENV_VALIDATION: "true"
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -51,3 +51,5 @@ jobs:
 
       - name: Run Tests
         run: pnpm test:run
+        env:
+          SKIP_ENV_VALIDATION: "true"

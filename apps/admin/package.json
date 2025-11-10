@@ -18,6 +18,10 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "type:check": "tsc --noEmit"
   },
   "dependencies": {
@@ -116,13 +120,15 @@
     "@types/react-dom": "^19.1.7",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.1.0",
+    "@vitest/ui": "^2.1.8",
     "eslint-config-next": "^15.2.0",
     "eslint-plugin-drizzle": "^0.2.3",
     "postcss": "^8.4.39",
     "raw-loader": "^4.0.2",
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^2.1.8"
   },
   "packageManager": "pnpm@10.4.0"
 }

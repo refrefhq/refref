@@ -1,6 +1,7 @@
 {
   "extends": "@refref/typescript-config/nextjs.json",
   "compilerOptions": {
+    "types": ["vitest/globals"],
     "paths": {
       "@/*": [
         "./src/*"
