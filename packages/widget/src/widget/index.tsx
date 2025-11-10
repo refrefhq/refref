@@ -26,10 +26,36 @@ function onReady() {
 
     const shadowRoot = document.createElement("div");
     shadowRoot.id = "widget-root";
-    shadowRoot.classList.toggle(
-      "dark",
-      document.documentElement.classList.contains("dark"),
-    );
+
+    // Detect and apply dark mode from parent page
+    const updateDarkMode = () => {
+      const htmlHasDark = document.documentElement.classList.contains("dark");
+      const bodyHasDark = document.body.classList.contains("dark");
+      const systemPrefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+
+      const shouldBeDark = htmlHasDark || bodyHasDark || systemPrefersDark;
+      shadowRoot.classList.toggle("dark", shouldBeDark);
+    };
+
+    // Initial dark mode detection
+    updateDarkMode();
+
+    // Watch for dark mode changes on parent page
+    const observer = new MutationObserver(updateDarkMode);
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+
+    // Watch for system preference changes
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    darkModeMediaQuery.addEventListener("change", updateDarkMode);
 
     const component = <WidgetContainer />;
 

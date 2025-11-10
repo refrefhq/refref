@@ -35,11 +35,10 @@ export function ReferralWidgetContent({
 
   return (
     <Card
+      className="border-0"
       style={{
         backgroundColor: config.modalBgColor,
-        color: config.textColor,
         borderRadius: `${config.modalBorderRadius}px`,
-        border: "none",
       }}
     >
       <CardHeader className="text-center">
@@ -48,12 +47,20 @@ export function ReferralWidgetContent({
             <img src={config.logoUrl} alt="Logo" className="h-12 w-auto" />
           </div>
         )}
-        <CardTitle className="text-xl" style={{ color: config.textColor }}>
+        <CardTitle
+          className="text-xl"
+          style={{
+            color: config.textColor,
+          }}
+        >
           {config.title}
         </CardTitle>
         <CardDescription
-          className="text-sm opacity-80"
-          style={{ color: config.textColor }}
+          className="text-sm"
+          style={{
+            color: config.textColor,
+            opacity: 0.7,
+          }}
         >
           {config.subtitle}
         </CardDescription>
@@ -63,8 +70,11 @@ export function ReferralWidgetContent({
         {/* Referral Link Section */}
         <div className="space-y-2">
           <label
-            className="text-sm font-medium opacity-80"
-            style={{ color: config.textColor }}
+            className="text-sm font-medium"
+            style={{
+              color: config.textColor,
+              opacity: 0.8,
+            }}
           >
             Your Referral Link
           </label>
@@ -73,11 +83,6 @@ export function ReferralWidgetContent({
               value={config.referralLink}
               readOnly
               className="flex-1"
-              style={{
-                backgroundColor: config.modalBgColor,
-                borderColor: `${config.accentColor}40`,
-                color: config.textColor,
-              }}
             />
             <Button
               onClick={copyToClipboard}

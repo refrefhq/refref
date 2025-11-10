@@ -82,16 +82,11 @@ export function ReferralWidgetPresentation({
         onOpenChange={onOpenChange}
       />
 
-      {/* Dialog Wrapper - modal={false} prevents body scroll lock and page shift */}
+      {/* Dialog Wrapper */}
       <Dialog open={isOpen} onOpenChange={onOpenChange} modal={false}>
         <DialogContent
-          className="sm:max-w-md p-0 border"
+          className="sm:max-w-md p-0"
           container={container}
-          style={{
-            backgroundColor: config.modalBgColor,
-            color: config.textColor,
-            borderRadius: `${config.modalBorderRadius}px`,
-          }}
         >
           <DialogTitle className="sr-only">Referral Widget</DialogTitle>
           <ReferralWidgetContent config={config} onClose={handleClose} />

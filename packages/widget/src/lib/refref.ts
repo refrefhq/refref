@@ -4,6 +4,7 @@ import {
   WidgetInitResponseType,
 } from "@refref/types";
 import { widgetStore } from "@/lib/store";
+import { defaultConfig } from "@/lib/config";
 
 export interface RefRef {
   init: (params: {
@@ -63,45 +64,13 @@ class RefRefImpl implements RefRef {
       if (demo) {
         console.log("Demo mode: Initializing without backend");
 
-        // Set demo configuration - matching the expected flat structure
+        // Use defaultConfig with demo-specific overrides
         const demoConfig = {
-          // Position and trigger
-          position: "bottom-right",
-          triggerText: "Refer & Earn",
+          ...defaultConfig,
+          // Add widgetElementSelector for data attribute support
           widgetElementSelector: "[data-refref-trigger]",
-
-          // Button styling
-          buttonBgColor: "#4F46E5",
-          buttonTextColor: "#ffffff",
-          borderRadius: 25,
-          icon: "gift",
-
-          // Modal content
-          title: "Refer a Friend",
-          subtitle: "Share your referral link and earn rewards when your friends join!",
-          logoUrl: "",
-
-          // Modal styling
-          modalBgColor: "#ffffff",
-          accentColor: "#4F46E5",
-          textColor: "#1f2937",
-          modalBorderRadius: 12,
-
-          // Sharing configuration
-          shareMessage: "Check out this amazing product! Use my referral link to get started:",
-          referralLink: "https://example.com/ref/DEMO123",
-          productName: "RefRef Demo",
-
-          // Enabled platforms
-          enabledPlatforms: {
-            facebook: true,
-            twitter: true,
-            linkedin: true,
-            whatsapp: true,
-            email: true,
-            instagram: false,
-            telegram: false,
-          },
+          // Override with demo-specific referral link
+          referralLink: "https://demo.refref.app/ref/DEMO123",
         };
 
         this.store.setState({

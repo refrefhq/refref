@@ -199,11 +199,11 @@
           </div>
 
           <div class="section">
-            <h3>🎨 Theme Configuration</h3>
+            <h3>🌓 Dark Mode</h3>
             <div class="button-group">
-              <button onclick="applyLightTheme()">Light Theme</button>
-              <button onclick="applyDarkTheme()">Dark Theme</button>
-              <button onclick="applyCustomTheme()">Custom Theme</button>
+              <button onclick="setLightMode()">Light Mode</button>
+              <button onclick="setDarkMode()">Dark Mode</button>
+              <button onclick="setSystemMode()">System Mode</button>
             </div>
           </div>
 
@@ -244,8 +244,8 @@
                 <span id="debug-position" class="debug-value">bottom-right</span>
               </div>
               <div class="debug-item">
-                <span class="debug-label">Theme:</span>
-                <span id="debug-theme" class="debug-value">light</span>
+                <span class="debug-label">Mode:</span>
+                <span id="debug-mode" class="debug-value">system</span>
               </div>
             </div>
           </div>
@@ -268,11 +268,20 @@
       const debugInitialized = document.getElementById("debug-initialized");
       const debugIsOpen = document.getElementById("debug-isopen");
       const debugPosition = document.getElementById("debug-position");
-      const debugTheme = document.getElementById("debug-theme");
+      const debugMode = document.getElementById("debug-mode");
 
-      let currentTheme = "light";
       let currentPosition = "bottom-right";
+      let currentMode = "system"; // "light", "dark", or "system"
       let widgetInitialized = false;
+
+      // Initialize with system mode on page load
+      const initializeDarkMode = () => {
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (systemPrefersDark) {
+          document.documentElement.classList.add('dark');
+        }
+      };
+      initializeDarkMode();
 
       // Logging function
       function logEvent(message, type = 'info') {
@@ -293,7 +302,14 @@
         debugInitialized.textContent = widgetInitialized ? 'true' : 'false';
         debugIsOpen.textContent = window.RefRef?.isOpen ? 'true' : 'false';
         debugPosition.textContent = currentPosition;
-        debugTheme.textContent = currentTheme;
+
+        // Update mode display
+        if (currentMode === 'system') {
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          debugMode.textContent = `system (${systemPrefersDark ? 'dark' : 'light'})`;
+        } else {
+          debugMode.textContent = currentMode;
+        }
       }
 
       // Widget control functions
@@ -327,57 +343,48 @@
         updateDebugPanel();
       };
 
-      // Theme functions
-      window.applyLightTheme = () => {
-        if (!window.RefRef) return;
-
-        window.RefRef.setConfig({
-          modalBgColor: "#ffffff",
-          accentColor: "#4F46E5",
-          textColor: "#1f2937",
-          buttonBgColor: "#4F46E5",
-          buttonTextColor: "#ffffff",
-          triggerText: "Refer & Earn",
-          title: "Refer a Friend",
-        });
-        currentTheme = "light";
-        logEvent("Applied light theme", 'success');
+      // Dark mode functions
+      window.setLightMode = () => {
+        document.documentElement.classList.remove('dark');
+        currentMode = 'light';
+        logEvent("Set to light mode", 'success');
         updateDebugPanel();
       };
 
-      window.applyDarkTheme = () => {
-        if (!window.RefRef) return;
-
-        window.RefRef.setConfig({
-          modalBgColor: "#1f2937",
-          accentColor: "#818CF8",
-          textColor: "#ffffff",
-          buttonBgColor: "#818CF8",
-          buttonTextColor: "#1f2937",
-          triggerText: "Refer & Earn",
-          title: "Refer a Friend",
-        });
-        currentTheme = "dark";
-        logEvent("Applied dark theme", 'success');
+      window.setDarkMode = () => {
+        document.documentElement.classList.add('dark');
+        currentMode = 'dark';
+        logEvent("Set to dark mode", 'success');
         updateDebugPanel();
       };
 
-      window.applyCustomTheme = () => {
-        if (!window.RefRef) return;
+      window.setSystemMode = () => {
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        window.RefRef.setConfig({
-          modalBgColor: "#fef3c7",
-          accentColor: "#f59e0b",
-          textColor: "#78350f",
-          buttonBgColor: "#f59e0b",
-          buttonTextColor: "#ffffff",
-          triggerText: "Share & Win",
-          title: "Share with Friends!",
-        });
-        currentTheme = "custom";
-        logEvent("Applied custom theme (warm colors)", 'success');
+        if (systemPrefersDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+
+        currentMode = 'system';
+        logEvent(`Set to system mode (currently ${systemPrefersDark ? 'dark' : 'light'})`, 'success');
         updateDebugPanel();
       };
+
+      // Watch for system preference changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (currentMode === 'system') {
+          if (e.matches) {
+            document.documentElement.classList.add('dark');
+            logEvent("System changed to dark mode", 'success');
+          } else {
+            document.documentElement.classList.remove('dark');
+            logEvent("System changed to light mode", 'success');
+          }
+          updateDebugPanel();
+        }
+      });
 
       // Position functions
       const positions = ["bottom-right", "bottom-left", "top-right", "top-left"];
@@ -413,7 +420,7 @@
         logEvent(`Initialized: ${widgetInitialized}`);
         logEvent(`Is Open: ${window.RefRef.isOpen || false}`);
         logEvent(`Position: ${currentPosition}`);
-        logEvent(`Theme: ${currentTheme}`);
+        logEvent(`Mode: ${currentMode}`);
 
         // Check for methods
         const methods = ['init', 'open', 'close', 'toggle', 'setConfig', 'getConfig'];
