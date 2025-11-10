@@ -1,0 +1,7 @@
+@host = http://localhost:3001
+
+### Health Check - Root
+GET {{host}}/
+
+### Health Check - Health Endpoint
+GET {{host}}/health
