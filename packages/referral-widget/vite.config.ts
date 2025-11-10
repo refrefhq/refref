@@ -11,7 +11,6 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     tailwindcss(),
-    ,
     /* cssInjectedByJsPlugin({
       // Inject CSS before our bundle code
       topExecutionPriority: true,

@@ -73,6 +73,7 @@ export function Widget() {
         isOpen={isOpen}
         onOpenChange={setIsOpen}
         config={config}
+        container={portalContainerRef.current}
       />
     </>
   );

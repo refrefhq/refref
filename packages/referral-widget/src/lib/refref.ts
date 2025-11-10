@@ -56,6 +56,64 @@ class RefRefImpl implements RefRef {
     token?: string;
   }) {
     try {
+      // Demo mode: if projectId starts with 'demo-', skip API call
+      if (projectId.startsWith("demo-")) {
+        console.log("Demo mode: Initializing without backend");
+
+        // Set demo configuration - matching the expected flat structure
+        const demoConfig = {
+          // Position and trigger
+          position: "bottom-right",
+          triggerText: "Refer & Earn",
+          widgetElementSelector: "[data-refref-trigger]",
+
+          // Button styling
+          buttonBgColor: "#4F46E5",
+          buttonTextColor: "#ffffff",
+          borderRadius: 25,
+          icon: "gift",
+
+          // Modal content
+          title: "Refer a Friend",
+          subtitle: "Share your referral link and earn rewards when your friends join!",
+          logoUrl: "",
+
+          // Modal styling
+          modalBgColor: "#ffffff",
+          accentColor: "#4F46E5",
+          textColor: "#1f2937",
+          modalBorderRadius: 12,
+
+          // Sharing configuration
+          shareMessage: "Check out this amazing product! Use my referral link to get started:",
+          referralLink: "https://example.com/ref/DEMO123",
+          productName: "RefRef Demo",
+
+          // Enabled platforms
+          enabledPlatforms: {
+            facebook: true,
+            twitter: true,
+            linkedin: true,
+            whatsapp: true,
+            email: true,
+            instagram: false,
+            telegram: false,
+          },
+        };
+
+        this.store.setState({
+          initialized: true,
+          token,
+          participantId,
+          projectId,
+          config: demoConfig as any,
+        });
+
+        console.log("Demo widget initialized with config: ", demoConfig);
+        return;
+      }
+
+      // Normal mode: make API call
       // Check for referral code (RFC) to enable auto-attribution
       // 1. Query string parameters (freshest intent, works even with cookies blocked, available in SSR)
       // 2. Cookie (persistent across sessions and page navigations, but may be blocked by privacy settings)

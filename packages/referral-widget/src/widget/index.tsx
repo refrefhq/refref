@@ -1,5 +1,5 @@
 import styles from "@refref/ui/globals.css?inline";
-import { hydrateRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { WidgetContainer } from "./components/widget-container";
 import { initRefRef } from "@/lib/refref";
 
@@ -34,7 +34,7 @@ function onReady() {
     const component = <WidgetContainer />;
 
     shadow.appendChild(shadowRoot);
-    hydrateRoot(shadowRoot, component);
+    createRoot(shadowRoot).render(component);
 
     document.body.appendChild(element);
   } catch (error) {

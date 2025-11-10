@@ -6,143 +6,509 @@
     <title>RefRef Widget Demo</title>
     <!-- Include the RefRef Widget -->
     <script
+      type="module"
       src="./dist/referral-widget.es.js"
-      data-client-key="YOUR_CLIENT_KEY"
+      data-client-key="demo-key"
     ></script>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
         padding: 20px;
         line-height: 1.6;
       }
-      .demo-section {
-        margin: 40px 0;
-        padding: 20px;
-        border: 1px solid #e5e7eb;
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+      .status-bar {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
         border-radius: 8px;
+        margin-top: 20px;
+        display: inline-block;
+        font-weight: 500;
+      }
+      .status-bar.success {
+        background: #10b981;
+      }
+      .status-bar.error {
+        background: #ef4444;
+      }
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        min-height: 600px;
+      }
+      .controls-panel {
+        padding: 30px;
+        border-right: 1px solid #e5e7eb;
+      }
+      .event-panel {
+        padding: 30px;
+        background: #f9fafb;
+      }
+      .section {
+        margin-bottom: 30px;
+      }
+      .section h3 {
+        color: #1f2937;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-bottom: 2px solid #4f46e5;
+        padding-bottom: 8px;
+      }
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
       }
       button {
         padding: 10px 20px;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         background: #4f46e5;
         color: white;
         cursor: pointer;
-        margin: 10px 0;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        flex: 1;
+        min-width: 120px;
       }
       button:hover {
         background: #4338ca;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
       }
-      pre {
-        background: #f5f5f5;
+      button:active {
+        transform: translateY(0);
+      }
+      button.secondary {
+        background: #6b7280;
+      }
+      button.secondary:hover {
+        background: #4b5563;
+      }
+      button[data-refref-trigger] {
+        background: #10b981;
+        width: 100%;
+      }
+      button[data-refref-trigger]:hover {
+        background: #059669;
+      }
+      .event-log {
+        background: #1f2937;
+        color: #10b981;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 13px;
+        height: 500px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      .info-box {
+        background: #eff6ff;
+        border-left: 4px solid #3b82f6;
         padding: 15px;
-        border-radius: 6px;
-        overflow-x: auto;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #1e40af;
+      }
+      .debug-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 15px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+      .debug-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+      }
+      .debug-label {
+        font-weight: 600;
+        color: #6b7280;
+      }
+      .debug-value {
+        color: #111827;
+      }
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+        .controls-panel {
+          border-right: none;
+          border-bottom: 1px solid #e5e7eb;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>RefRef Widget Demo</h1>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 RefRef Widget Demo</h1>
+        <p>Complete testing interface for the referral widget</p>
+        <div id="status" class="status-bar">Initializing widget...</div>
+      </div>
 
-    <div class="demo-section">
-      <h2>Basic Usage</h2>
-      <p>Click the button below to open the widget (using data attribute):</p>
-      <button data-refref-trigger>Open Widget (Data Attribute)</button>
+      <div class="main-content">
+        <!-- Left Panel: Controls -->
+        <div class="controls-panel">
+          <div class="info-box">
+            Widget will auto-initialize in demo mode. All controls are functional without a backend.
+          </div>
 
-      <p>Or use the programmatic API:</p>
-      <button onclick="window.RefRef.open()">Open Widget (JavaScript)</button>
-      <button onclick="window.RefRef.close()">Close Widget</button>
-      <button onclick="window.RefRef.toggle()">Toggle Widget</button>
-    </div>
+          <div class="section">
+            <h3>🎮 Widget Controls</h3>
+            <div class="button-group">
+              <button onclick="openWidget()">Open Widget</button>
+              <button onclick="closeWidget()">Close Widget</button>
+              <button onclick="toggleWidget()">Toggle Widget</button>
+            </div>
+            <button data-refref-trigger>Open via Data Attribute</button>
+          </div>
 
-    <div class="demo-section">
-      <h2>Widget Configuration</h2>
-      <p>Try different configurations:</p>
-      <button onclick="applyLightTheme()">Light Theme</button>
-      <button onclick="applyDarkTheme()">Dark Theme</button>
-      <button onclick="changePosition()">Change Position</button>
-    </div>
+          <div class="section">
+            <h3>🎨 Theme Configuration</h3>
+            <div class="button-group">
+              <button onclick="applyLightTheme()">Light Theme</button>
+              <button onclick="applyDarkTheme()">Dark Theme</button>
+              <button onclick="applyCustomTheme()">Custom Theme</button>
+            </div>
+          </div>
 
-    <div class="demo-section">
-      <h2>Event Handling</h2>
-      <pre id="eventLog">Events will be logged here...</pre>
+          <div class="section">
+            <h3>📍 Position Control</h3>
+            <div class="button-group">
+              <button onclick="changePosition()">Cycle Position</button>
+              <button onclick="setPosition('bottom-right')">Bottom Right</button>
+              <button onclick="setPosition('bottom-left')">Bottom Left</button>
+              <button onclick="setPosition('top-right')">Top Right</button>
+              <button onclick="setPosition('top-left')">Top Left</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>🛠️ Debug Actions</h3>
+            <div class="button-group">
+              <button onclick="checkStatus()" class="secondary">Check Status</button>
+              <button onclick="getConfig()" class="secondary">Get Config</button>
+              <button onclick="checkShadowDOM()" class="secondary">Check Shadow DOM</button>
+              <button onclick="clearLog()" class="secondary">Clear Log</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>📊 Widget State</h3>
+            <div class="debug-info">
+              <div class="debug-item">
+                <span class="debug-label">Initialized:</span>
+                <span id="debug-initialized" class="debug-value">false</span>
+              </div>
+              <div class="debug-item">
+                <span class="debug-label">Is Open:</span>
+                <span id="debug-isopen" class="debug-value">false</span>
+              </div>
+              <div class="debug-item">
+                <span class="debug-label">Position:</span>
+                <span id="debug-position" class="debug-value">bottom-right</span>
+              </div>
+              <div class="debug-item">
+                <span class="debug-label">Theme:</span>
+                <span id="debug-theme" class="debug-value">light</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Event Log -->
+        <div class="event-panel">
+          <div class="section">
+            <h3>📝 Event Log</h3>
+            <div id="eventLog" class="event-log">Waiting for widget initialization...</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script type="module">
-      // Initialize event logging
+      // Initialize elements
       const eventLog = document.getElementById("eventLog");
-      function logEvent(message) {
+      const statusEl = document.getElementById("status");
+      const debugInitialized = document.getElementById("debug-initialized");
+      const debugIsOpen = document.getElementById("debug-isopen");
+      const debugPosition = document.getElementById("debug-position");
+      const debugTheme = document.getElementById("debug-theme");
+
+      let currentTheme = "light";
+      let currentPosition = "bottom-right";
+      let widgetInitialized = false;
+
+      // Logging function
+      function logEvent(message, type = 'info') {
         const timestamp = new Date().toLocaleTimeString();
-        eventLog.textContent =
-          `[${timestamp}] ${message}\n` + eventLog.textContent;
+        const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '📌';
+        eventLog.textContent = `[${timestamp}] ${prefix} ${message}\n` + eventLog.textContent;
+        console.log(message);
       }
 
-      // Theme configuration functions
+      // Update status bar
+      function updateStatus(message, type = 'info') {
+        statusEl.textContent = message;
+        statusEl.className = `status-bar ${type}`;
+      }
+
+      // Update debug panel
+      function updateDebugPanel() {
+        debugInitialized.textContent = widgetInitialized ? 'true' : 'false';
+        debugIsOpen.textContent = window.RefRef?.isOpen ? 'true' : 'false';
+        debugPosition.textContent = currentPosition;
+        debugTheme.textContent = currentTheme;
+      }
+
+      // Widget control functions
+      window.openWidget = () => {
+        if (!window.RefRef) {
+          logEvent("Widget not available", 'error');
+          return;
+        }
+        window.RefRef.open();
+        logEvent("Opened widget");
+        updateDebugPanel();
+      };
+
+      window.closeWidget = () => {
+        if (!window.RefRef) {
+          logEvent("Widget not available", 'error');
+          return;
+        }
+        window.RefRef.close();
+        logEvent("Closed widget");
+        updateDebugPanel();
+      };
+
+      window.toggleWidget = () => {
+        if (!window.RefRef) {
+          logEvent("Widget not available", 'error');
+          return;
+        }
+        window.RefRef.toggle();
+        logEvent("Toggled widget");
+        updateDebugPanel();
+      };
+
+      // Theme functions
       window.applyLightTheme = () => {
+        if (!window.RefRef) return;
+
         window.RefRef.setConfig({
-          appearance: {
-            theme: "light",
-            primaryColor: "#4F46E5",
-            buttonText: "Refer a Friend (Light)",
-            widgetTitle: "Light Theme Widget",
-          },
+          modalBgColor: "#ffffff",
+          accentColor: "#4F46E5",
+          textColor: "#1f2937",
+          buttonBgColor: "#4F46E5",
+          buttonTextColor: "#ffffff",
+          triggerText: "Refer & Earn",
+          title: "Refer a Friend",
         });
+        currentTheme = "light";
+        logEvent("Applied light theme", 'success');
+        updateDebugPanel();
       };
 
       window.applyDarkTheme = () => {
+        if (!window.RefRef) return;
+
         window.RefRef.setConfig({
-          appearance: {
-            theme: "dark",
-            primaryColor: "#818CF8",
-            buttonText: "Refer a Friend (Dark)",
-            widgetTitle: "Dark Theme Widget",
-          },
+          modalBgColor: "#1f2937",
+          accentColor: "#818CF8",
+          textColor: "#ffffff",
+          buttonBgColor: "#818CF8",
+          buttonTextColor: "#1f2937",
+          triggerText: "Refer & Earn",
+          title: "Refer a Friend",
         });
+        currentTheme = "dark";
+        logEvent("Applied dark theme", 'success');
+        updateDebugPanel();
       };
 
-      let currentPosition = 0;
-      const positions = [
-        "bottom-right",
-        "bottom-left",
-        "top-right",
-        "top-left",
-      ];
+      window.applyCustomTheme = () => {
+        if (!window.RefRef) return;
+
+        window.RefRef.setConfig({
+          modalBgColor: "#fef3c7",
+          accentColor: "#f59e0b",
+          textColor: "#78350f",
+          buttonBgColor: "#f59e0b",
+          buttonTextColor: "#ffffff",
+          triggerText: "Share & Win",
+          title: "Share with Friends!",
+        });
+        currentTheme = "custom";
+        logEvent("Applied custom theme (warm colors)", 'success');
+        updateDebugPanel();
+      };
+
+      // Position functions
+      const positions = ["bottom-right", "bottom-left", "top-right", "top-left"];
+      let positionIndex = 0;
 
       window.changePosition = () => {
-        currentPosition = (currentPosition + 1) % positions.length;
-        window.RefRef.setConfig({
-          appearance: {
-            position: positions[currentPosition],
-          },
-        });
-        logEvent(`Widget position changed to: ${positions[currentPosition]}`);
+        if (!window.RefRef) return;
+
+        positionIndex = (positionIndex + 1) % positions.length;
+        currentPosition = positions[positionIndex];
+        window.RefRef.setConfig({ position: currentPosition });
+        logEvent(`Position changed to: ${currentPosition}`, 'success');
+        updateDebugPanel();
       };
 
-      // Set initial configuration
-      window.RefRef.setConfig({
-        appearance: {
-          theme: "light",
-          primaryColor: "#4F46E5",
-          position: "bottom-right",
-          buttonText: "Refer & Earn",
-          widgetTitle: "Refer a Friend",
-        },
-        campaign: {
-          id: "demo-campaign",
-          name: "Demo Campaign",
-          rewardType: "fixed",
-          rewardAmount: 25,
-          referralLink: "https://example.com/ref/[CODE]",
-        },
-        sharing: {
-          enabledChannels: ["email", "twitter", "facebook", "copy"],
-          customMessage:
-            "Check out this amazing product! Use my referral link to get started:",
-        },
-      });
+      window.setPosition = (position) => {
+        if (!window.RefRef) return;
+
+        currentPosition = position;
+        window.RefRef.setConfig({ position });
+        logEvent(`Position set to: ${position}`, 'success');
+        updateDebugPanel();
+      };
+
+      // Debug functions
+      window.checkStatus = () => {
+        logEvent("=== Widget Status ===");
+        if (!window.RefRef) {
+          logEvent("Widget not loaded", 'error');
+          return;
+        }
+
+        logEvent(`Initialized: ${widgetInitialized}`);
+        logEvent(`Is Open: ${window.RefRef.isOpen || false}`);
+        logEvent(`Position: ${currentPosition}`);
+        logEvent(`Theme: ${currentTheme}`);
+
+        // Check for methods
+        const methods = ['init', 'open', 'close', 'toggle', 'setConfig', 'getConfig'];
+        methods.forEach(method => {
+          if (typeof window.RefRef[method] === 'function') {
+            logEvent(`  ✓ RefRef.${method}() available`);
+          }
+        });
+      };
+
+      window.getConfig = () => {
+        if (!window.RefRef || !window.RefRef.getConfig) {
+          logEvent("Cannot get config - method not available", 'error');
+          return;
+        }
+
+        const config = window.RefRef.getConfig();
+        logEvent("=== Widget Configuration ===");
+        logEvent(JSON.stringify(config, null, 2));
+      };
+
+      window.checkShadowDOM = () => {
+        logEvent("=== Shadow DOM Check ===");
+        const elements = document.querySelectorAll('body > div');
+        let shadowFound = false;
+
+        elements.forEach((el, index) => {
+          if (el.shadowRoot) {
+            shadowFound = true;
+            logEvent(`Found shadow DOM at element index ${index}`);
+
+            const widgetRoot = el.shadowRoot.getElementById('widget-root');
+            if (widgetRoot) {
+              logEvent("  ✓ Widget root found in shadow DOM");
+            }
+
+            const portalContainer = el.shadowRoot.getElementById('widget-portal-container');
+            if (portalContainer) {
+              logEvent("  ✓ Portal container found in shadow DOM");
+            }
+          }
+        });
+
+        if (!shadowFound) {
+          logEvent("No shadow DOM elements found", 'error');
+        }
+      };
+
+      window.clearLog = () => {
+        eventLog.textContent = "Event log cleared\n";
+        logEvent("Log cleared", 'success');
+      };
+
+      // Initialize widget on load
+      setTimeout(async () => {
+        if (window.RefRef) {
+          try {
+            updateStatus("Initializing widget...", 'info');
+            logEvent("Starting widget initialization...");
+
+            // Initialize in demo mode (projectId starts with 'demo-')
+            await window.RefRef.init({
+              projectId: 'demo-project',
+              participantId: 'demo-user-123'
+            });
+
+            widgetInitialized = true;
+            updateStatus("Widget ready! Click the floating button to open.", 'success');
+            logEvent("Widget initialized successfully in demo mode!", 'success');
+            logEvent("Look for the floating button in the bottom-right corner");
+
+            // Check methods
+            const methods = ['open', 'close', 'toggle', 'setConfig', 'getConfig'];
+            methods.forEach(method => {
+              if (typeof window.RefRef[method] === 'function') {
+                logEvent(`  ✓ RefRef.${method}() ready`);
+              }
+            });
+
+            updateDebugPanel();
+
+          } catch (error) {
+            widgetInitialized = false;
+            updateStatus("Widget initialization failed!", 'error');
+            logEvent(`Initialization failed: ${error.message}`, 'error');
+            console.error('Widget initialization error:', error);
+          }
+        } else {
+          updateStatus("Widget script not loaded", 'error');
+          logEvent("RefRef object not found on window", 'error');
+        }
+      }, 500);
+
+      // Update debug panel periodically
+      setInterval(updateDebugPanel, 1000);
     </script>
   </body>
 </html>

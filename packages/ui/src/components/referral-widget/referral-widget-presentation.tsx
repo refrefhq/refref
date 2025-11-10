@@ -13,6 +13,7 @@ export interface ReferralWidgetPresentationProps {
   config: WidgetConfigType;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  container?: HTMLElement | null;
 }
 
 const iconMap = {
@@ -30,6 +31,7 @@ export function ReferralWidgetPresentation({
   config,
   isOpen,
   onOpenChange,
+  container,
 }: ReferralWidgetPresentationProps) {
   const IconComponent = iconMap[config.icon as keyof typeof iconMap] || Gift;
 
@@ -80,15 +82,15 @@ export function ReferralWidgetPresentation({
         onOpenChange={onOpenChange}
       />
 
-      {/* Dialog Wrapper */}
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      {/* Dialog Wrapper - modal={false} prevents body scroll lock and page shift */}
+      <Dialog open={isOpen} onOpenChange={onOpenChange} modal={false}>
         <DialogContent
-          className="sm:max-w-md p-0"
+          className="sm:max-w-md p-0 border"
+          container={container}
           style={{
             backgroundColor: config.modalBgColor,
             color: config.textColor,
             borderRadius: `${config.modalBorderRadius}px`,
-            borderColor: config.modalBgColor,
           }}
         >
           <DialogTitle className="sr-only">Referral Widget</DialogTitle>
