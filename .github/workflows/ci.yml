@@ -49,7 +49,5 @@ jobs:
       - name: Type Check
         run: pnpm type:check
 
-      - name: Build
-        run: pnpm build
-        env:
-          SKIP_ENV_VALIDATION: "true"
+      - name: Run Tests
+        run: pnpm test:run
