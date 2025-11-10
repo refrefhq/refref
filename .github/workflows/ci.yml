@@ -8,7 +8,7 @@ on:
 
 env:
   PNPM_VERSION: 10.4.1
-  SKIP_ENV_VALIDATION: true
+  SKIP_ENV_VALIDATION: "true"
 
 jobs:
   build:
@@ -46,3 +46,5 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          SKIP_ENV_VALIDATION: "true"
