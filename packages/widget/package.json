@@ -1,15 +1,15 @@
 {
-  "name": "@refref/referral-widget",
+  "name": "@refref/widget",
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "main": "./dist/referral-widget.umd.js",
-  "module": "./dist/referral-widget.es.js",
+  "main": "./dist/widget.umd.js",
+  "module": "./dist/widget.es.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/referral-widget.es.js",
-      "require": "./dist/referral-widget.umd.js",
+      "import": "./dist/widget.es.js",
+      "require": "./dist/widget.umd.js",
       "types": "./dist/types/index.d.ts"
     },
     "./dist/*": "./dist/*"

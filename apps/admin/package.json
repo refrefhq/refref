@@ -106,7 +106,7 @@
     "@refref/attribution-script": "workspace:*",
     "@refref/coredb": "workspace:*",
     "@refref/eslint-config": "workspace:*",
-    "@refref/referral-widget": "workspace:*",
+    "@refref/widget": "workspace:*",
     "@refref/typescript-config": "workspace:*",
     "@refref/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.0.14",

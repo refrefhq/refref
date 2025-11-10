@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
       // Inject CSS before our bundle code
       topExecutionPriority: true,
       // Add a unique ID to avoid conflicts
-      styleId: "referral-widget-styles",
+      styleId: "widget-styles",
     }) */ dts({
       insertTypesEntry: true,
       outDir: "dist/types",
@@ -34,8 +34,8 @@ export default defineConfig(({ mode }) => ({
     target: "esnext",
     lib: {
       entry: path.resolve(__dirname, "src/widget/index.tsx"),
-      name: "ReferralWidget",
-      fileName: (format) => `referral-widget.${format}.js`,
+      name: "Widget",
+      fileName: (format) => `widget.${format}.js`,
       formats: ["es", "umd"],
     },
     minify: mode === "production",
