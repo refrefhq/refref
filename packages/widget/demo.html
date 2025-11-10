@@ -474,10 +474,11 @@
             updateStatus("Initializing widget...", 'info');
             logEvent("Starting widget initialization...");
 
-            // Initialize in demo mode (projectId starts with 'demo-')
+            // Initialize in demo mode using the demo flag
             await window.RefRef.init({
               projectId: 'demo-project',
-              participantId: 'demo-user-123'
+              participantId: 'demo-user-123',
+              demo: true
             });
 
             widgetInitialized = true;

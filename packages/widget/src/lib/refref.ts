@@ -10,6 +10,7 @@ export interface RefRef {
     projectId: string;
     participantId: string;
     token?: string;
+    demo?: boolean;
   }) => Promise<void>;
   open: () => void;
   close: () => void;
@@ -50,14 +51,16 @@ class RefRefImpl implements RefRef {
     projectId,
     participantId,
     token,
+    demo = false,
   }: {
     projectId: string;
     participantId: string;
     token?: string;
+    demo?: boolean;
   }) {
     try {
-      // Demo mode: if projectId starts with 'demo-', skip API call
-      if (projectId.startsWith("demo-")) {
+      // Demo mode: if demo flag is true, skip API call
+      if (demo) {
         console.log("Demo mode: Initializing without backend");
 
         // Set demo configuration - matching the expected flat structure
