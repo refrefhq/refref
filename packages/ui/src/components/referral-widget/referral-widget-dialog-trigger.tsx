@@ -28,14 +28,14 @@ export function ReferralWidgetDialogTrigger({
       className={cn(
         className,
         "shadow-lg hover:shadow-xl transition-all duration-200",
-        "inline-flex items-center justify-center",
+        "inline-flex items-center justify-center"
       )}
-      onClick={() => onOpenChange(true)}
       style={{
         backgroundColor: config.buttonBgColor,
         color: config.buttonTextColor,
         borderRadius: `${config.borderRadius}px`,
       }}
+      onClick={() => onOpenChange(true)}
       aria-label="Open referral widget"
     >
       <IconComponent className="w-4 h-4 mr-2" />

@@ -4,12 +4,14 @@ import {
   WidgetInitResponseType,
 } from "@refref/types";
 import { widgetStore } from "@/lib/store";
+import { defaultConfig } from "@/lib/config";
 
 export interface RefRef {
   init: (params: {
     projectId: string;
     participantId: string;
     token?: string;
+    demo?: boolean;
   }) => Promise<void>;
   open: () => void;
   close: () => void;
@@ -50,12 +52,40 @@ class RefRefImpl implements RefRef {
     projectId,
     participantId,
     token,
+    demo = false,
   }: {
     projectId: string;
     participantId: string;
     token?: string;
+    demo?: boolean;
   }) {
     try {
+      // Demo mode: if demo flag is true, skip API call
+      if (demo) {
+        console.log("Demo mode: Initializing without backend");
+
+        // Use defaultConfig with demo-specific overrides
+        const demoConfig = {
+          ...defaultConfig,
+          // Add widgetElementSelector for data attribute support
+          widgetElementSelector: "[data-refref-trigger]",
+          // Override with demo-specific referral link
+          referralLink: "https://demo.refref.app/ref/DEMO123",
+        };
+
+        this.store.setState({
+          initialized: true,
+          token,
+          participantId,
+          projectId,
+          config: demoConfig as any,
+        });
+
+        console.log("Demo widget initialized with config: ", demoConfig);
+        return;
+      }
+
+      // Normal mode: make API call
       // Check for referral code (RFC) to enable auto-attribution
       // 1. Query string parameters (freshest intent, works even with cookies blocked, available in SSR)
       // 2. Cookie (persistent across sessions and page navigations, but may be blocked by privacy settings)

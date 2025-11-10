@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import { join } from "path";
-import prodBundle from "@refref/referral-widget/dist/referral-widget.es.js";
+import prodBundle from "@refref/widget/dist/widget.es.js";
 import { env } from "@/env";
 
 // Serve the widget bundle, hot-reloading in dev, cached in prod
@@ -29,9 +29,9 @@ export async function GET() {
         process.cwd(),
         "node_modules",
         "@refref",
-        "referral-widget",
+        "widget",
         "dist",
-        "referral-widget.es.js",
+        "widget.es.js",
       );
       const bundle = await fs.readFile(bundlePath, "utf-8");
       return new NextResponse(bundle, { headers });
