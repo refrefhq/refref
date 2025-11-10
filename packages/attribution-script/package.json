@@ -22,7 +22,7 @@
     "build": "vite build",
     "clean": "rm -rf dist src/**/*.js src/**/*.js.map",
     "lint": "eslint . --report-unused-disable-directives",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "preview": "vite preview",
     "type:check": "tsc --noEmit"
   },
