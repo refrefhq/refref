@@ -14,7 +14,6 @@ import type {
   EventMetadataV1Type,
   RewardMetadataV1Type,
 } from "@refref/types";
-import { createId } from "@paralleldrive/cuid2";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 type DbType = PostgresJsDatabase<typeof schema>;

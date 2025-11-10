@@ -3,7 +3,8 @@ import { z } from "zod";
 import { db, schema } from "@/server/db";
 const { participant, referralLink, projectSecrets, program, referral } = schema;
 import { and, asc, desc, eq } from "drizzle-orm";
-import { createId } from "@paralleldrive/cuid2";
+import { createId } from "@refref/id";
+import { createId as createUnprefixedId } from "@paralleldrive/cuid2";
 import { jwtVerify } from "jose";
 import { decode } from "@tsndr/cloudflare-worker-jwt";
 import {
@@ -148,7 +149,7 @@ export async function POST(request: Request) {
 
         if (referrerLink) {
           // Create referral record linking the new participant (referee) to the referrer
-          const referralId = createId();
+          const referralId = createId("referral");
           const [newReferral] = await db
             .insert(referral)
             .values({
@@ -214,9 +215,9 @@ export async function POST(request: Request) {
       const [newLink] = await db
         .insert(referralLink)
         .values({
-          id: createId(),
+          id: createId("referralLink"),
           participantId: participantRecord.id,
-          slug: createId().slice(0, 8), // Using first 8 chars of cuid as slug
+          slug: createUnprefixedId().slice(0, 8), // Using first 8 chars of cuid as slug
         })
         .onConflictDoNothing()
         .returning();
