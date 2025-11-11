@@ -64,7 +64,7 @@ export const session = pgTable("session", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  activeProjectId: text("active_project_id"),
+  activeOrganizationId: text("active_organization_id"),
   impersonatedBy: text("impersonated_by"),
 });
 
@@ -91,8 +91,30 @@ export const verification = pgTable("verification", {
   expiresAt: timestamp("expires_at").notNull(),
 });
 
+export const org = pgTable("org", {
+  ...baseFields("org"),
+  name: text("name").notNull(),
+  slug: text("slug").unique(),
+  logo: text("logo"),
+  metadata: text("metadata"),
+});
+
+export const orgUser = pgTable("org_user", {
+  ...baseFields("orgUser"),
+  orgId: text("org_id")
+    .notNull()
+    .references(() => org.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  role: text("role").notNull(),
+});
+
 export const project = pgTable("project", {
   ...baseFields("project"),
+  orgId: text("org_id").references(() => org.id, {
+    onDelete: "cascade",
+  }),
   name: text("name").notNull(),
   slug: text("slug").unique(),
   logo: text("logo"),
@@ -117,9 +139,12 @@ export const projectUser = pgTable("project_user", {
 
 export const invitation = pgTable("invitation", {
   ...baseFields("invitation"),
-  projectId: text("project_id")
-    .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id").references(() => org.id, {
+    onDelete: "cascade",
+  }),
+  projectId: text("project_id").references(() => project.id, {
+    onDelete: "cascade",
+  }),
   email: text("email").notNull(),
   role: text("role"),
   status: text("status").notNull(),
@@ -131,6 +156,9 @@ export const invitation = pgTable("invitation", {
 
 export const apikey = pgTable("apikey", {
   ...baseFields("apikey"),
+  organizationId: text("organization_id").references(() => org.id, {
+    onDelete: "cascade",
+  }),
   name: text("name"),
   start: text("start"),
   prefix: text("prefix"),

@@ -15,6 +15,13 @@
       "when": 1761715884588,
       "tag": "0001_seed_program_templates",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762000000000,
+      "tag": "0002_add_organization_hierarchy",
+      "breakpoints": true
     }
   ]
 }

@@ -91,24 +91,24 @@ export const auth = betterAuth({
     organization({
       schema: {
         organization: {
-          modelName: "project",
+          modelName: "org",
         },
         session: {
           modelName: "session",
           fields: {
-            activeOrganizationId: "activeProjectId",
+            activeOrganizationId: "activeOrganizationId",
           },
         },
         member: {
-          modelName: "projectUser",
+          modelName: "orgUser",
           fields: {
-            organizationId: "projectId",
+            organizationId: "orgId",
           },
         },
         invitation: {
           modelName: "invitation",
           fields: {
-            organizationId: "projectId",
+            organizationId: "organizationId",
           },
         },
       },
@@ -141,6 +141,38 @@ export const auth = betterAuth({
               name: user.name || undefined,
             },
           });
+
+          // Auto-create default organization for new users
+          try {
+            const { org: orgTable, orgUser } = schema;
+
+            // Create default organization
+            const [newOrg] = await db
+              .insert(orgTable)
+              .values({
+                name: `${user.name || user.email}'s Organization`,
+                slug: `org-${user.id.slice(0, 8)}`,
+              })
+              .returning();
+
+            // Add user as owner of the organization
+            await db.insert(orgUser).values({
+              orgId: newOrg!.id,
+              userId: user.id,
+              role: "owner",
+            });
+
+            logger.info("Created default organization for new user", {
+              userId: user.id,
+              organizationId: newOrg!.id,
+            });
+          } catch (error) {
+            logger.error("Failed to create default organization for user", {
+              userId: user.id,
+              error,
+            });
+            // Don't throw - allow user creation to succeed even if org creation fails
+          }
         },
       },
     },

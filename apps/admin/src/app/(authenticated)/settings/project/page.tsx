@@ -40,6 +40,7 @@ export default function ProjectSettings() {
     },
     onSubmit: async ({ value }) => {
       updateProjectMutation.mutate({
+        projectId: project!.id,
         name: value.name,
         url: value.url,
       });

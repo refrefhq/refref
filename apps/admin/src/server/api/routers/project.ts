@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, onboardingProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  onboardingProcedure,
+  protectedProcedure,
+} from "@/server/api/trpc";
 import { schema } from "@/server/db";
 const { project, projectSecrets, projectUser } = schema;
 import assert from "assert";
@@ -8,7 +12,7 @@ import { randomBytes } from "crypto";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { appTypes, paymentProviders } from "@/lib/validations/onboarding";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const slugGenerator = init({
   length: 7,
@@ -55,31 +59,26 @@ export const projectRouter = createTRPCRouter({
   create: onboardingProcedure
     .input(createProjectSchema)
     .mutation(async ({ ctx, input }) => {
-      // Create the project
+      // Get active organization from session
+      const activeOrgId = ctx.activeOrganizationId;
+      if (!activeOrgId) {
+        throw new Error(
+          "No active organization. Please create an organization first.",
+        );
+      }
+
+      // Create the project within the organization
       const [newProject] = await ctx.db
         .insert(project)
         .values({
           name: input.name,
           url: input.url,
           slug: slugGenerator(),
+          orgId: activeOrgId,
         })
         .returning();
 
       assert(newProject, "Project not created");
-
-      // add membership to the project
-      await ctx.db.insert(projectUser).values({
-        projectId: newProject.id,
-        userId: ctx.userId,
-        role: "owner",
-      });
-
-      await auth.api.setActiveOrganization({
-        body: {
-          organizationId: newProject.id,
-        },
-        headers: await headers(),
-      });
 
       // Generate and create project secrets
       const clientId = createId();
@@ -106,13 +105,22 @@ export const projectRouter = createTRPCRouter({
   createWithOnboarding: onboardingProcedure
     .input(createProjectWithOnboardingSchema)
     .mutation(async ({ ctx, input }) => {
-      // Create the project with onboarding data
+      // Get active organization from session
+      const activeOrgId = ctx.activeOrganizationId;
+      if (!activeOrgId) {
+        throw new Error(
+          "No active organization. Please create an organization first.",
+        );
+      }
+
+      // Create the project with onboarding data within the organization
       const [newProject] = await ctx.db
         .insert(project)
         .values({
           name: input.name,
           url: input.url,
           slug: slugGenerator(),
+          orgId: activeOrgId,
           appType: input.appType,
           paymentProvider:
             input.paymentProvider === "other"
@@ -124,20 +132,6 @@ export const projectRouter = createTRPCRouter({
         .returning();
 
       assert(newProject, "Project not created");
-
-      // add membership to the project
-      await ctx.db.insert(projectUser).values({
-        projectId: newProject.id,
-        userId: ctx.userId,
-        role: "owner",
-      });
-
-      await auth.api.setActiveOrganization({
-        body: {
-          organizationId: newProject.id,
-        },
-        headers: await headers(),
-      });
 
       // Generate and create project secrets
       const clientId = createId();
@@ -161,33 +155,63 @@ export const projectRouter = createTRPCRouter({
       };
     }),
 
-  // Get current project data
-  getCurrent: onboardingProcedure.query(async ({ ctx }) => {
-    if (!ctx.activeProjectId) {
-      throw new Error("No active project");
-    }
-
-    const currentProject = await ctx.db
+  // Get all projects in the active organization
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const projects = await ctx.db
       .select()
       .from(project)
-      .where(eq(project.id, ctx.activeProjectId))
-      .limit(1);
+      .where(eq(project.orgId, ctx.activeOrganizationId));
 
-    if (!currentProject.length) {
-      throw new Error("Project not found");
-    }
-
-    return currentProject[0];
+    return projects;
   }),
 
-  // Update project information
-  update: onboardingProcedure
-    .input(updateProjectSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.activeProjectId) {
-        throw new Error("No active project");
+  // Get the first project in the active organization
+  getCurrent: protectedProcedure.query(async ({ ctx }) => {
+    const [firstProject] = await ctx.db
+      .select()
+      .from(project)
+      .where(eq(project.orgId, ctx.activeOrganizationId))
+      .limit(1);
+
+    if (!firstProject) {
+      throw new Error("No projects found in your organization");
+    }
+
+    return firstProject;
+  }),
+
+  // Get a specific project by ID
+  getById: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const [projectData] = await ctx.db
+        .select()
+        .from(project)
+        .where(
+          and(
+            eq(project.id, input.projectId),
+            eq(project.orgId, ctx.activeOrganizationId),
+          ),
+        )
+        .limit(1);
+
+      if (!projectData) {
+        throw new Error(
+          "Project not found or does not belong to your organization",
+        );
       }
 
+      return projectData;
+    }),
+
+  // Update project information
+  update: protectedProcedure
+    .input(
+      updateProjectSchema.extend({
+        projectId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const [updatedProject] = await ctx.db
         .update(project)
         .set({
@@ -195,11 +219,16 @@ export const projectRouter = createTRPCRouter({
           url: input.url,
           updatedAt: new Date(),
         })
-        .where(eq(project.id, ctx.activeProjectId))
+        .where(
+          and(
+            eq(project.id, input.projectId),
+            eq(project.orgId, ctx.activeOrganizationId),
+          ),
+        )
         .returning();
 
       if (!updatedProject) {
-        throw new Error("Failed to update project");
+        throw new Error("Failed to update project or project not found");
       }
 
       return updatedProject;

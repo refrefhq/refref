@@ -33,16 +33,18 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await auth.api.getSession({
     headers,
   });
-  const projectUser = await auth.api.getActiveMember({
+  const organizationUser = await auth.api.getActiveMember({
     headers,
   });
   return {
     db,
     headers,
     session: session?.session,
-    activeProjectId: session?.session?.activeOrganizationId,
-    projectUserId: projectUser?.id,
-    projectUserRole: projectUser?.role as "owner" | "admin" | "member",
+    activeOrganizationId: session?.session?.activeOrganizationId,
+    organizationUserId: organizationUser?.id,
+    organizationUserRole: organizationUser?.role as "owner" | "admin" | "member",
+    //! TODO: @haritabh-z01 to be fixed post nc changes
+    activeProjectId: 'temp-ts',
     userId: session?.user?.id,
     logger: logger,
   };
@@ -136,23 +138,23 @@ export const onboardingProcedure = t.procedure.use(async ({ ctx, next }) => {
   });
 });
 
-//! these require the presence of an active project id
+//! these require the presence of an active organization id
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   console.error("ctx is ", ctx.session);
   // check both cause ts :)
   if (!ctx.session || !ctx.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  if (!ctx.activeProjectId || !ctx.projectUserId) {
+  if (!ctx.activeOrganizationId || !ctx.organizationUserId) {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
 
   return next({
     ctx: {
       session: ctx.session,
-      activeProjectId: ctx.activeProjectId,
-      projectUserId: ctx.projectUserId,
-      projectUserRole: ctx.projectUserRole,
+      activeOrganizationId: ctx.activeOrganizationId,
+      organizationUserId: ctx.organizationUserId,
+      organizationUserRole: ctx.organizationUserRole,
       userId: ctx.userId,
     },
   });
