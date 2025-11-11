@@ -1,0 +1,144 @@
+openapi: 3.1.0
+info:
+  title: RefRef API
+  description: API for RefRef referral program management platform
+  version: 0.1.0
+  contact:
+    name: RefRef Team
+    url: https://github.com/refrefhq/refref
+
+servers:
+  - url: http://localhost:3001
+    description: Local development server
+  - url: https://api.refref.com
+    description: Production server
+
+paths:
+  /:
+    get:
+      summary: Root health check
+      description: Returns the health status of the API and its dependencies
+      operationId: getRootHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: All services are healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                healthy:
+                  value:
+                    ok: true
+                    service: refref-api
+                    checks:
+                      api:
+                        ok: true
+                      database:
+                        ok: true
+        '503':
+          description: One or more services are unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                unhealthy:
+                  value:
+                    ok: false
+                    service: refref-api
+                    checks:
+                      api:
+                        ok: true
+                      database:
+                        ok: false
+                        error: connection refused
+
+  /health:
+    get:
+      summary: Health check
+      description: Returns the health status of the API and its dependencies
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: All services are healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                healthy:
+                  value:
+                    ok: true
+                    service: refref-api
+                    checks:
+                      api:
+                        ok: true
+                      database:
+                        ok: true
+        '503':
+          description: One or more services are unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                unhealthy:
+                  value:
+                    ok: false
+                    service: refref-api
+                    checks:
+                      api:
+                        ok: true
+                      database:
+                        ok: false
+                        error: connection refused
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - ok
+        - service
+        - checks
+      properties:
+        ok:
+          type: boolean
+          description: Overall health status - true if all checks pass
+        service:
+          type: string
+          description: Name of the service
+          example: refref-api
+        checks:
+          type: object
+          description: Individual health checks for each service component
+          required:
+            - api
+            - database
+          properties:
+            api:
+              $ref: '#/components/schemas/HealthCheck'
+            database:
+              $ref: '#/components/schemas/HealthCheck'
+
+    HealthCheck:
+      type: object
+      required:
+        - ok
+      properties:
+        ok:
+          type: boolean
+          description: Health status of this component
+        error:
+          type: string
+          description: Error message if the check failed
+          example: connection timeout
+
+tags:
+  - name: Health
+    description: Health check endpoints
