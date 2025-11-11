@@ -25,7 +25,7 @@ describe("Health Endpoints", () => {
   });
 
   describe("GET /health", () => {
-    it("should return ok: true and service name", async () => {
+    it("should return ok: true and service name with health checks", async () => {
       const response = await apiContext.get("/health");
 
       expect(response.ok()).toBe(true);
@@ -33,9 +33,13 @@ describe("Health Endpoints", () => {
 
       const body = await response.json();
 
-      expect(body).toEqual({
+      expect(body).toMatchObject({
         ok: true,
         service: "refref-api",
+        checks: {
+          api: { ok: true },
+          database: { ok: true },
+        },
       });
     });
 
@@ -57,7 +61,7 @@ describe("Health Endpoints", () => {
   });
 
   describe("GET /", () => {
-    it("should return ok: true and service name", async () => {
+    it("should return ok: true and service name with health checks", async () => {
       const response = await apiContext.get("/");
 
       expect(response.ok()).toBe(true);
@@ -65,9 +69,13 @@ describe("Health Endpoints", () => {
 
       const body = await response.json();
 
-      expect(body).toEqual({
+      expect(body).toMatchObject({
         ok: true,
         service: "refref-api",
+        checks: {
+          api: { ok: true },
+          database: { ok: true },
+        },
       });
     });
 

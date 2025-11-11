@@ -1,6 +1,8 @@
 import Fastify, { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
+import { coredbPlugin } from "@refref/utils";
 import { healthHandler } from "./handlers/health.js";
+import { openapiHandler } from "./handlers/openapi.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
@@ -25,9 +27,15 @@ export async function buildApp(): Promise<FastifyInstance> {
     origin: true,
   });
 
+  // Register coredb plugin
+  await app.register(coredbPlugin);
+
   // Register health check routes
   app.get("/", healthHandler);
   app.get("/health", healthHandler);
+
+  // Register OpenAPI spec route
+  app.get("/openapi", openapiHandler);
 
   return app;
 }

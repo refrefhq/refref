@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+import * as schema from "./schema.js";
 
 /**
  * Cache the database connections in development. This avoids creating a new connection on every HMR
@@ -44,4 +44,4 @@ export function createDb(databaseUrl: string) {
 export type DBType = ReturnType<typeof createDb>;
 
 // Export schema for direct imports
-export * as schema from "./schema";
+export * as schema from "./schema.js";

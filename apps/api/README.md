@@ -17,7 +17,7 @@ pnpm test:watch        # Run tests in watch mode
 pnpm test:ui           # Run tests with UI
 
 # Type checking
-pnpm typecheck
+pnpm type:check
 
 # Build for production
 pnpm build
