@@ -19,7 +19,7 @@ import { processEventForRewards } from "@/server/services/reward-engine";
 
 // Input schema for creating events
 const createEventSchema = z.object({
-  projectId: z.string(),
+  productId: z.string(),
   programId: z.string().optional(),
   eventType: z.string(), // e.g., "signup", "purchase"
   participantId: z.string().optional(),
@@ -82,7 +82,7 @@ export const eventsRouter = createTRPCRouter({
       const [newEvent] = await ctx.db
         .insert(eventTable)
         .values({
-          projectId: input.projectId,
+          productId: input.productId,
           programId: input.programId || null,
           participantId: input.participantId || null,
           referralId: input.referralId || null,
@@ -121,14 +121,14 @@ export const eventsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { programId, page, pageSize, status } = input;
 
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -136,7 +136,7 @@ export const eventsRouter = createTRPCRouter({
       if (!program) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Program not found or does not belong to your project",
+          message: "Program not found or does not belong to your product",
         });
       }
 
@@ -216,12 +216,12 @@ export const eventsRouter = createTRPCRouter({
         });
       }
 
-      // Verify event belongs to active project
-      const projectId = eventData.event.projectId;
-      if (projectId !== ctx.activeProjectId) {
+      // Verify event belongs to active product
+      const productId = eventData.event.productId;
+      if (productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Event does not belong to your project",
+          message: "Event does not belong to your product",
         });
       }
 
@@ -242,7 +242,7 @@ export const eventsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify event belongs to active project
+      // Verify event belongs to active product
       const [existingEvent] = await ctx.db
         .select()
         .from(eventTable)
@@ -256,10 +256,10 @@ export const eventsRouter = createTRPCRouter({
         });
       }
 
-      if (existingEvent.projectId !== ctx.activeProjectId) {
+      if (existingEvent.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Event does not belong to your project",
+          message: "Event does not belong to your product",
         });
       }
 
@@ -272,7 +272,7 @@ export const eventsRouter = createTRPCRouter({
       return updatedEvent;
     }),
 
-  // Get all events across all programs for the active project
+  // Get all events across all programs for the active product
   getAll: protectedProcedure
     .input(
       z.object({
@@ -353,8 +353,8 @@ export const eventsRouter = createTRPCRouter({
         });
       }
 
-      // Add filter to only show events from user's active project
-      whereConditions.push(eq(eventTable.projectId, ctx.activeProjectId));
+      // Add filter to only show events from user's active product
+      whereConditions.push(eq(eventTable.productId, ctx.activeProductId));
 
       const where =
         whereConditions.length > 0 ? and(...whereConditions) : undefined;
@@ -414,7 +414,7 @@ export const eventsRouter = createTRPCRouter({
       // Format the response
       const data = events.map((row) => ({
         id: row.event.id,
-        projectId: row.event.projectId,
+        productId: row.event.productId,
         programId: row.event.programId,
         programName: row.program?.name,
         participantId: row.event.participantId,
@@ -440,14 +440,14 @@ export const eventsRouter = createTRPCRouter({
   getStatsByProgram: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input: programId }) => {
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -455,7 +455,7 @@ export const eventsRouter = createTRPCRouter({
       if (!program) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Program not found or does not belong to your project",
+          message: "Program not found or does not belong to your product",
         });
       }
 

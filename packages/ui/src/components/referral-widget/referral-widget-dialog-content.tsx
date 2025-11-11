@@ -79,11 +79,7 @@ export function ReferralWidgetContent({
             Your Referral Link
           </label>
           <div className="flex gap-2">
-            <Input
-              value={config.referralLink}
-              readOnly
-              className="flex-1"
-            />
+            <Input value={config.referralLink} readOnly className="flex-1" />
             <Button
               onClick={copyToClipboard}
               size="sm"

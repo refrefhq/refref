@@ -23,7 +23,7 @@ export type WidgetInitResponseType = WidgetConfigType;
 export interface WidgetStore {
   initialized: boolean;
   token: string | null | undefined;
-  projectId: string | null | undefined;
+  productId: string | null | undefined;
   widgetElementSelector: string | null | undefined;
   isOpen: boolean;
   config: WidgetConfigType;
@@ -60,12 +60,12 @@ export const jwtPayloadSchema = z.object({
   sub: z.string(),
   email: z.string().email().optional(),
   name: z.string().optional(),
-  projectId: z.string(),
+  productId: z.string(),
 });
 export type JwtPayloadType = z.infer<typeof jwtPayloadSchema>;
 
 export const widgetInitRequestSchema = z.object({
-  projectId: z.string(),
+  productId: z.string(),
   referralCode: z.string().optional(),
 });
 export type WidgetInitRequestType = z.infer<typeof widgetInitRequestSchema>;

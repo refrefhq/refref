@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { api } from "@/trpc/server";
 import { db, schema } from "@/server/db";
-const { participant, referral, project } = schema;
+const { participant, referral, product } = schema;
 import { eq, and } from "drizzle-orm";
 import { eventMetadataV1Schema, type EventMetadataV1Type } from "@refref/types";
 
@@ -10,7 +10,7 @@ import { eventMetadataV1Schema, type EventMetadataV1Type } from "@refref/types";
 const BaseEvent = z.object({
   eventType: z.string(), // discriminant
   timestamp: z.string().datetime(), // ISO 8601
-  projectId: z.string(), // Project ID is required
+  productId: z.string(), // Product ID is required
   programId: z.string().optional(), // Program ID is optional
 });
 
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
           .from(participant)
           .where(
             and(
-              eq(participant.projectId, eventData.projectId),
+              eq(participant.productId, eventData.productId),
               eq(participant.externalId, eventData.payload.userId),
             ),
           )
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
           const [newParticipant] = await tx
             .insert(participant)
             .values({
-              projectId: eventData.projectId,
+              productId: eventData.productId,
               externalId: eventData.payload.userId,
               email: eventData.payload.email,
               name: eventData.payload.name,
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
           .from(participant)
           .where(
             and(
-              eq(participant.projectId, eventData.projectId),
+              eq(participant.productId, eventData.productId),
               eq(participant.externalId, eventData.payload.userId),
             ),
           )
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
 
     // Create the event using our tRPC router (outside transaction for now)
     const newEvent = await api.events.create({
-      projectId: eventData.projectId,
+      productId: eventData.productId,
       programId: eventData.programId,
       eventType: eventData.eventType,
       participantId: result.participantId,

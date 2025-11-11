@@ -1,41 +1,41 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db, schema } from "@/server/db";
-const { project, projectSecrets } = schema;
+const { product, productSecrets } = schema;
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
-export const projectSecretsRouter = createTRPCRouter({
+export const productSecretsRouter = createTRPCRouter({
   get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const [secrets] = await ctx.db
       .select()
-      .from(projectSecrets)
-      .where(eq(projectSecrets.projectId, input))
+      .from(productSecrets)
+      .where(eq(productSecrets.productId, input))
       .limit(1);
 
     if (!secrets) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "No secrets found for this project",
+        message: "No secrets found for this product",
       });
     }
 
-    // Verify project belongs to active organization
-    const [projectRecord] = await ctx.db
+    // Verify product belongs to active organization
+    const [productRecord] = await ctx.db
       .select()
-      .from(project)
+      .from(product)
       .where(
         and(
-          eq(project.id, secrets.projectId),
-          eq(project.id, ctx.activeProjectId),
+          eq(product.id, secrets.productId),
+          eq(product.id, ctx.activeProductId),
         ),
       )
       .limit(1);
 
-    if (!projectRecord) {
+    if (!productRecord) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Project does not belong to your organization",
+        message: "Product does not belong to your organization",
       });
     }
 

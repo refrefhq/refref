@@ -89,13 +89,13 @@ export const rewardsRouter = createTRPCRouter({
         });
       }
 
-      // Add filter to only show rewards from user's active project
-      // Join with program to check project ownership
-      const projectFilter = sql`${rewardTable.programId} IN (
+      // Add filter to only show rewards from user's active product
+      // Join with program to check product ownership
+      const productFilter = sql`${rewardTable.programId} IN (
         SELECT id FROM ${programTable} 
-        WHERE ${programTable.projectId} = ${ctx.activeProjectId}
+        WHERE ${programTable.productId} = ${ctx.activeProductId}
       )`;
-      whereConditions.push(projectFilter);
+      whereConditions.push(productFilter);
 
       const where =
         whereConditions.length > 0 ? and(...whereConditions) : undefined;
@@ -184,7 +184,7 @@ export const rewardsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify reward exists and belongs to user's project
+      // Verify reward exists and belongs to user's product
       const [existingReward] = await ctx.db
         .select({
           reward: rewardTable,
@@ -202,10 +202,10 @@ export const rewardsRouter = createTRPCRouter({
         });
       }
 
-      if (existingReward.program.projectId !== ctx.activeProjectId) {
+      if (existingReward.program.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Reward does not belong to your project",
+          message: "Reward does not belong to your product",
         });
       }
 
@@ -230,7 +230,7 @@ export const rewardsRouter = createTRPCRouter({
   markAsDisbursed: protectedProcedure
     .input(z.object({ rewardId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // Verify reward exists and belongs to user's project
+      // Verify reward exists and belongs to user's product
       const [existingReward] = await ctx.db
         .select({
           reward: rewardTable,
@@ -248,10 +248,10 @@ export const rewardsRouter = createTRPCRouter({
         });
       }
 
-      if (existingReward.program.projectId !== ctx.activeProjectId) {
+      if (existingReward.program.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Reward does not belong to your project",
+          message: "Reward does not belong to your product",
         });
       }
 
@@ -320,11 +320,11 @@ export const rewardsRouter = createTRPCRouter({
         });
       }
 
-      // Verify reward belongs to user's project
-      if (rewardData.program?.projectId !== ctx.activeProjectId) {
+      // Verify reward belongs to user's product
+      if (rewardData.program?.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Reward does not belong to your project",
+          message: "Reward does not belong to your product",
         });
       }
 
@@ -349,14 +349,14 @@ export const rewardsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { participantId, page, pageSize } = input;
 
-      // Verify participant belongs to user's project
+      // Verify participant belongs to user's product
       const [participantRecord] = await ctx.db
         .select()
         .from(participant)
         .where(
           and(
             eq(participant.id, participantId),
-            eq(participant.projectId, ctx.activeProjectId),
+            eq(participant.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -364,7 +364,7 @@ export const rewardsRouter = createTRPCRouter({
       if (!participantRecord) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Participant not found or does not belong to your project",
+          message: "Participant not found or does not belong to your product",
         });
       }
 
@@ -411,14 +411,14 @@ export const rewardsRouter = createTRPCRouter({
   getStatsByProgram: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input: programId }) => {
-      // Verify program belongs to user's project
+      // Verify program belongs to user's product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -426,7 +426,7 @@ export const rewardsRouter = createTRPCRouter({
       if (!program) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Program not found or does not belong to your project",
+          message: "Program not found or does not belong to your product",
         });
       }
 

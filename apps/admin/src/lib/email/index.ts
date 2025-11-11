@@ -154,7 +154,7 @@ class EmailService {
 
     return this.send({
       to: params.email,
-      subject: "You've been invited to join a project on RefRef",
+      subject: "You've been invited to join a product on RefRef",
       html,
     });
   }

@@ -7,31 +7,31 @@ import { count } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { TRPCError } from "@trpc/server";
 
-const { user, projectUser, invitation } = schema;
+const { user, productUser, invitation } = schema;
 
 // Helper function to get member counts by role
-async function getProjectMemberCounts(db: DBType, projectId: string) {
+async function getProductMemberCounts(db: DBType, productId: string) {
   const [totalResult, ownerResult, adminResult] = await Promise.all([
     db
       .select({ count: count() })
-      .from(projectUser)
-      .where(eq(projectUser.projectId, projectId)),
+      .from(productUser)
+      .where(eq(productUser.productId, productId)),
     db
       .select({ count: count() })
-      .from(projectUser)
+      .from(productUser)
       .where(
         and(
-          eq(projectUser.projectId, projectId),
-          eq(projectUser.role, "owner"),
+          eq(productUser.productId, productId),
+          eq(productUser.role, "owner"),
         ),
       ),
     db
       .select({ count: count() })
-      .from(projectUser)
+      .from(productUser)
       .where(
         and(
-          eq(projectUser.projectId, projectId),
-          eq(projectUser.role, "admin"),
+          eq(productUser.productId, productId),
+          eq(productUser.role, "admin"),
         ),
       ),
   ]);
@@ -46,7 +46,7 @@ async function getProjectMemberCounts(db: DBType, projectId: string) {
 // Helper to validate role changes
 async function validateRoleChange(
   db: DBType,
-  projectId: string,
+  productId: string,
   userId: string,
   newRole: string,
   currentUserId: string,
@@ -54,18 +54,18 @@ async function validateRoleChange(
   // Get current user's role (the one making the change)
   const [currentUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
       and(
-        eq(projectUser.projectId, projectId),
-        eq(projectUser.userId, currentUserId),
+        eq(productUser.productId, productId),
+        eq(productUser.userId, currentUserId),
       ),
     );
 
   if (!currentUserMembership) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "You are not a member of this project",
+      message: "You are not a member of this product",
     });
   }
 
@@ -80,19 +80,19 @@ async function validateRoleChange(
   // Get target user's current role
   const [targetUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
-      and(eq(projectUser.projectId, projectId), eq(projectUser.userId, userId)),
+      and(eq(productUser.productId, productId), eq(productUser.userId, userId)),
     );
 
   if (!targetUserMembership) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "User is not a member of this project",
+      message: "User is not a member of this product",
     });
   }
 
-  const counts = await getProjectMemberCounts(db, projectId);
+  const counts = await getProductMemberCounts(db, productId);
 
   // Prevent demoting the last owner
   if (
@@ -132,25 +132,25 @@ async function validateRoleChange(
 // Helper to validate member removal
 async function validateMemberRemoval(
   db: DBType,
-  projectId: string,
+  productId: string,
   userIdToRemove: string,
   currentUserId: string,
 ) {
   // Get current user's role
   const [currentUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
       and(
-        eq(projectUser.projectId, projectId),
-        eq(projectUser.userId, currentUserId),
+        eq(productUser.productId, productId),
+        eq(productUser.userId, currentUserId),
       ),
     );
 
   if (!currentUserMembership) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "You are not a member of this project",
+      message: "You are not a member of this product",
     });
   }
 
@@ -165,28 +165,28 @@ async function validateMemberRemoval(
   // Get target user's role
   const [targetUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
       and(
-        eq(projectUser.projectId, projectId),
-        eq(projectUser.userId, userIdToRemove),
+        eq(productUser.productId, productId),
+        eq(productUser.userId, userIdToRemove),
       ),
     );
 
   if (!targetUserMembership) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "User is not a member of this project",
+      message: "User is not a member of this product",
     });
   }
 
-  const counts = await getProjectMemberCounts(db, projectId);
+  const counts = await getProductMemberCounts(db, productId);
 
   // Prevent removing the last member
   if (counts.total === 1) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Cannot remove the last member of the project",
+      message: "Cannot remove the last member of the product",
     });
   }
 
@@ -212,17 +212,12 @@ async function validateMemberRemoval(
   }
 }
 
-export const projectMembersRouter = createTRPCRouter({
+export const productMembersRouter = createTRPCRouter({
   /**
-   * Get all members for the active project.
+   * Get all members for the active organization.
    */
   listMembers: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.activeProjectId) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "No active project",
-      });
-    }
+    const { orgUser } = schema;
 
     const rows = await ctx.db
       .select({
@@ -230,15 +225,44 @@ export const projectMembersRouter = createTRPCRouter({
         name: user.name,
         email: user.email,
         avatar: user.image,
-        role: projectUser.role,
-        joinedAt: projectUser.createdAt,
+        role: orgUser.role,
+        joinedAt: orgUser.createdAt,
       })
-      .from(projectUser)
-      .innerJoin(user, eq(projectUser.userId, user.id))
-      .where(eq(projectUser.projectId, ctx.activeProjectId));
+      .from(orgUser)
+      .innerJoin(user, eq(orgUser.userId, user.id))
+      .where(eq(orgUser.orgId, ctx.activeOrganizationId));
 
-    // Include member counts for UI to use
-    const counts = await getProjectMemberCounts(ctx.db, ctx.activeProjectId);
+    // Get member counts by role
+    const [totalResult, ownerResult, adminResult] = await Promise.all([
+      ctx.db
+        .select({ count: count() })
+        .from(orgUser)
+        .where(eq(orgUser.orgId, ctx.activeOrganizationId)),
+      ctx.db
+        .select({ count: count() })
+        .from(orgUser)
+        .where(
+          and(
+            eq(orgUser.orgId, ctx.activeOrganizationId),
+            eq(orgUser.role, "owner"),
+          ),
+        ),
+      ctx.db
+        .select({ count: count() })
+        .from(orgUser)
+        .where(
+          and(
+            eq(orgUser.orgId, ctx.activeOrganizationId),
+            eq(orgUser.role, "admin"),
+          ),
+        ),
+    ]);
+
+    const counts = {
+      total: totalResult[0]?.count ?? 0,
+      owners: ownerResult[0]?.count ?? 0,
+      admins: adminResult[0]?.count ?? 0,
+    };
 
     // Format joinedAt to readable string
     return {
@@ -257,25 +281,21 @@ export const projectMembersRouter = createTRPCRouter({
       })),
       counts, // Include counts for UI validations
       currentUserId: ctx.userId, // Explicitly provide current user ID
-      currentUserRole: ctx.projectUserRole, // Provide current user's role for UI permissions
+      currentUserRole: ctx.organizationUserRole, // Provide current user's role for UI permissions
     };
   }),
 
   /**
-   * Get pending/expired invitations for the active project.
+   * Get pending/expired invitations for the active organization.
    */
   listInvitations: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.activeProjectId) {
-      throw new Error("No active project");
-    }
-
     const data = await ctx.db
       .select()
       .from(invitation)
       .innerJoin(user, eq(user.id, invitation.inviterId))
       .where(
         and(
-          eq(invitation.projectId, ctx.activeProjectId),
+          eq(invitation.organizationId, ctx.activeOrganizationId),
           eq(invitation.status, "pending"),
         ),
       );
@@ -312,15 +332,8 @@ export const projectMembersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.activeProjectId || !ctx.userId) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "No active project or user",
-        });
-      }
-
       // Check if user has permission to invite
-      if (ctx.projectUserRole === "member") {
+      if (ctx.organizationUserRole === "member") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message:
@@ -329,7 +342,7 @@ export const projectMembersRouter = createTRPCRouter({
       }
 
       // Only owners can invite other owners
-      if (ctx.projectUserRole === "admin" && input.role === "owner") {
+      if (ctx.organizationUserRole === "admin" && input.role === "owner") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only owners can invite other owners",
@@ -339,7 +352,7 @@ export const projectMembersRouter = createTRPCRouter({
       // Create invitation entry
       const invitation = await auth.api.createInvitation({
         body: {
-          organizationId: ctx.activeProjectId,
+          organizationId: ctx.activeOrganizationId,
           email: input.email,
           role: input.role,
         },
@@ -360,26 +373,10 @@ export const projectMembersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.activeProjectId || !ctx.userId) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "No active project or user",
-        });
-      }
-
-      // Validate the role change
-      await validateRoleChange(
-        ctx.db,
-        ctx.activeProjectId,
-        input.userId,
-        input.role,
-        ctx.userId,
-      );
-
       // Use Better Auth's API to update the role
       await auth.api.updateMemberRole({
         body: {
-          organizationId: ctx.activeProjectId,
+          organizationId: ctx.activeOrganizationId,
           memberId: input.userId,
           role: input.role,
         },
@@ -390,30 +387,15 @@ export const projectMembersRouter = createTRPCRouter({
     }),
 
   /**
-   * Remove member from project with validation.
+   * Remove member from organization with validation.
    */
   remove: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.activeProjectId || !ctx.userId) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "No active project or user",
-        });
-      }
-
-      // Validate the member removal
-      await validateMemberRemoval(
-        ctx.db,
-        ctx.activeProjectId,
-        input.userId,
-        ctx.userId,
-      );
-
       // Use Better Auth's API to remove the member
       await auth.api.removeMember({
         body: {
-          organizationId: ctx.activeProjectId,
+          organizationId: ctx.activeOrganizationId,
           memberIdOrEmail: input.userId,
         },
         headers: ctx.headers,
@@ -429,7 +411,7 @@ export const projectMembersRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // Check if user has permission to cancel invitations
-      if (ctx.projectUserRole === "member") {
+      if (ctx.organizationUserRole === "member") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message:
@@ -457,7 +439,7 @@ export const projectMembersRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Check if user has permission to resend invitations
-      if (ctx.projectUserRole === "member") {
+      if (ctx.organizationUserRole === "member") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message:
@@ -466,7 +448,7 @@ export const projectMembersRouter = createTRPCRouter({
       }
 
       // Only owners can invite other owners
-      if (ctx.projectUserRole === "admin" && input.role === "owner") {
+      if (ctx.organizationUserRole === "admin" && input.role === "owner") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only owners can invite other owners",
@@ -477,7 +459,7 @@ export const projectMembersRouter = createTRPCRouter({
         body: {
           email: input.email,
           role: input.role,
-          organizationId: ctx.activeProjectId,
+          organizationId: ctx.activeOrganizationId,
           resend: true,
         },
         headers: ctx.headers,

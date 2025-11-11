@@ -12,7 +12,7 @@ export default function NewProgramPage() {
   const searchParams = useSearchParams();
   const templateId = searchParams?.get("templateId");
   const templateName = searchParams?.get("title");
-  const { data: activeProject } = authClient.useActiveOrganization();
+  const { data: activeProduct } = authClient.useActiveOrganization();
 
   // Create program mutation
   const createProgram = api.program.create.useMutation({
@@ -31,9 +31,9 @@ export default function NewProgramPage() {
     if (!templateId) router.replace("/programs");
   }, [templateId, router]);
 
-  // Create program as soon as templateId and activeProject are available
+  // Create program as soon as templateId and activeProduct are available
   useEffect(() => {
-    if (!templateId || !activeProject?.id) return;
+    if (!templateId || !activeProduct?.id) return;
     // Only trigger if not already loading or succeeded
     if (
       !createProgram.isPending &&
@@ -43,11 +43,11 @@ export default function NewProgramPage() {
       createProgram.mutate({
         name: templateName ?? "Untitled Program",
         description: "",
-        projectId: activeProject.id,
+        productId: activeProduct.id,
         templateId,
       });
     }
-  }, [templateId, activeProject, createProgram]);
+  }, [templateId, activeProduct, createProgram]);
 
   // Minimal loading spinner
   return (

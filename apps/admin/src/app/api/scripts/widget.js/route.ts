@@ -12,12 +12,12 @@ export async function GET() {
 
   // Check if referral program IDs are configured
   const isConfigured =
-    env.NEXT_PUBLIC_REFREF_PROJECT_ID && env.NEXT_PUBLIC_REFREF_PROGRAM_ID;
+    env.NEXT_PUBLIC_REFREF_PRODUCT_ID && env.NEXT_PUBLIC_REFREF_PROGRAM_ID;
 
   // Return no-op if not configured
   if (!isConfigured) {
     return new NextResponse(
-      "// RefRef widget not loaded: project/program IDs not configured",
+      "// RefRef widget not loaded: product/program IDs not configured",
       { headers },
     );
   }

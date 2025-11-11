@@ -32,7 +32,7 @@ export const baseFields = (entityType: string) => {
       .$defaultFn(() =>
         entityType && isValidEntityType(entityType)
           ? createId(entityType)
-          : createCuid()
+          : createCuid(),
       ),
     createdAt: timestamp("created_at")
       .notNull()
@@ -64,7 +64,7 @@ export const session = pgTable("session", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  activeProjectId: text("active_project_id"),
+  activeOrganizationId: text("active_organization_id"),
   impersonatedBy: text("impersonated_by"),
 });
 
@@ -91,8 +91,30 @@ export const verification = pgTable("verification", {
   expiresAt: timestamp("expires_at").notNull(),
 });
 
-export const project = pgTable("project", {
-  ...baseFields("project"),
+export const org = pgTable("org", {
+  ...baseFields("org"),
+  name: text("name").notNull(),
+  slug: text("slug").unique(),
+  logo: text("logo"),
+  metadata: text("metadata"),
+});
+
+export const orgUser = pgTable("org_user", {
+  ...baseFields("orgUser"),
+  orgId: text("org_id")
+    .notNull()
+    .references(() => org.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  role: text("role").notNull(),
+});
+
+export const product = pgTable("product", {
+  ...baseFields("product"),
+  orgId: text("org_id").references(() => org.id, {
+    onDelete: "cascade",
+  }),
   name: text("name").notNull(),
   slug: text("slug").unique(),
   logo: text("logo"),
@@ -104,11 +126,11 @@ export const project = pgTable("project", {
   onboardingStep: integer("onboarding_step").default(1),
 });
 
-export const projectUser = pgTable("project_user", {
-  ...baseFields("projectUser"),
-  projectId: text("project_id")
+export const productUser = pgTable("product_user", {
+  ...baseFields("productUser"),
+  productId: text("product_id")
     .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
+    .references(() => product.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -117,9 +139,12 @@ export const projectUser = pgTable("project_user", {
 
 export const invitation = pgTable("invitation", {
   ...baseFields("invitation"),
-  projectId: text("project_id")
-    .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id").references(() => org.id, {
+    onDelete: "cascade",
+  }),
+  productId: text("product_id").references(() => product.id, {
+    onDelete: "cascade",
+  }),
   email: text("email").notNull(),
   role: text("role"),
   status: text("status").notNull(),
@@ -131,6 +156,9 @@ export const invitation = pgTable("invitation", {
 
 export const apikey = pgTable("apikey", {
   ...baseFields("apikey"),
+  organizationId: text("organization_id").references(() => org.id, {
+    onDelete: "cascade",
+  }),
   name: text("name"),
   start: text("start"),
   prefix: text("prefix"),
@@ -163,9 +191,9 @@ export const programTemplate = pgTable("program_template", {
 
 export const program = pgTable("program", {
   ...baseFields("program"),
-  projectId: text("project_id")
+  productId: text("product_id")
     .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
+    .references(() => product.id, { onDelete: "cascade" }),
   programTemplateId: text("program_template_id")
     .notNull()
     .references(() => programTemplate.id, { onDelete: "restrict" }), // Restrict deletion if programs use it
@@ -190,14 +218,14 @@ export const participant = pgTable(
     ...baseFields("participant"),
     name: text("name"),
     email: text("email"),
-    projectId: text("project_id")
+    productId: text("product_id")
       .notNull()
-      .references(() => project.id, { onDelete: "cascade" }),
+      .references(() => product.id, { onDelete: "cascade" }),
     externalId: text("external_id"),
   },
   (participant) => ({
-    projectExternalUnique: unique().on(
-      participant.projectId,
+    productExternalUnique: unique().on(
+      participant.productId,
       participant.externalId,
     ),
   }),
@@ -259,12 +287,12 @@ export const reward = pgTable(
   }),
 );
 
-// Project secrets for JWT generation
-export const projectSecrets = pgTable("project_secrets", {
-  ...baseFields("projectSecrets"),
-  projectId: text("project_id")
+// Product secrets for JWT generation
+export const productSecrets = pgTable("product_secrets", {
+  ...baseFields("productSecrets"),
+  productId: text("product_id")
     .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
+    .references(() => product.id, { onDelete: "cascade" }),
   clientId: text("client_id").notNull(),
   clientSecret: text("client_secret").notNull(),
 });
@@ -301,9 +329,9 @@ export const event = pgTable(
   "event",
   {
     ...baseFields("event"),
-    projectId: text("project_id")
+    productId: text("product_id")
       .notNull()
-      .references(() => project.id, { onDelete: "cascade" }),
+      .references(() => product.id, { onDelete: "cascade" }),
     programId: text("program_id").references(() => program.id, {
       onDelete: "cascade",
     }),
@@ -317,7 +345,7 @@ export const event = pgTable(
   },
   (table) => ({
     // Indexes for performance
-    projectIdIdx: index("event_project_id_idx").on(table.projectId),
+    productIdIdx: index("event_product_id_idx").on(table.productId),
     programIdIdx: index("event_program_id_idx").on(table.programId),
     participantIdIdx: index("event_participant_id_idx").on(table.participantId),
     referralIdIdx: index("event_referral_id_idx").on(table.referralId),

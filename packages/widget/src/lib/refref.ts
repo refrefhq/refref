@@ -8,7 +8,7 @@ import { defaultConfig } from "@/lib/config";
 
 export interface RefRef {
   init: (params: {
-    projectId: string;
+    productId: string;
     participantId: string;
     token?: string;
     demo?: boolean;
@@ -49,12 +49,12 @@ class RefRefImpl implements RefRef {
   }
 
   async init({
-    projectId,
+    productId,
     participantId,
     token,
     demo = false,
   }: {
-    projectId: string;
+    productId: string;
     participantId: string;
     token?: string;
     demo?: boolean;
@@ -77,7 +77,7 @@ class RefRefImpl implements RefRef {
           initialized: true,
           token,
           participantId,
-          projectId,
+          productId,
           config: demoConfig as any,
         });
 
@@ -103,7 +103,7 @@ class RefRefImpl implements RefRef {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          projectId,
+          productId,
           referralCode,
         } satisfies WidgetInitRequestType),
       });
@@ -119,7 +119,7 @@ class RefRefImpl implements RefRef {
         initialized: true,
         token,
         participantId,
-        projectId,
+        productId,
         config: {
           ...data,
         },

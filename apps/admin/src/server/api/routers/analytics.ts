@@ -4,20 +4,20 @@ import { db, schema } from "@/server/db";
 import { eq, and, sql, desc, gte, lte, count } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
-const { program: programTable, participant, referral, project } = schema;
+const { program: programTable, participant, referral, product } = schema;
 
 export const analyticsRouter = createTRPCRouter({
   getStats: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input: programId }) => {
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -29,13 +29,13 @@ export const analyticsRouter = createTRPCRouter({
         });
       }
 
-      // Get participant count for this project
+      // Get participant count for this product
       const [participantStats] = await ctx.db
         .select({
           total: count(),
         })
         .from(participant)
-        .where(eq(participant.projectId, program.projectId));
+        .where(eq(participant.productId, program.productId));
 
       // Get referral count for this program
       const [referralStats] = await ctx.db
@@ -44,7 +44,7 @@ export const analyticsRouter = createTRPCRouter({
         })
         .from(referral)
         .innerJoin(participant, eq(participant.id, referral.referrerId))
-        .where(eq(participant.projectId, program.projectId));
+        .where(eq(participant.productId, program.productId));
 
       // Calculate trends (compare last 30 days vs previous 30 days)
       const thirtyDaysAgo = new Date();
@@ -59,7 +59,7 @@ export const analyticsRouter = createTRPCRouter({
         .innerJoin(participant, eq(participant.id, referral.referrerId))
         .where(
           and(
-            eq(participant.projectId, program.projectId),
+            eq(participant.productId, program.productId),
             gte(referral.createdAt, thirtyDaysAgo),
           ),
         );
@@ -71,7 +71,7 @@ export const analyticsRouter = createTRPCRouter({
         .innerJoin(participant, eq(participant.id, referral.referrerId))
         .where(
           and(
-            eq(participant.projectId, program.projectId),
+            eq(participant.productId, program.productId),
             gte(referral.createdAt, sixtyDaysAgo),
             lte(referral.createdAt, thirtyDaysAgo),
           ),
@@ -83,7 +83,7 @@ export const analyticsRouter = createTRPCRouter({
         .from(participant)
         .where(
           and(
-            eq(participant.projectId, program.projectId),
+            eq(participant.productId, program.productId),
             gte(participant.createdAt, thirtyDaysAgo),
           ),
         );
@@ -94,7 +94,7 @@ export const analyticsRouter = createTRPCRouter({
         .from(participant)
         .where(
           and(
-            eq(participant.projectId, program.projectId),
+            eq(participant.productId, program.productId),
             gte(participant.createdAt, sixtyDaysAgo),
             lte(participant.createdAt, thirtyDaysAgo),
           ),
@@ -137,14 +137,14 @@ export const analyticsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, input.programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -180,7 +180,7 @@ export const analyticsRouter = createTRPCRouter({
         .innerJoin(participant, eq(participant.id, referral.referrerId))
         .where(
           and(
-            eq(participant.projectId, program.projectId),
+            eq(participant.productId, program.productId),
             gte(referral.createdAt, startDate),
             lte(referral.createdAt, endDate),
           ),
@@ -215,14 +215,14 @@ export const analyticsRouter = createTRPCRouter({
   getTopParticipants: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input: programId }) => {
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -244,7 +244,7 @@ export const analyticsRouter = createTRPCRouter({
         })
         .from(participant)
         .leftJoin(referral, eq(referral.referrerId, participant.id))
-        .where(eq(participant.projectId, program.projectId))
+        .where(eq(participant.productId, program.productId))
         .groupBy(participant.id, participant.name, participant.email)
         .orderBy(desc(count(referral.id)))
         .limit(5);

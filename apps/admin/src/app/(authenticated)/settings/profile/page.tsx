@@ -23,7 +23,7 @@ import { toast } from "sonner";
 
 export default function ProfileSettings() {
   const { data: user, isLoading, refetch } = api.user.getProfile.useQuery();
-  const { data: canLeaveProject } = api.user.canLeaveProject.useQuery();
+  const { data: canLeaveProduct } = api.user.canLeaveProduct.useQuery();
   const updateProfileMutation = api.user.updateProfile.useMutation({
     onSuccess: () => {
       toast.success("Profile updated successfully");
@@ -33,14 +33,14 @@ export default function ProfileSettings() {
       toast.error(error.message || "Failed to update profile");
     },
   });
-  const leaveProjectMutation = api.user.leaveProject.useMutation({
+  const leaveProductMutation = api.user.leaveProduct.useMutation({
     onSuccess: () => {
-      toast.success("Successfully left the project");
+      toast.success("Successfully left the product");
       // Redirect to onboarding or dashboard
       window.location.href = "/";
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to leave project");
+      toast.error(error.message || "Failed to leave product");
     },
   });
 
@@ -192,7 +192,7 @@ export default function ProfileSettings() {
         {/* Workspace Access Section */}
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">
-            Project access
+            Product access
           </h2>
 
           <Card>
@@ -200,11 +200,11 @@ export default function ProfileSettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-medium text-foreground">
-                    Remove yourself from project
+                    Remove yourself from product
                   </h3>
-                  {canLeaveProject && !canLeaveProject.canLeave && (
+                  {canLeaveProduct && !canLeaveProduct.canLeave && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      {canLeaveProject.reason}
+                      {canLeaveProduct.reason}
                     </p>
                   )}
                 </div>
@@ -213,34 +213,34 @@ export default function ProfileSettings() {
                     <Button
                       variant="destructive"
                       disabled={
-                        !canLeaveProject?.canLeave ||
-                        leaveProjectMutation.isPending
+                        !canLeaveProduct?.canLeave ||
+                        leaveProductMutation.isPending
                       }
                     >
-                      {leaveProjectMutation.isPending
+                      {leaveProductMutation.isPending
                         ? "Leaving..."
-                        : "Leave Project"}
+                        : "Leave Product"}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Leave Project</AlertDialogTitle>
+                      <AlertDialogTitle>Leave Product</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to leave this project? You will
-                        lose access to all project data and settings. This
+                        Are you sure you want to leave this product? You will
+                        lose access to all product data and settings. This
                         action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={() => leaveProjectMutation.mutate()}
-                        disabled={leaveProjectMutation.isPending}
+                        onClick={() => leaveProductMutation.mutate()}
+                        disabled={leaveProductMutation.isPending}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
-                        {leaveProjectMutation.isPending
+                        {leaveProductMutation.isPending
                           ? "Leaving..."
-                          : "Leave Project"}
+                          : "Leave Product"}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

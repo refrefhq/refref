@@ -31,7 +31,7 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
-    NEXT_PUBLIC_REFREF_PROJECT_ID: z.string().optional(),
+    NEXT_PUBLIC_REFREF_PRODUCT_ID: z.string().optional(),
     NEXT_PUBLIC_REFREF_PROGRAM_ID: z.string().optional(),
     NEXT_PUBLIC_ENABLE_PASSWORD_AUTH: z
       .enum(["true", "false"])
@@ -75,7 +75,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     REFERRAL_PROGRAM_CLIENT_ID: process.env.REFERRAL_PROGRAM_CLIENT_ID,
     REFERRAL_PROGRAM_CLIENT_SECRET: process.env.REFERRAL_PROGRAM_CLIENT_SECRET,
-    NEXT_PUBLIC_REFREF_PROJECT_ID: process.env.NEXT_PUBLIC_REFREF_PROJECT_ID,
+    NEXT_PUBLIC_REFREF_PRODUCT_ID: process.env.NEXT_PUBLIC_REFREF_PRODUCT_ID,
     NEXT_PUBLIC_REFREF_PROGRAM_ID: process.env.NEXT_PUBLIC_REFREF_PROGRAM_ID,
     NEXT_PUBLIC_ENABLE_PASSWORD_AUTH:
       process.env.NEXT_PUBLIC_ENABLE_PASSWORD_AUTH,

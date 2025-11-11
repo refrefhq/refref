@@ -13,7 +13,7 @@ export const referralRouter = createTRPCRouter({
     if (
       !env.REFERRAL_PROGRAM_CLIENT_SECRET ||
       !env.REFERRAL_PROGRAM_CLIENT_ID ||
-      !env.NEXT_PUBLIC_REFREF_PROJECT_ID
+      !env.NEXT_PUBLIC_REFREF_PRODUCT_ID
     ) {
       throw new TRPCError({
         code: "PRECONDITION_FAILED",
@@ -29,7 +29,7 @@ export const referralRouter = createTRPCRouter({
       sub: ctx.userId,
       email: user!.email,
       name: user!.name,
-      projectId: env.NEXT_PUBLIC_REFREF_PROJECT_ID,
+      productId: env.NEXT_PUBLIC_REFREF_PRODUCT_ID,
     };
 
     const token = await new SignJWT(payload)

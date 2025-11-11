@@ -104,7 +104,7 @@ export const participantsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { id } = input;
 
-      // Get participant with project validation
+      // Get participant with product validation
       const [participantData] = await ctx.db
         .select()
         .from(participant)

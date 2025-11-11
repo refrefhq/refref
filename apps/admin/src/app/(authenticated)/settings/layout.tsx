@@ -33,7 +33,7 @@ const SidebarItems = [
   {
     group: "Team",
     items: [
-      { label: "Project", href: "/settings/project", icon: IconBuilding },
+      { label: "Product", href: "/settings/product", icon: IconBuilding },
       { label: "Members", href: "/settings/members", icon: IconUsers },
     ],
   },

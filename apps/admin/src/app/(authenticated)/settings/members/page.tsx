@@ -26,39 +26,39 @@ export default function MembersPage() {
   // TRPC hooks
   const utils = api.useUtils();
 
-  const membersQuery = api.projectMembers.listMembers.useQuery();
-  const invitationsQuery = api.projectMembers.listInvitations.useQuery();
+  const membersQuery = api.productMembers.listMembers.useQuery();
+  const invitationsQuery = api.productMembers.listInvitations.useQuery();
 
-  const inviteMutation = api.projectMembers.invite.useMutation({
+  const inviteMutation = api.productMembers.invite.useMutation({
     onSuccess: () => {
-      utils.projectMembers.listInvitations.invalidate();
+      utils.productMembers.listInvitations.invalidate();
     },
   });
 
-  const changeRoleMutation = api.projectMembers.changeRole.useMutation({
-    onSuccess: () => utils.projectMembers.listMembers.invalidate(),
+  const changeRoleMutation = api.productMembers.changeRole.useMutation({
+    onSuccess: () => utils.productMembers.listMembers.invalidate(),
   });
 
-  const removeMutation = api.projectMembers.remove.useMutation({
+  const removeMutation = api.productMembers.remove.useMutation({
     onSuccess: () => {
-      utils.projectMembers.listMembers.invalidate();
+      utils.productMembers.listMembers.invalidate();
       setRemoveDialogOpen(false);
       setUserToRemove(null);
     },
   });
 
   const cancelInvitationMutation =
-    api.projectMembers.cancelInvitation.useMutation({
+    api.productMembers.cancelInvitation.useMutation({
       onSuccess: () => {
-        utils.projectMembers.listInvitations.invalidate();
+        utils.productMembers.listInvitations.invalidate();
         setCancelInvitationDialogOpen(false);
         setInvitationToCancel(null);
       },
     });
 
   const resendInvitationMutation =
-    api.projectMembers.resendInvitation.useMutation({
-      onSuccess: () => utils.projectMembers.listInvitations.invalidate(),
+    api.productMembers.resendInvitation.useMutation({
+      onSuccess: () => utils.productMembers.listInvitations.invalidate(),
     });
 
   // Get members data with proper structure
@@ -124,7 +124,7 @@ export default function MembersPage() {
       <div className="mb-8">
         <h1 className="text-xl font-bold">Members</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your project members and settings
+          Manage your product members and settings
         </p>
       </div>
 
@@ -135,7 +135,7 @@ export default function MembersPage() {
             Team Members ({users.length})
           </h2>
           <p className="text-sm text-muted-foreground">
-            Manage who has access to your project
+            Manage who has access to your product
           </p>
         </div>
         {currentUserRole && currentUserRole !== "member" && (

@@ -1,15 +1,15 @@
 import { postRouter } from "@/server/api/routers/post";
 import { programRouter } from "@/server/api/routers/program";
 import { programTemplateRouter } from "@/server/api/routers/program-template";
-import { projectRouter } from "@/server/api/routers/project";
-import { projectSecretsRouter } from "@/server/api/routers/project-secrets";
+import { productRouter } from "@/server/api/routers/product";
+import { productSecretsRouter } from "@/server/api/routers/product-secrets";
 import { referralRouter } from "@/server/api/routers/referral";
 import { participantsRouter } from "@/server/api/routers/participants";
 import { rewardsRouter } from "@/server/api/routers/rewards";
 import { eventsRouter } from "@/server/api/routers/events";
 import { rewardRulesRouter } from "@/server/api/routers/reward-rules";
 import { userRouter } from "@/server/api/routers/user";
-import { projectMembersRouter } from "@/server/api/routers/project-members";
+import { productMembersRouter } from "@/server/api/routers/product-members";
 import { searchRouter } from "@/server/api/routers/search";
 import { analyticsRouter } from "@/server/api/routers/analytics";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
@@ -23,15 +23,15 @@ export const appRouter = createTRPCRouter({
   post: postRouter,
   program: programRouter,
   programTemplate: programTemplateRouter,
-  project: projectRouter,
-  projectSecrets: projectSecretsRouter,
+  product: productRouter,
+  productSecrets: productSecretsRouter,
   referral: referralRouter,
   participants: participantsRouter,
   rewards: rewardsRouter,
   events: eventsRouter,
   rewardRules: rewardRulesRouter,
   user: userRouter,
-  projectMembers: projectMembersRouter,
+  productMembers: productMembersRouter,
   search: searchRouter,
   analytics: analyticsRouter,
 });

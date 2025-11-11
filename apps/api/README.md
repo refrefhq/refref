@@ -40,10 +40,12 @@ NODE_ENV=development
 The API uses Vitest and Playwright for integration testing. Tests start a real server instance and make HTTP requests to validate responses.
 
 Test structure:
+
 - `test/utils/testServer.ts` - Test server utilities for starting/stopping the server
 - `test/health.test.ts` - Health endpoint tests
 
 Each test suite:
+
 1. Starts a test server on a random port
 2. Creates a Playwright API request context
 3. Runs tests against real endpoints

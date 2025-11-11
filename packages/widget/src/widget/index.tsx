@@ -31,7 +31,9 @@ function onReady() {
     const updateDarkMode = () => {
       const htmlHasDark = document.documentElement.classList.contains("dark");
       const bodyHasDark = document.body.classList.contains("dark");
-      const systemPrefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+      const systemPrefersDark = window.matchMedia?.(
+        "(prefers-color-scheme: dark)",
+      ).matches;
 
       const shouldBeDark = htmlHasDark || bodyHasDark || systemPrefersDark;
       shadowRoot.classList.toggle("dark", shouldBeDark);
@@ -45,16 +47,18 @@ function onReady() {
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["class"]
+      attributeFilter: ["class"],
     });
 
     observer.observe(document.body, {
       attributes: true,
-      attributeFilter: ["class"]
+      attributeFilter: ["class"],
     });
 
     // Watch for system preference changes
-    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    );
     darkModeMediaQuery.addEventListener("change", updateDarkMode);
 
     const component = <WidgetContainer />;

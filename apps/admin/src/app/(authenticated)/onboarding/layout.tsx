@@ -10,8 +10,8 @@ export default async function OnboardingLayout({
   const organizations = await auth.api.listOrganizations({
     headers: await headers(),
   });
-  const hasProjects = organizations.length > 0;
-  if (hasProjects) {
+  const hasProducts = organizations.length > 0;
+  if (hasProducts) {
     redirect("/programs");
   }
 

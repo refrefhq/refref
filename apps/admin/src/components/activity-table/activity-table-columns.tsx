@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 export interface Activity {
   id: string;
-  projectId: string;
+  productId: string;
   programId: string | null;
   programName: string | null;
   participantId: string | null;

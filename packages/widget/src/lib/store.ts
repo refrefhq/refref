@@ -6,7 +6,7 @@ import { defaultConfig } from "./config";
 export const widgetStore = createStore<WidgetStore>((set) => ({
   initialized: false,
   token: undefined,
-  projectId: undefined,
+  productId: undefined,
   widgetElementSelector: null,
   isOpen: false,
   config: defaultConfig,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, schema } from "@/server/db";
-const { referralLink, participant, project } = schema;
+const { referralLink, participant, product } = schema;
 import { eq } from "drizzle-orm";
 
 /**
@@ -35,19 +35,19 @@ export async function GET(
       return new NextResponse("Participant not found", { status: 404 });
     }
 
-    // Look up the project to get the redirect URL
-    const projectRecord = await db.query.project.findFirst({
-      where: eq(project.id, participantRecord.projectId),
+    // Look up the product to get the redirect URL
+    const productRecord = await db.query.product.findFirst({
+      where: eq(product.id, participantRecord.productId),
     });
 
-    // Use project URL if available, otherwise fallback to environment variable
-    const redirectUrl = projectRecord?.url;
+    // Use product URL if available, otherwise fallback to environment variable
+    const redirectUrl = productRecord?.url;
 
     if (!redirectUrl) {
       console.error("No redirect URL configured", {
-        projectId: participantRecord.projectId,
+        productId: participantRecord.productId,
       });
-      return new NextResponse("Redirect URL not configured for this project", {
+      return new NextResponse("Redirect URL not configured for this product", {
         status: 500,
       });
     }
@@ -68,7 +68,7 @@ export async function GET(
     });
     searchParams.set("rfc", id);
 
-    // Redirect with 307 to the project URL with encoded params
+    // Redirect with 307 to the product URL with encoded params
     return NextResponse.redirect(
       `${redirectUrl}?${searchParams.toString()}`,
       307,

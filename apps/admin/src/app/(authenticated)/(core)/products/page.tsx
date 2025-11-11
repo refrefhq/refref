@@ -38,33 +38,33 @@ import {
   AlertDialogTitle,
 } from "@refref/ui/components/alert-dialog";
 
-export default function ProjectsPage() {
+export default function ProductsPage() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const utils = api.useUtils();
 
-  // const { data: projects, isLoading } = api.project.getAll.useQuery();
-  const projects: any[] = [];
+  // const { data: products, isLoading } = api.product.getAll.useQuery();
+  const products: any[] = [];
   const isLoading = false;
-  const createProject = api.project.create.useMutation({
+  const createProduct = api.product.create.useMutation({
     onSuccess: () => {
       setOpen(false);
       setName("");
-      // utils.project.getAll.invalidate();
+      // utils.product.getAll.invalidate();
     },
   });
 
-  // const deleteProject = api.project.delete.useMutation({
+  // const deleteProduct = api.product.delete.useMutation({
   //   onSuccess: () => {
   //     setDeleteDialogOpen(false);
-  //     // utils.project.getAll.invalidate();
+  //     // utils.product.getAll.invalidate();
   //   },
   // });
-  const deleteProject = {
+  const deleteProduct = {
     mutate: (data: any) => {
       console.log("Delete not implemented", data);
     },
@@ -73,15 +73,15 @@ export default function ProjectsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createProject.mutate({
+    createProduct.mutate({
       name,
       url: `https://example.com/${name.toLowerCase().replace(/\s+/g, "-")}`,
     });
   };
 
   const handleDelete = () => {
-    if (projectToDelete) {
-      // deleteProject.mutate({ id: projectToDelete });
+    if (productToDelete) {
+      // deleteProduct.mutate({ id: productToDelete });
       console.log("Delete not implemented");
     }
   };
@@ -90,7 +90,7 @@ export default function ProjectsPage() {
     return <div>Loading...</div>;
   }
 
-  const breadcrumbs = [{ label: "Projects", href: "/projects" }];
+  const breadcrumbs = [{ label: "Products", href: "/products" }];
 
   return (
     <>
@@ -101,15 +101,15 @@ export default function ProjectsPage() {
             <DialogTrigger asChild>
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
-                Create Project
+                Create Product
               </Button>
             </DialogTrigger>
             <DialogContent>
               <form onSubmit={handleSubmit}>
                 <DialogHeader>
-                  <DialogTitle>Create Project</DialogTitle>
+                  <DialogTitle>Create Product</DialogTitle>
                   <DialogDescription>
-                    Create a new project to organize your referral programs.
+                    Create a new product to organize your referral programs.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -119,13 +119,13 @@ export default function ProjectsPage() {
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter project name"
+                      placeholder="Enter product name"
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit" disabled={createProject.isPending}>
-                    {createProject.isPending ? "Creating..." : "Create Project"}
+                  <Button type="submit" disabled={createProduct.isPending}>
+                    {createProduct.isPending ? "Creating..." : "Create Product"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -136,10 +136,10 @@ export default function ProjectsPage() {
       <div className="flex-1 overflow-auto">
         <div className="p-4 lg:p-6 space-y-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {projects?.map((project) => (
-              <Card key={project.id} className="relative">
+            {products?.map((product) => (
+              <Card key={product.id} className="relative">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <h2 className="text-xl font-semibold">{project.name}</h2>
+                  <h2 className="text-xl font-semibold">{product.name}</h2>
                   <div className="flex items-center gap-1">
                     <Dialog>
                       <DialogTrigger asChild>
@@ -149,9 +149,9 @@ export default function ProjectsPage() {
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Project Settings</DialogTitle>
+                          <DialogTitle>Product Settings</DialogTitle>
                           <DialogDescription>
-                            View your project's client ID and secret for JWT
+                            View your product's client ID and secret for JWT
                             generation.
                           </DialogDescription>
                         </DialogHeader>
@@ -160,7 +160,7 @@ export default function ProjectsPage() {
                             <Label htmlFor="clientId">Client ID</Label>
                             <Input
                               id="clientId"
-                              value={project.clientId ?? ""}
+                              value={product.clientId ?? ""}
                               readOnly
                               className="font-mono"
                             />
@@ -169,7 +169,7 @@ export default function ProjectsPage() {
                             <Label htmlFor="clientSecret">Client Secret</Label>
                             <Input
                               id="clientSecret"
-                              value={project.clientSecret ?? ""}
+                              value={product.clientSecret ?? ""}
                               readOnly
                               className="font-mono"
                             />
@@ -187,12 +187,12 @@ export default function ProjectsPage() {
                         <DropdownMenuItem
                           className="text-destructive focus:text-destructive"
                           onClick={() => {
-                            setProjectToDelete(project.id);
+                            setProductToDelete(product.id);
                             setDeleteDialogOpen(true);
                           }}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Project
+                          Delete Product
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -212,9 +212,9 @@ export default function ProjectsPage() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Project</AlertDialogTitle>
+            <AlertDialogTitle>Delete Product</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this project? This action cannot
+              Are you sure you want to delete this product? This action cannot
               be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -223,9 +223,9 @@ export default function ProjectsPage() {
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deleteProject.isPending}
+              disabled={deleteProduct.isPending}
             >
-              {deleteProject.isPending ? "Deleting..." : "Delete"}
+              {deleteProduct.isPending ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
