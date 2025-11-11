@@ -12,9 +12,9 @@ const settingsPages = [
     href: `/settings/profile`,
   },
   {
-    id: "project-settings",
-    name: "Project",
-    href: `/settings/project`,
+    id: "product-settings",
+    name: "Product",
+    href: `/settings/product`,
   },
   {
     id: "appearance-settings",
@@ -37,7 +37,7 @@ export const searchRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { query } = input;
-      const projectId = ctx.activeProjectId;
+      const productId = ctx.activeProductId;
 
       // Return empty results if query is empty
       if (!query || query.trim().length === 0) {
@@ -63,7 +63,7 @@ export const searchRouter = createTRPCRouter({
           )
           .where(
             and(
-              eq(participant.projectId, projectId),
+              eq(participant.productId, productId),
               or(
                 ilike(participant.email, searchPattern),
                 ilike(participant.id, searchPattern),
@@ -83,7 +83,7 @@ export const searchRouter = createTRPCRouter({
           .from(program)
           .where(
             and(
-              eq(program.projectId, projectId),
+              eq(program.productId, productId),
               ilike(program.name, searchPattern),
             ),
           )

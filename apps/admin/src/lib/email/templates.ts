@@ -180,7 +180,7 @@ export const invitationTemplate = ({
           <div class="content">
             <p>Hi there,</p>
             <p>
-              <strong>${inviterDisplay}</strong> has invited you to join their project on RefRef as a
+              <strong>${inviterDisplay}</strong> has invited you to join their product on RefRef as a
               <span class="role-badge">${role}</span>.
             </p>
 

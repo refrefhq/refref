@@ -19,7 +19,7 @@ interface Command {
  *
  *   // Original RefRef.init will be called with these arguments
  *   window.RefRef.push(['init', {
- *     projectId: "my-project",
+ *     productId: "my-product",
  *     participantId: "user123"
  *   }]);
  *

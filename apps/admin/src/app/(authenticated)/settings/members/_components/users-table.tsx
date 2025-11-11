@@ -126,7 +126,7 @@ export function UsersTable({
     if (!memberCounts) return "";
 
     if (memberCounts.total === 1) {
-      return "Cannot remove the last member of the project.";
+      return "Cannot remove the last member of the product.";
     }
 
     if (user.role === "owner" && memberCounts.owners === 1) {

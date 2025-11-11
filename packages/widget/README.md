@@ -67,7 +67,7 @@ window.RefRef.setConfig({
 
 ### Advanced: Pre-initialization Command Queue
 
-You can queue commands before the widget script loads. This is useful for setting config or initializing with user data as soon as possible. The `init` call is used to associate the widget with a specific project and participant, and optionally a token for authentication. This enables personalized referral links and campaign tracking.
+You can queue commands before the widget script loads. This is useful for setting config or initializing with user data as soon as possible. The `init` call is used to associate the widget with a specific product and participant, and optionally a token for authentication. This enables personalized referral links and campaign tracking.
 
 ```html
 <script>
@@ -81,7 +81,7 @@ You can queue commands before the widget script loads. This is useful for settin
   window.RefRef.push([
     "init",
     {
-      projectId: "my-project",
+      productId: "my-product",
       participantId: "user123",
     },
   ]);
@@ -111,16 +111,16 @@ const config = window.RefRef.getConfig();
 - `window.RefRef.setConfig(config)`: Update the widget configuration.
 - `window.RefRef.getConfig()`: Get the current widget configuration.
 - `window.RefRef.isOpen`: Boolean indicating if the widget is open.
-- `window.RefRef.init({ projectId, participantId, token? })`: (Optional) Programmatically initialize the widget with user/project info.
+- `window.RefRef.init({ productId, participantId, token? })`: (Optional) Programmatically initialize the widget with user/product info.
   Makes api call to load the config data.
 
 #### `init` Method Details
 
-The `init` method is used to associate the widget instance with a specific project and participant (user). This enables personalized referral links, campaign tracking, and secure widget initialization. It is especially useful if you want to dynamically set the user context after page load or in a single-page app.
+The `init` method is used to associate the widget instance with a specific product and participant (user). This enables personalized referral links, campaign tracking, and secure widget initialization. It is especially useful if you want to dynamically set the user context after page load or in a single-page app.
 
 **Parameters:**
 
-- `projectId` (string, required): The unique identifier for your referral campaign or project.
+- `productId` (string, required): The unique identifier for your referral campaign or product.
 - `participantId` (string, required): The unique identifier for the current user or participant.
 - `token` (string, optional): An authentication token (e.g., JWT) if your API requires secure access.
 
@@ -128,7 +128,7 @@ The `init` method is used to associate the widget instance with a specific proje
 
 ```javascript
 window.RefRef.init({
-  projectId: "my-project-id",
+  productId: "my-product-id",
   participantId: "user-123",
   token: "optional-jwt-token",
 });

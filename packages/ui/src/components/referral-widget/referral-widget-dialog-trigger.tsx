@@ -28,7 +28,7 @@ export function ReferralWidgetDialogTrigger({
       className={cn(
         className,
         "shadow-lg hover:shadow-xl transition-all duration-200",
-        "inline-flex items-center justify-center"
+        "inline-flex items-center justify-center",
       )}
       style={{
         backgroundColor: config.buttonBgColor,

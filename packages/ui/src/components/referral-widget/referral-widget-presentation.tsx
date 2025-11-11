@@ -84,10 +84,7 @@ export function ReferralWidgetPresentation({
 
       {/* Dialog Wrapper */}
       <Dialog open={isOpen} onOpenChange={onOpenChange} modal={false}>
-        <DialogContent
-          className="sm:max-w-md p-0"
-          container={container}
-        >
+        <DialogContent className="sm:max-w-md p-0" container={container}>
           <DialogTitle className="sr-only">Referral Widget</DialogTitle>
           <ReferralWidgetContent config={config} onClose={handleClose} />
         </DialogContent>

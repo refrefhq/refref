@@ -94,7 +94,7 @@ export function SectionCards() {
           <div className="line-clamp-1 flex gap-2 font-medium">
             Steady performance increase <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground">Meets growth productions</div>
         </CardFooter>
       </Card>
     </div>

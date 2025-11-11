@@ -21,14 +21,14 @@ export const rewardRulesRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, input.programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -36,7 +36,7 @@ export const rewardRulesRouter = createTRPCRouter({
       if (!program) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Program not found or does not belong to your project",
+          message: "Program not found or does not belong to your product",
         });
       }
 
@@ -60,14 +60,14 @@ export const rewardRulesRouter = createTRPCRouter({
   getByProgram: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input: programId }) => {
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -75,7 +75,7 @@ export const rewardRulesRouter = createTRPCRouter({
       if (!program) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Program not found or does not belong to your project",
+          message: "Program not found or does not belong to your product",
         });
       }
 
@@ -109,11 +109,11 @@ export const rewardRulesRouter = createTRPCRouter({
         });
       }
 
-      // Verify program belongs to active project
-      if (rule.program.projectId !== ctx.activeProjectId) {
+      // Verify program belongs to active product
+      if (rule.program.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Reward rule does not belong to your project",
+          message: "Reward rule does not belong to your product",
         });
       }
 
@@ -136,7 +136,7 @@ export const rewardRulesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...updateData } = input;
 
-      // Verify rule exists and belongs to active project
+      // Verify rule exists and belongs to active product
       const [existingRule] = await ctx.db
         .select({
           rule: rewardRule,
@@ -154,10 +154,10 @@ export const rewardRulesRouter = createTRPCRouter({
         });
       }
 
-      if (existingRule.program.projectId !== ctx.activeProjectId) {
+      if (existingRule.program.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Reward rule does not belong to your project",
+          message: "Reward rule does not belong to your product",
         });
       }
 
@@ -177,7 +177,7 @@ export const rewardRulesRouter = createTRPCRouter({
   toggleActive: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input: ruleId }) => {
-      // Verify rule exists and belongs to active project
+      // Verify rule exists and belongs to active product
       const [existingRule] = await ctx.db
         .select({
           rule: rewardRule,
@@ -195,10 +195,10 @@ export const rewardRulesRouter = createTRPCRouter({
         });
       }
 
-      if (existingRule.program.projectId !== ctx.activeProjectId) {
+      if (existingRule.program.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Reward rule does not belong to your project",
+          message: "Reward rule does not belong to your product",
         });
       }
 
@@ -218,7 +218,7 @@ export const rewardRulesRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input: ruleId }) => {
-      // Verify rule exists and belongs to active project
+      // Verify rule exists and belongs to active product
       const [existingRule] = await ctx.db
         .select({
           rule: rewardRule,
@@ -236,10 +236,10 @@ export const rewardRulesRouter = createTRPCRouter({
         });
       }
 
-      if (existingRule.program.projectId !== ctx.activeProjectId) {
+      if (existingRule.program.productId !== ctx.activeProductId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Reward rule does not belong to your project",
+          message: "Reward rule does not belong to your product",
         });
       }
 
@@ -262,14 +262,14 @@ export const rewardRulesRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify program belongs to active project
+      // Verify program belongs to active product
       const [program] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
             eq(programTable.id, input.programId),
-            eq(programTable.projectId, ctx.activeProjectId),
+            eq(programTable.productId, ctx.activeProductId),
           ),
         )
         .limit(1);
@@ -277,7 +277,7 @@ export const rewardRulesRouter = createTRPCRouter({
       if (!program) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Program not found or does not belong to your project",
+          message: "Program not found or does not belong to your product",
         });
       }
 

@@ -15,7 +15,7 @@ export function ReferralWidgetInit() {
 
   // Check if referral credentials are configured
   const isConfigured = Boolean(
-    env.NEXT_PUBLIC_REFREF_PROJECT_ID && env.NEXT_PUBLIC_REFREF_PROGRAM_ID,
+    env.NEXT_PUBLIC_REFREF_PRODUCT_ID && env.NEXT_PUBLIC_REFREF_PROGRAM_ID,
   );
 
   // Only query for token if configured
@@ -34,7 +34,7 @@ export function ReferralWidgetInit() {
     window.RefRef.push([
       "init",
       {
-        projectId: env.NEXT_PUBLIC_REFREF_PROJECT_ID,
+        productId: env.NEXT_PUBLIC_REFREF_PRODUCT_ID,
         programId: env.NEXT_PUBLIC_REFREF_PROGRAM_ID,
         participantId: "dfsdfs",
         token: data.token,

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db, schema } from "@/server/db";
 const {
-  project,
+  product,
   program: programTable,
   programTemplate,
   participant,
@@ -72,27 +72,27 @@ export const programRouter = createTRPCRouter({
           .min(1, "Name is required")
           .max(100, "Name is too long"),
         description: z.string().max(255, "Description is too long").optional(),
-        projectId: z.string().min(1, "Project is required"),
+        productId: z.string().min(1, "Product is required"),
         templateId: z.string().min(1, "Template is required"),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify project belongs to active organization
-      const [selectedProject] = await ctx.db
+      // Verify product belongs to active organization
+      const [selectedProduct] = await ctx.db
         .select()
-        .from(project)
+        .from(product)
         .where(
           and(
-            eq(project.id, input.projectId),
-            eq(project.id, ctx.activeProjectId),
+            eq(product.id, input.productId),
+            eq(product.id, ctx.activeProductId),
           ),
         )
         .limit(1);
 
-      if (!selectedProject) {
+      if (!selectedProduct) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Project not found or does not belong to your organization",
+          message: "Product not found or does not belong to your organization",
         });
       }
 
@@ -110,13 +110,13 @@ export const programRouter = createTRPCRouter({
         });
       }
 
-      // Check if a program with this template already exists for this project
+      // Check if a program with this template already exists for this product
       const [existingProgram] = await ctx.db
         .select()
         .from(programTable)
         .where(
           and(
-            eq(programTable.projectId, input.projectId),
+            eq(programTable.productId, input.productId),
             eq(programTable.programTemplateId, input.templateId),
           ),
         )
@@ -125,7 +125,7 @@ export const programRouter = createTRPCRouter({
       if (existingProgram) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: `A program with the "${selectedTemplate.templateName}" template already exists in this project. Each template can only be used once per project.`,
+          message: `A program with the "${selectedTemplate.templateName}" template already exists in this product. Each template can only be used once per product.`,
         });
       }
 
@@ -134,7 +134,7 @@ export const programRouter = createTRPCRouter({
         .insert(programTable)
         .values({
           name: input.name,
-          projectId: input.projectId,
+          productId: input.productId,
           programTemplateId: input.templateId,
           status: "pending_setup", // Initial status
           config: undefined,
@@ -173,7 +173,7 @@ export const programRouter = createTRPCRouter({
       const program = await ctx.db.query.program.findFirst({
         where: and(
           eq(programTable.id, input.id),
-          eq(programTable.projectId, ctx.activeProjectId),
+          eq(programTable.productId, ctx.activeProductId),
         ),
         with: {
           programTemplate: true,
@@ -280,14 +280,14 @@ export const programRouter = createTRPCRouter({
         let widgetConfig: WidgetConfigType;
 
         if (brandConfig && rewardConfig) {
-          // Get project details for product name
-          const [projectData] = await tx
+          // Get product details for product name
+          const [productData] = await tx
             .select()
-            .from(project)
-            .where(eq(project.id, ctx.activeProjectId))
+            .from(product)
+            .where(eq(product.id, ctx.activeProductId))
             .limit(1);
 
-          const productName = projectData?.name || "Our Platform";
+          const productName = productData?.name || "Our Platform";
 
           // Generate widget config from template settings
           widgetConfig = generateWidgetConfigFromTemplate(
@@ -347,19 +347,19 @@ export const programRouter = createTRPCRouter({
         throw new Error("Program not found");
       }
 
-      // Verify program belongs to active organization through project
-      const [projectRecord] = await ctx.db
+      // Verify program belongs to active organization through product
+      const [productRecord] = await ctx.db
         .select()
-        .from(project)
+        .from(product)
         .where(
           and(
-            eq(project.id, program.projectId),
-            eq(project.id, ctx.activeProjectId),
+            eq(product.id, program.productId),
+            eq(product.id, ctx.activeProductId),
           ),
         )
         .limit(1);
 
-      if (!projectRecord) {
+      if (!productRecord) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Program does not belong to your organization",
@@ -385,19 +385,19 @@ export const programRouter = createTRPCRouter({
         throw new Error("Program not found");
       }
 
-      // Verify program belongs to active organization through project
-      const [projectRecord] = await ctx.db
+      // Verify program belongs to active organization through product
+      const [productRecord] = await ctx.db
         .select()
-        .from(project)
+        .from(product)
         .where(
           and(
-            eq(project.id, program.projectId),
-            eq(project.id, ctx.activeProjectId),
+            eq(product.id, program.productId),
+            eq(product.id, ctx.activeProductId),
           ),
         )
         .limit(1);
 
-      if (!projectRecord) {
+      if (!productRecord) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Program does not belong to your organization",
@@ -425,19 +425,19 @@ export const programRouter = createTRPCRouter({
         throw new Error("Program not found");
       }
 
-      // Verify program belongs to active organization through project
-      const [projectRecord] = await ctx.db
+      // Verify program belongs to active organization through product
+      const [productRecord] = await ctx.db
         .select()
-        .from(project)
+        .from(product)
         .where(
           and(
-            eq(project.id, program.projectId),
-            eq(project.id, ctx.activeProjectId),
+            eq(product.id, program.productId),
+            eq(product.id, ctx.activeProductId),
           ),
         )
         .limit(1);
 
-      if (!projectRecord) {
+      if (!productRecord) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Program does not belong to your organization",
@@ -484,19 +484,19 @@ export const programRouter = createTRPCRouter({
         throw new Error("Program not found");
       }
 
-      // Verify program belongs to active organization through project
-      const [projectRecord] = await ctx.db
+      // Verify program belongs to active organization through product
+      const [productRecord] = await ctx.db
         .select()
-        .from(project)
+        .from(product)
         .where(
           and(
-            eq(project.id, program.projectId),
-            eq(project.id, ctx.activeProjectId),
+            eq(product.id, program.productId),
+            eq(product.id, ctx.activeProductId),
           ),
         )
         .limit(1);
 
-      if (!projectRecord) {
+      if (!productRecord) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Program does not belong to your organization",
@@ -542,29 +542,29 @@ export const programRouter = createTRPCRouter({
   */
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    // Get all programs through projects belonging to the active organization
+    // Get all programs through products belonging to the active organization
     const programs = await ctx.db
       .select()
       .from(programTable)
-      .innerJoin(project, eq(project.id, programTable.projectId))
-      .where(eq(project.id, ctx.activeProjectId))
+      .innerJoin(product, eq(product.id, programTable.productId))
+      .where(eq(product.id, ctx.activeProductId))
       .orderBy(asc(programTable.createdAt));
 
     // Get participant and referral counts for each program
     const programsWithCounts = await Promise.all(
       programs.map(async ({ program }) => {
-        // Get participant count for this project
+        // Get participant count for this product
         const [participantCount] = await ctx.db
           .select({ count: count() })
           .from(participant)
-          .where(eq(participant.projectId, program.projectId));
+          .where(eq(participant.productId, program.productId));
 
-        // Get referral count through participants in this project
+        // Get referral count through participants in this product
         const [referralCount] = await ctx.db
           .select({ count: count() })
           .from(referral)
           .innerJoin(participant, eq(participant.id, referral.referrerId))
-          .where(eq(participant.projectId, program.projectId));
+          .where(eq(participant.productId, program.productId));
 
         return {
           ...program,
@@ -598,19 +598,19 @@ export const programRouter = createTRPCRouter({
         });
       }
 
-      // Verify program belongs to active organization through project
-      const [projectRecord] = await ctx.db
+      // Verify program belongs to active organization through product
+      const [productRecord] = await ctx.db
         .select()
-        .from(project)
+        .from(product)
         .where(
           and(
-            eq(project.id, program.projectId),
-            eq(project.id, ctx.activeProjectId),
+            eq(product.id, program.productId),
+            eq(product.id, ctx.activeProductId),
           ),
         )
         .limit(1);
 
-      if (!projectRecord) {
+      if (!productRecord) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Program does not belong to your organization",

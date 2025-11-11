@@ -48,20 +48,20 @@ export default function OnboardingPage() {
   const userEmail = session?.user?.email;
   const [currentStep, setCurrentStep] = useState(1);
 
-  const createProject = api.project.createWithOnboarding.useMutation({
+  const createProduct = api.product.createWithOnboarding.useMutation({
     onSuccess: () => {
-      toast.success("Project created successfully!");
+      toast.success("Product created successfully!");
       router.push("/programs");
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to create project");
+      toast.error(error.message || "Failed to create product");
     },
   });
 
   const form = useOnboardingForm({
     defaultValues: {
-      projectName: "",
-      projectUrl: "",
+      productName: "",
+      productUrl: "",
       appType: "saas",
       paymentProvider: "stripe",
       otherPaymentProvider: "",
@@ -71,13 +71,13 @@ export default function OnboardingPage() {
     },
     onSubmit: async ({ value }) => {
       // Transform URL if needed
-      let url = value.projectUrl;
+      let url = value.productUrl;
       if (!url.match(/^https?:\/\//)) {
         url = `https://${url}`;
       }
 
-      createProject.mutate({
-        name: value.projectName,
+      createProduct.mutate({
+        name: value.productName,
         url,
         appType: value.appType,
         paymentProvider: value.paymentProvider,
@@ -136,7 +136,7 @@ export default function OnboardingPage() {
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="border-b py-4 px-6 flex justify-between items-center">
-        <h1 className="text-xl font-semibold">Setup your project</h1>
+        <h1 className="text-xl font-semibold">Setup your product</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">{userEmail}</span>
           <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -186,14 +186,14 @@ export default function OnboardingPage() {
                 <ProductInfoStep
                   form={form}
                   fields={{
-                    projectName: "projectName",
-                    projectUrl: "projectUrl",
+                    productName: "productName",
+                    productUrl: "productUrl",
                   }}
                   onNext={handleNext}
                   onPrevious={handlePrevious}
                   isFirstStep={true}
                   isLastStep={false}
-                  isSubmitting={createProject.isPending}
+                  isSubmitting={createProduct.isPending}
                   submitButtonRef={submitButtonRef}
                 />
               )}
@@ -205,7 +205,7 @@ export default function OnboardingPage() {
                   onPrevious={handlePrevious}
                   isFirstStep={false}
                   isLastStep={false}
-                  isSubmitting={createProject.isPending}
+                  isSubmitting={createProduct.isPending}
                   submitButtonRef={submitButtonRef}
                 />
               )}
@@ -220,7 +220,7 @@ export default function OnboardingPage() {
                   onPrevious={handlePrevious}
                   isFirstStep={false}
                   isLastStep={true}
-                  isSubmitting={createProject.isPending}
+                  isSubmitting={createProduct.isPending}
                   submitButtonRef={submitButtonRef}
                 />
               )}

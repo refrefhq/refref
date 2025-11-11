@@ -16,7 +16,7 @@ export default async function AuthLayout({
     headers: await headers(),
   });
 
-  // Redirect to home if user is already authenticated (will redirect to project)
+  // Redirect to home if user is already authenticated (will redirect to product)
   if (session) {
     redirect("/");
   }

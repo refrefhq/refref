@@ -8,8 +8,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export const ProductInfoStep = withFieldGroup({
   // These values are only used for type-checking, not at runtime
   defaultValues: {
-    projectName: "",
-    projectUrl: "",
+    productName: "",
+    productUrl: "",
   },
   props: {
     onNext: () => {},
@@ -62,9 +62,9 @@ export const ProductInfoStep = withFieldGroup({
 
         <div className="space-y-4">
           <group.AppField
-            name="projectName"
+            name="productName"
             validators={{
-              onChange: productInfoSchema.shape.projectName,
+              onChange: productInfoSchema.shape.productName,
             }}
           >
             {(field) => (
@@ -76,9 +76,9 @@ export const ProductInfoStep = withFieldGroup({
           </group.AppField>
 
           <group.AppField
-            name="projectUrl"
+            name="productUrl"
             validators={{
-              onChange: productInfoSchema.shape.projectUrl,
+              onChange: productInfoSchema.shape.productUrl,
             }}
           >
             {(field) => (

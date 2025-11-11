@@ -8,8 +8,8 @@ import type { appTypes, paymentProviders } from "@/lib/validations/onboarding";
 
 // Define form values type
 export type OnboardingFormValues = {
-  projectName: string;
-  projectUrl: string;
+  productName: string;
+  productUrl: string;
   appType: (typeof appTypes)[number] | undefined;
   paymentProvider: (typeof paymentProviders)[number] | undefined;
   otherPaymentProvider: string | undefined;

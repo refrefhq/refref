@@ -42,9 +42,12 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     session: session?.session,
     activeOrganizationId: session?.session?.activeOrganizationId,
     organizationUserId: organizationUser?.id,
-    organizationUserRole: organizationUser?.role as "owner" | "admin" | "member",
+    organizationUserRole: organizationUser?.role as
+      | "owner"
+      | "admin"
+      | "member",
     //! TODO: @haritabh-z01 to be fixed post nc changes
-    activeProjectId: 'temp-ts',
+    activeProductId: "temp-ts",
     userId: session?.user?.id,
     logger: logger,
   };

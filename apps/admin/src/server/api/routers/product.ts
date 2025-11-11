@@ -5,7 +5,7 @@ import {
   protectedProcedure,
 } from "@/server/api/trpc";
 import { schema } from "@/server/db";
-const { project, projectSecrets, projectUser } = schema;
+const { product, productSecrets, productUser } = schema;
 import assert from "assert";
 import { createId, init } from "@paralleldrive/cuid2";
 import { randomBytes } from "crypto";
@@ -18,14 +18,14 @@ const slugGenerator = init({
   length: 7,
 });
 
-// Input validation schema for creating a project
-const createProjectSchema = z.object({
+// Input validation schema for creating a product
+const createProductSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   url: z.string().url({ message: "Invalid URL" }),
 });
 
-// Input validation schema for creating a project with onboarding data
-export const createProjectWithOnboardingSchema = z
+// Input validation schema for creating a product with onboarding data
+export const createProductWithOnboardingSchema = z
   .object({
     name: z.string().min(1, "Name is required").max(100, "Name is too long"),
     url: z.string().min(1, "URL is required"),
@@ -49,15 +49,15 @@ export const createProjectWithOnboardingSchema = z
     },
   );
 
-// Input validation schema for updating project
-const updateProjectSchema = z.object({
+// Input validation schema for updating product
+const updateProductSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   url: z.string().url({ message: "Invalid URL" }),
 });
 
-export const projectRouter = createTRPCRouter({
+export const productRouter = createTRPCRouter({
   create: onboardingProcedure
-    .input(createProjectSchema)
+    .input(createProductSchema)
     .mutation(async ({ ctx, input }) => {
       // Get active organization from session
       const activeOrgId = ctx.activeOrganizationId;
@@ -67,9 +67,9 @@ export const projectRouter = createTRPCRouter({
         );
       }
 
-      // Create the project within the organization
-      const [newProject] = await ctx.db
-        .insert(project)
+      // Create the product within the organization
+      const [newProduct] = await ctx.db
+        .insert(product)
         .values({
           name: input.name,
           url: input.url,
@@ -78,32 +78,32 @@ export const projectRouter = createTRPCRouter({
         })
         .returning();
 
-      assert(newProject, "Project not created");
+      assert(newProduct, "Product not created");
 
-      // Generate and create project secrets
+      // Generate and create product secrets
       const clientId = createId();
       const clientSecret = randomBytes(32).toString("hex");
 
       const [secrets] = await ctx.db
-        .insert(projectSecrets)
+        .insert(productSecrets)
         .values({
-          projectId: newProject.id,
+          productId: newProduct.id,
           clientId,
           clientSecret,
         })
         .returning();
 
-      assert(secrets, "Project secrets not created");
+      assert(secrets, "Product secrets not created");
 
       return {
-        ...newProject,
+        ...newProduct,
         clientId: secrets.clientId,
         clientSecret: secrets.clientSecret, // Only returned once during creation
       };
     }),
 
   createWithOnboarding: onboardingProcedure
-    .input(createProjectWithOnboardingSchema)
+    .input(createProductWithOnboardingSchema)
     .mutation(async ({ ctx, input }) => {
       // Get active organization from session
       const activeOrgId = ctx.activeOrganizationId;
@@ -113,9 +113,9 @@ export const projectRouter = createTRPCRouter({
         );
       }
 
-      // Create the project with onboarding data within the organization
-      const [newProject] = await ctx.db
-        .insert(project)
+      // Create the product with onboarding data within the organization
+      const [newProduct] = await ctx.db
+        .insert(product)
         .values({
           name: input.name,
           url: input.url,
@@ -131,89 +131,89 @@ export const projectRouter = createTRPCRouter({
         })
         .returning();
 
-      assert(newProject, "Project not created");
+      assert(newProduct, "Product not created");
 
-      // Generate and create project secrets
+      // Generate and create product secrets
       const clientId = createId();
       const clientSecret = randomBytes(32).toString("hex");
 
       const [secrets] = await ctx.db
-        .insert(projectSecrets)
+        .insert(productSecrets)
         .values({
-          projectId: newProject.id,
+          productId: newProduct.id,
           clientId,
           clientSecret,
         })
         .returning();
 
-      assert(secrets, "Project secrets not created");
+      assert(secrets, "Product secrets not created");
 
       return {
-        ...newProject,
+        ...newProduct,
         clientId: secrets.clientId,
         clientSecret: secrets.clientSecret, // Only returned once during creation
       };
     }),
 
-  // Get all projects in the active organization
+  // Get all products in the active organization
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const projects = await ctx.db
+    const products = await ctx.db
       .select()
-      .from(project)
-      .where(eq(project.orgId, ctx.activeOrganizationId));
+      .from(product)
+      .where(eq(product.orgId, ctx.activeOrganizationId));
 
-    return projects;
+    return products;
   }),
 
-  // Get the first project in the active organization
+  // Get the first product in the active organization
   getCurrent: protectedProcedure.query(async ({ ctx }) => {
-    const [firstProject] = await ctx.db
+    const [firstProduct] = await ctx.db
       .select()
-      .from(project)
-      .where(eq(project.orgId, ctx.activeOrganizationId))
+      .from(product)
+      .where(eq(product.orgId, ctx.activeOrganizationId))
       .limit(1);
 
-    if (!firstProject) {
-      throw new Error("No projects found in your organization");
+    if (!firstProduct) {
+      throw new Error("No products found in your organization");
     }
 
-    return firstProject;
+    return firstProduct;
   }),
 
-  // Get a specific project by ID
+  // Get a specific product by ID
   getById: protectedProcedure
-    .input(z.object({ projectId: z.string() }))
+    .input(z.object({ productId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const [projectData] = await ctx.db
+      const [productData] = await ctx.db
         .select()
-        .from(project)
+        .from(product)
         .where(
           and(
-            eq(project.id, input.projectId),
-            eq(project.orgId, ctx.activeOrganizationId),
+            eq(product.id, input.productId),
+            eq(product.orgId, ctx.activeOrganizationId),
           ),
         )
         .limit(1);
 
-      if (!projectData) {
+      if (!productData) {
         throw new Error(
-          "Project not found or does not belong to your organization",
+          "Product not found or does not belong to your organization",
         );
       }
 
-      return projectData;
+      return productData;
     }),
 
-  // Update project information
+  // Update product information
   update: protectedProcedure
     .input(
-      updateProjectSchema.extend({
-        projectId: z.string(),
+      updateProductSchema.extend({
+        productId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [updatedProject] = await ctx.db
-        .update(project)
+      const [updatedProduct] = await ctx.db
+        .update(product)
         .set({
           name: input.name,
           url: input.url,
@@ -221,16 +221,16 @@ export const projectRouter = createTRPCRouter({
         })
         .where(
           and(
-            eq(project.id, input.projectId),
-            eq(project.orgId, ctx.activeOrganizationId),
+            eq(product.id, input.productId),
+            eq(product.orgId, ctx.activeOrganizationId),
           ),
         )
         .returning();
 
-      if (!updatedProject) {
-        throw new Error("Failed to update project or project not found");
+      if (!updatedProduct) {
+        throw new Error("Failed to update product or product not found");
       }
 
-      return updatedProject;
+      return updatedProduct;
     }),
 });

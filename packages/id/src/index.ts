@@ -1,27 +1,27 @@
-import { createId as createCuid } from '@paralleldrive/cuid2';
+import { createId as createCuid } from "@paralleldrive/cuid2";
 
 /**
  * Entity type prefixes for RefRef domain models
  */
 const ENTITY_PREFIXES = {
-  user: 'usr',
-  session: 'ses',
-  account: 'acc',
-  verification: 'ver',
-  project: 'prj',
-  projectUser: 'pju',
-  invitation: 'inv',
-  apikey: 'key',
-  programTemplate: 'pgt',
-  program: 'prg',
-  eventDefinition: 'evd',
-  participant: 'prt',
-  rewardRule: 'rwr',
-  reward: 'rwd',
-  projectSecrets: 'sec',
-  referralLink: 'rfl',
-  referral: 'ref',
-  event: 'evt',
+  user: "usr",
+  session: "ses",
+  account: "acc",
+  verification: "ver",
+  product: "prd",
+  productUser: "pu",
+  invitation: "inv",
+  apikey: "key",
+  programTemplate: "pgt",
+  program: "prg",
+  eventDefinition: "evd",
+  participant: "prt",
+  rewardRule: "rwr",
+  reward: "rwd",
+  productSecrets: "sec",
+  referralLink: "rfl",
+  referral: "ref",
+  event: "evt",
 } as const;
 
 /**
@@ -35,9 +35,9 @@ export type EntityType = keyof typeof ENTITY_PREFIXES;
 export class InvalidEntityError extends Error {
   constructor(entityType: string) {
     super(
-      `Invalid entity type: ${entityType}. Valid types are: ${Object.keys(ENTITY_PREFIXES).join(', ')}`
+      `Invalid entity type: ${entityType}. Valid types are: ${Object.keys(ENTITY_PREFIXES).join(", ")}`,
     );
-    this.name = 'InvalidEntityError';
+    this.name = "InvalidEntityError";
   }
 }
 
@@ -50,7 +50,7 @@ export class InvalidEntityError extends Error {
  *
  * @example
  * createId('user') // Returns: usr_cl9x8k2n000000d0e8y8z8b0w
- * createId('project') // Returns: prj_cm1a9b3c000000e0f9z0a1b2c
+ * createId('product') // Returns: prj_cm1a9b3c000000e0f9z0a1b2c
  */
 export function createId(entityType: EntityType): string {
   const prefix = ENTITY_PREFIXES[entityType];
@@ -72,7 +72,9 @@ export function createId(entityType: EntityType): string {
  * isValidEntityType('user') // Returns: true
  * isValidEntityType('invalid') // Returns: false
  */
-export function isValidEntityType(entityType: string): entityType is EntityType {
+export function isValidEntityType(
+  entityType: string,
+): entityType is EntityType {
   return entityType in ENTITY_PREFIXES;
 }
 
@@ -82,7 +84,7 @@ export function isValidEntityType(entityType: string): entityType is EntityType 
  * @returns Array of valid entity types
  *
  * @example
- * getValidEntityTypes() // Returns: ['user', 'project', 'program', ...]
+ * getValidEntityTypes() // Returns: ['user', 'product', 'program', ...]
  */
 export function getValidEntityTypes(): EntityType[] {
   return Object.keys(ENTITY_PREFIXES) as EntityType[];

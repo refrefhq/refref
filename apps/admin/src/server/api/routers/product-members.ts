@@ -7,31 +7,31 @@ import { count } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { TRPCError } from "@trpc/server";
 
-const { user, projectUser, invitation } = schema;
+const { user, productUser, invitation } = schema;
 
 // Helper function to get member counts by role
-async function getProjectMemberCounts(db: DBType, projectId: string) {
+async function getProductMemberCounts(db: DBType, productId: string) {
   const [totalResult, ownerResult, adminResult] = await Promise.all([
     db
       .select({ count: count() })
-      .from(projectUser)
-      .where(eq(projectUser.projectId, projectId)),
+      .from(productUser)
+      .where(eq(productUser.productId, productId)),
     db
       .select({ count: count() })
-      .from(projectUser)
+      .from(productUser)
       .where(
         and(
-          eq(projectUser.projectId, projectId),
-          eq(projectUser.role, "owner"),
+          eq(productUser.productId, productId),
+          eq(productUser.role, "owner"),
         ),
       ),
     db
       .select({ count: count() })
-      .from(projectUser)
+      .from(productUser)
       .where(
         and(
-          eq(projectUser.projectId, projectId),
-          eq(projectUser.role, "admin"),
+          eq(productUser.productId, productId),
+          eq(productUser.role, "admin"),
         ),
       ),
   ]);
@@ -46,7 +46,7 @@ async function getProjectMemberCounts(db: DBType, projectId: string) {
 // Helper to validate role changes
 async function validateRoleChange(
   db: DBType,
-  projectId: string,
+  productId: string,
   userId: string,
   newRole: string,
   currentUserId: string,
@@ -54,18 +54,18 @@ async function validateRoleChange(
   // Get current user's role (the one making the change)
   const [currentUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
       and(
-        eq(projectUser.projectId, projectId),
-        eq(projectUser.userId, currentUserId),
+        eq(productUser.productId, productId),
+        eq(productUser.userId, currentUserId),
       ),
     );
 
   if (!currentUserMembership) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "You are not a member of this project",
+      message: "You are not a member of this product",
     });
   }
 
@@ -80,19 +80,19 @@ async function validateRoleChange(
   // Get target user's current role
   const [targetUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
-      and(eq(projectUser.projectId, projectId), eq(projectUser.userId, userId)),
+      and(eq(productUser.productId, productId), eq(productUser.userId, userId)),
     );
 
   if (!targetUserMembership) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "User is not a member of this project",
+      message: "User is not a member of this product",
     });
   }
 
-  const counts = await getProjectMemberCounts(db, projectId);
+  const counts = await getProductMemberCounts(db, productId);
 
   // Prevent demoting the last owner
   if (
@@ -132,25 +132,25 @@ async function validateRoleChange(
 // Helper to validate member removal
 async function validateMemberRemoval(
   db: DBType,
-  projectId: string,
+  productId: string,
   userIdToRemove: string,
   currentUserId: string,
 ) {
   // Get current user's role
   const [currentUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
       and(
-        eq(projectUser.projectId, projectId),
-        eq(projectUser.userId, currentUserId),
+        eq(productUser.productId, productId),
+        eq(productUser.userId, currentUserId),
       ),
     );
 
   if (!currentUserMembership) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "You are not a member of this project",
+      message: "You are not a member of this product",
     });
   }
 
@@ -165,28 +165,28 @@ async function validateMemberRemoval(
   // Get target user's role
   const [targetUserMembership] = await db
     .select()
-    .from(projectUser)
+    .from(productUser)
     .where(
       and(
-        eq(projectUser.projectId, projectId),
-        eq(projectUser.userId, userIdToRemove),
+        eq(productUser.productId, productId),
+        eq(productUser.userId, userIdToRemove),
       ),
     );
 
   if (!targetUserMembership) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "User is not a member of this project",
+      message: "User is not a member of this product",
     });
   }
 
-  const counts = await getProjectMemberCounts(db, projectId);
+  const counts = await getProductMemberCounts(db, productId);
 
   // Prevent removing the last member
   if (counts.total === 1) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Cannot remove the last member of the project",
+      message: "Cannot remove the last member of the product",
     });
   }
 
@@ -212,7 +212,7 @@ async function validateMemberRemoval(
   }
 }
 
-export const projectMembersRouter = createTRPCRouter({
+export const productMembersRouter = createTRPCRouter({
   /**
    * Get all members for the active organization.
    */

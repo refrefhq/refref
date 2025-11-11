@@ -22,8 +22,8 @@ export const paymentProviders = [
 // ───────────────────────────────────────────────────────────────
 export const onboardingSchema = z
   .object({
-    projectName: z.string().min(1, "Product name is required").max(100),
-    projectUrl: z
+    productName: z.string().min(1, "Product name is required").max(100),
+    productUrl: z
       .string()
       .min(1, "Website URL is required")
       .transform((val) => {
@@ -64,8 +64,8 @@ export const onboardingSchema = z
 // ───────────────────────────────────────────────────────────────
 
 export const productInfoSchema = onboardingSchema.pick({
-  projectName: true,
-  projectUrl: true,
+  productName: true,
+  productUrl: true,
 });
 
 export const appTypeSchema = onboardingSchema.pick({

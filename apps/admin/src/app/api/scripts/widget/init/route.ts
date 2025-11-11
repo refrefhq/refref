@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db, schema } from "@/server/db";
-const { participant, referralLink, projectSecrets, program, referral } = schema;
+const { participant, referralLink, productSecrets, program, referral } = schema;
 import { and, asc, desc, eq } from "drizzle-orm";
 import { createId } from "@refref/id";
 import { createId as createUnprefixedId } from "@paralleldrive/cuid2";
@@ -19,35 +19,35 @@ import { api } from "@/trpc/server";
 // JWT verification function
 async function verifyJWT(
   token: string,
-  projectId: string,
+  productId: string,
 ): Promise<JwtPayloadType | null> {
   try {
-    // First decode the JWT without verification to get the project ID
+    // First decode the JWT without verification to get the product ID
     const { payload } = decode(token);
     const parsedPayload = jwtPayloadSchema.parse(payload);
 
-    // Verify the project ID matches
-    if (parsedPayload.projectId !== projectId) {
-      console.error("projectId mismatch", {
-        expected: projectId,
-        actual: parsedPayload.projectId,
+    // Verify the product ID matches
+    if (parsedPayload.productId !== productId) {
+      console.error("productId mismatch", {
+        expected: productId,
+        actual: parsedPayload.productId,
       });
       return null;
     }
 
-    // Get project secret from database
-    const secret = await db.query.projectSecrets.findFirst({
-      where: eq(projectSecrets.projectId, projectId),
+    // Get product secret from database
+    const secret = await db.query.productSecrets.findFirst({
+      where: eq(productSecrets.productId, productId),
     });
 
     if (!secret) {
-      console.error("project secret not found", {
-        projectId,
+      console.error("product secret not found", {
+        productId,
       });
-      throw new Error("Project secret not found");
+      throw new Error("Product secret not found");
     }
 
-    // Verify the JWT with the project's secret
+    // Verify the JWT with the product's secret
     const { payload: verifiedPayload } = await jwtVerify(
       token,
       new TextEncoder().encode(secret.clientSecret),
@@ -71,10 +71,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Parse and validate the request body first to get projectId
+    // Parse and validate the request body first to get productId
     const rawBody = await request.json();
     const body = widgetInitRequestSchema.parse(rawBody);
-    const { projectId, referralCode } = body;
+    const { productId, referralCode } = body;
 
     // Extract and verify the JWT
     const token = authHeader.split(" ")[1];
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const decoded = await verifyJWT(token, projectId);
+    const decoded = await verifyJWT(token, productId);
     if (!decoded) {
       return NextResponse.json(
         { error: "Invalid or expired token" },
@@ -93,10 +93,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // ensure there is an active program for this project
+    // ensure there is an active program for this product
     const activeProgram = await db.query.program.findFirst({
       where: and(
-        eq(program.projectId, projectId),
+        eq(program.productId, productId),
         eq(program.status, "active"),
       ),
       orderBy: [asc(program.createdAt)],
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
 
     if (!activeProgram) {
       return NextResponse.json(
-        { error: "No active program found for this project" },
+        { error: "No active program found for this product" },
         { status: 400 },
       );
     }
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
     // Check if participant already exists
     const existingParticipant = await db.query.participant.findFirst({
       where: and(
-        eq(participant.projectId, projectId),
+        eq(participant.productId, productId),
         eq(participant.externalId, decoded.sub),
       ),
     });
@@ -121,12 +121,12 @@ export async function POST(request: Request) {
       .insert(participant)
       .values({
         externalId: decoded.sub,
-        projectId,
+        productId,
         email: decoded.email,
         name: decoded.name,
       })
       .onConflictDoUpdate({
-        target: [participant.projectId, participant.externalId],
+        target: [participant.productId, participant.externalId],
         set: {
           email: decoded.email,
           name: decoded.name,
@@ -174,7 +174,7 @@ export async function POST(request: Request) {
             // Create signup event for reward processing
             try {
               await api.events.create({
-                projectId,
+                productId,
                 programId: activeProgram.id,
                 eventType: "signup",
                 participantId: participantRecord.id,
@@ -251,10 +251,10 @@ export async function POST(request: Request) {
     }
     if (
       error instanceof Error &&
-      error.message === "Project secret not found"
+      error.message === "Product secret not found"
     ) {
       return NextResponse.json(
-        { error: "Invalid project or project not configured" },
+        { error: "Invalid product or product not configured" },
         { status: 401 },
       );
     }
