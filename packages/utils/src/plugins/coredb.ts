@@ -11,7 +11,7 @@ declare module "fastify" {
   }
 }
 
-const databasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+const coredbPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   const databaseUrl = process.env.DATABASE_URL;
 
   if (!databaseUrl) {
@@ -37,6 +37,6 @@ const databasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   });
 };
 
-export default fp(databasePlugin, {
-  name: "database-plugin",
+export default fp(coredbPlugin, {
+  name: "coredb-plugin",
 });

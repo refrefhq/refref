@@ -1,6 +1,6 @@
 import Fastify, { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
-import databasePlugin from "./plugins/database.js";
+import { coredbPlugin } from "@refref/utils";
 import { healthHandler } from "./handlers/health.js";
 import { openapiHandler } from "./handlers/openapi.js";
 
@@ -27,8 +27,8 @@ export async function buildApp(): Promise<FastifyInstance> {
     origin: true,
   });
 
-  // Register database plugin
-  await app.register(databasePlugin);
+  // Register coredb plugin
+  await app.register(coredbPlugin);
 
   // Register health check routes
   app.get("/", healthHandler);
