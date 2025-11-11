@@ -333,12 +333,21 @@ importers:
       '@fastify/cors':
         specifier: ^10.0.1
         version: 10.1.0
+      '@refref/coredb':
+        specifier: workspace:*
+        version: link:../../packages/coredb
+      drizzle-orm:
+        specifier: ^0.33.0
+        version: 0.33.0(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/react@19.1.10)(better-sqlite3@11.10.0)(kysely@0.28.8)(postgres@3.4.7)(prisma@5.22.0)(react@19.0.0)
       fastify:
         specifier: ^5.2.0
         version: 5.6.2
       fastify-plugin:
         specifier: ^5.0.1
         version: 5.1.0
+      postgres:
+        specifier: ^3.4.5
+        version: 3.4.7
     devDependencies:
       '@types/node':
         specifier: ^22.10.2
