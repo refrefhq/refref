@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Copy package files
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
-COPY apps/admin/package.json ./apps/admin/
+COPY apps/webapp/package.json ./apps/webapp/
 COPY packages/attribution-script/package.json ./packages/attribution-script/
 COPY packages/coredb/package.json ./packages/coredb/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
@@ -18,20 +18,20 @@ COPY packages/types/package.json ./packages/types/
 COPY packages/typescript-config/package.json ./packages/typescript-config/
 COPY packages/ui/package.json ./packages/ui/
 
-# Install dependencies only for admin app and its dependencies
-RUN pnpm install --frozen-lockfile --filter @refref/admin... --ignore-scripts
+# Install dependencies only for webapp app and its dependencies
+RUN pnpm install --frozen-lockfile --filter @refref/webapp... --ignore-scripts
 
 # Copy source code (excluding www)
-COPY apps/admin ./apps/admin
+COPY apps/webapp ./apps/webapp
 COPY packages ./packages
 
 # Run postinstall scripts now that source files are available
-RUN pnpm install --frozen-lockfile --filter @refref/admin...
+RUN pnpm install --frozen-lockfile --filter @refref/webapp...
 
-# Build the admin application (with placeholder env vars for build time)
+# Build the webapp application (with placeholder env vars for build time)
 ENV DATABASE_URL="postgresql://placeholder"
 ENV BETTER_AUTH_SECRET="placeholder-secret-for-build"
-RUN pnpm build --filter @refref/admin...
+RUN pnpm build --filter @refref/webapp...
 
 # Production stage
 FROM node:24-alpine AS runner
@@ -43,7 +43,7 @@ WORKDIR /app
 
 # Copy necessary files from builder
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/admin ./apps/admin
+COPY --from=builder /app/apps/webapp ./apps/webapp
 COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
@@ -57,5 +57,5 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Start the application
-WORKDIR /app/apps/admin
+WORKDIR /app/apps/webapp
 CMD ["pnpm", "start"]
