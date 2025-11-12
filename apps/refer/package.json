@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",
+    "@fastify/rate-limit": "^10.3.0",
     "@refref/attribution-script": "workspace:*",
     "@refref/coredb": "workspace:*",
     "@refref/utils": "workspace:*",

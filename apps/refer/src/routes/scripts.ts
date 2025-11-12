@@ -34,6 +34,14 @@ export default async function scriptRoutes(fastify: FastifyInstance) {
    */
   fastify.get(
     "/widget.js",
+    {
+      config: {
+        rateLimit: {
+          max: 20,
+          timeWindow: "1 minute",
+        },
+      },
+    },
     async (_request: FastifyRequest, reply: FastifyReply) => {
       const headers = {
         "Content-Type": "application/javascript; charset=utf-8",
@@ -103,6 +111,14 @@ export default async function scriptRoutes(fastify: FastifyInstance) {
    */
   fastify.get(
     "/attribution.js",
+    {
+      config: {
+        rateLimit: {
+          max: 20,
+          timeWindow: "1 minute",
+        },
+      },
+    },
     async (_request: FastifyRequest, reply: FastifyReply) => {
       const headers = {
         "Content-Type": "application/javascript; charset=utf-8",

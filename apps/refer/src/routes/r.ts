@@ -14,6 +14,14 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
    */
   fastify.get<{ Params: ReferralParams }>(
     "/:id",
+    {
+      config: {
+        rateLimit: {
+          max: 100,
+          timeWindow: "1 minute",
+        },
+      },
+    },
     async (
       request: FastifyRequest<{ Params: ReferralParams }>,
       reply: FastifyReply,
