@@ -199,7 +199,7 @@ importers:
         version: 0.4.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nuqs:
         specifier: 2.4.3
-        version: 2.4.3(next@15.4.6(@babel/core@7.28.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        version: 2.4.3(next@15.4.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       plugins:
         specifier: link:better-auth/client/plugins
         version: link:better-auth/client/plugins
@@ -375,6 +375,58 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.19.0
+      '@vitest/ui':
+        specifier: ^2.1.8
+        version: 2.1.9(vitest@2.1.9)
+      pino-pretty:
+        specifier: ^13.0.0
+        version: 13.1.2
+      playwright:
+        specifier: ^1.49.1
+        version: 1.56.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.19.3
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.2
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.0)(@vitest/ui@2.1.9)(lightningcss@1.30.1)(terser@5.44.0)
+
+  apps/refer:
+    dependencies:
+      '@fastify/cors':
+        specifier: ^10.0.1
+        version: 10.1.0
+      '@refref/attribution-script':
+        specifier: workspace:*
+        version: link:../../packages/attribution-script
+      '@refref/coredb':
+        specifier: workspace:*
+        version: link:../../packages/coredb
+      '@refref/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      '@refref/widget':
+        specifier: workspace:*
+        version: link:../../packages/widget
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
+      drizzle-orm:
+        specifier: ^0.33.0
+        version: 0.33.0(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/react@19.1.10)(better-sqlite3@11.10.0)(kysely@0.28.8)(postgres@3.4.7)(prisma@5.22.0)(react@19.0.0)
+      fastify:
+        specifier: ^5.2.0
+        version: 5.6.2
+      postgres:
+        specifier: ^3.4.5
+        version: 3.4.7
     devDependencies:
       '@types/node':
         specifier: ^22.10.2
@@ -680,7 +732,7 @@ importers:
         version: 0.4.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nuqs:
         specifier: 2.4.3
-        version: 2.4.3(next@15.4.6(@babel/core@7.28.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        version: 2.4.3(next@15.4.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -15010,7 +15062,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.14
       tinyrainbow: 1.2.0
-      vitest: 2.1.9(@types/node@22.19.0)(@vitest/ui@2.1.9)(lightningcss@1.30.1)(terser@5.44.0)
+      vitest: 2.1.9(@types/node@24.3.0)(@vitest/ui@2.1.9)(lightningcss@1.30.1)(terser@5.44.0)
 
   '@vitest/utils@2.1.9':
     dependencies:
@@ -18154,7 +18206,7 @@ snapshots:
     dependencies:
       path-key: 3.1.1
 
-  nuqs@2.4.3(next@15.4.6(@babel/core@7.28.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
+  nuqs@2.4.3(next@15.4.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
     dependencies:
       mitt: 3.0.1
       react: 19.0.0
