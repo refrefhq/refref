@@ -31,7 +31,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           type="module"
-          src="/api/scripts/attribution.js"
+          src={`${process.env.NEXT_PUBLIC_REFER_URL || 'http://localhost:3002'}/scripts/attribution.js`}
           strategy="beforeInteractive"
         />
         <Script
@@ -46,7 +46,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           type="module"
-          src="/api/scripts/widget.js"
+          src={`${process.env.NEXT_PUBLIC_REFER_URL || 'http://localhost:3002'}/scripts/widget.js`}
           strategy="afterInteractive"
           defer
         />
