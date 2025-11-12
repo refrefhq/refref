@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
-import { createDb, type DBType } from "@refref/coredb";
+import { type DBType } from "@refref/coredb";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -11,14 +11,8 @@ declare module "fastify" {
   }
 }
 
-const coredbPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
-  const databaseUrl = process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL environment variable is required");
-  }
-
-  const db = createDb(databaseUrl);
+const coredbPlugin: FastifyPluginAsync<{ db: DBType }> = async (fastify: FastifyInstance, opts) => {
+  const { db } = opts;
 
   fastify.decorate("db", db);
 

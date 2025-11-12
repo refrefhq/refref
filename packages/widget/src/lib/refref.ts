@@ -12,6 +12,7 @@ export interface RefRef {
     participantId: string;
     token?: string;
     demo?: boolean;
+    apiUrl?: string;
   }) => Promise<void>;
   open: () => void;
   close: () => void;
@@ -53,11 +54,13 @@ class RefRefImpl implements RefRef {
     participantId,
     token,
     demo = false,
+    apiUrl,
   }: {
     productId: string;
     participantId: string;
     token?: string;
     demo?: boolean;
+    apiUrl?: string;
   }) {
     try {
       // Demo mode: if demo flag is true, skip API call
@@ -96,7 +99,12 @@ class RefRefImpl implements RefRef {
       // Query string takes priority as it represents the most recent referral click
       const referralCode = rfcFromQuery || rfcFromCookie || undefined;
 
-      const response = await fetch("/api/scripts/widget/init", {
+      // Use provided apiUrl or fall back to relative path for backward compatibility
+      const widgetInitUrl = apiUrl
+        ? `${apiUrl}/v1/widget/init`
+        : "/api/scripts/widget/init";
+
+      const response = await fetch(widgetInitUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
