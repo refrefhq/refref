@@ -3,7 +3,7 @@ import { request } from "playwright";
 import { startTestServer, stopTestServer } from "./utils/testServer.js";
 import type { APIRequestContext } from "playwright";
 
-describe("Events API", () => {
+describe("Track API", () => {
   let apiContext: APIRequestContext;
   let baseURL: string;
 
@@ -21,15 +21,14 @@ describe("Events API", () => {
     await stopTestServer();
   });
 
-  describe("POST /v1/events - Error Handling", () => {
+  describe("POST /v1/track/signup - Error Handling", () => {
     it("should return generic error message for internal server errors (SECURITY FIX)", async () => {
       // Send invalid request that will cause internal error
-      const response = await apiContext.post("/v1/events", {
+      const response = await apiContext.post("/v1/track/signup", {
         headers: {
           "x-api-key": "invalid-key-that-does-not-exist",
         },
         data: {
-          eventType: "signup",
           timestamp: new Date().toISOString(),
           productId: "test-product",
           payload: {
@@ -54,7 +53,7 @@ describe("Events API", () => {
     it("should return 401 when authentication fails before request validation", async () => {
       // Note: Auth happens in preHandler before body validation
       // So invalid JSON with bad API key returns 401, not 400
-      const response = await apiContext.post("/v1/events", {
+      const response = await apiContext.post("/v1/track/signup", {
         headers: {
           "x-api-key": "invalid-key",
           "content-type": "application/json",
@@ -68,14 +67,13 @@ describe("Events API", () => {
       expect(body.error).toBe("Unauthorized");
     });
 
-    it("should return 401 for invalid event schema with bad API key", async () => {
+    it("should return 401 for invalid schema with bad API key", async () => {
       // Auth happens first, so bad API key returns 401
-      const response = await apiContext.post("/v1/events", {
+      const response = await apiContext.post("/v1/track/signup", {
         headers: {
           "x-api-key": "invalid-key",
         },
         data: {
-          eventType: "invalid-type",
           // Missing required fields
         },
       });
@@ -84,11 +82,10 @@ describe("Events API", () => {
     });
   });
 
-  describe("POST /v1/events - Signup Events", () => {
+  describe("POST /v1/track/signup - Signup Events", () => {
     it("should require API key authentication", async () => {
-      const response = await apiContext.post("/v1/events", {
+      const response = await apiContext.post("/v1/track/signup", {
         data: {
-          eventType: "signup",
           timestamp: new Date().toISOString(),
           productId: "test-product",
           payload: {
@@ -107,7 +104,6 @@ describe("Events API", () => {
 
     it("should accept valid signup event structure", async () => {
       const signupEvent = {
-        eventType: "signup",
         timestamp: new Date().toISOString(),
         productId: "test-product-id",
         programId: "test-program-id",
@@ -120,16 +116,14 @@ describe("Events API", () => {
       };
 
       // Note: This will fail auth but validates schema
-      expect(signupEvent.eventType).toBe("signup");
       expect(signupEvent.payload.userId).toBeDefined();
       expect(signupEvent.payload.referralCode).toBeDefined();
     });
   });
 
-  describe("POST /v1/events - Purchase Events", () => {
+  describe("POST /v1/track/purchase - Purchase Events", () => {
     it("should accept valid purchase event structure", async () => {
       const purchaseEvent = {
-        eventType: "purchase",
         timestamp: new Date().toISOString(),
         productId: "test-product-id",
         programId: "test-program-id",
@@ -142,14 +136,12 @@ describe("Events API", () => {
         },
       };
 
-      expect(purchaseEvent.eventType).toBe("purchase");
       expect(purchaseEvent.payload.orderAmount).toBeGreaterThan(0);
       expect(purchaseEvent.payload.orderId).toBeDefined();
     });
 
     it("should require positive orderAmount", async () => {
       const invalidPurchaseEvent = {
-        eventType: "purchase",
         timestamp: new Date().toISOString(),
         productId: "test-product-id",
         payload: {

@@ -79,10 +79,9 @@ describe("Authentication Configuration", () => {
   });
 
   describe("API Key Protected Routes", () => {
-    it("should reject events endpoint without API key", async () => {
-      const response = await apiContext.post("/v1/events", {
+    it("should reject track signup endpoint without API key", async () => {
+      const response = await apiContext.post("/v1/track/signup", {
         data: {
-          eventType: "signup",
           timestamp: new Date().toISOString(),
           productId: "test-product",
           payload: {
@@ -109,12 +108,11 @@ describe("Authentication Configuration", () => {
     });
 
     it("should reject with invalid API key", async () => {
-      const response = await apiContext.post("/v1/events", {
+      const response = await apiContext.post("/v1/track/signup", {
         headers: {
           "X-Api-Key": "invalid-api-key-12345",
         },
         data: {
-          eventType: "signup",
           timestamp: new Date().toISOString(),
           productId: "test-product",
           payload: {
@@ -147,12 +145,11 @@ describe("Authentication Configuration", () => {
     });
 
     it("should not accept JWT for API-key-protected route", async () => {
-      const response = await apiContext.post("/v1/events", {
+      const response = await apiContext.post("/v1/track/signup", {
         headers: {
           "Authorization": "Bearer some-jwt-token",
         },
         data: {
-          eventType: "signup",
           timestamp: new Date().toISOString(),
           productId: "test",
           payload: {

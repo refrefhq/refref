@@ -7,7 +7,7 @@ import openapiRoutes from "./routes/openapi.js";
 import betterAuthPlugin from "./plugins/better-auth.js";
 import jwtAuthPlugin from "./plugins/jwt-auth.js";
 import widgetInitRoutes from "./routes/v1/widget/init.js";
-import eventsRoutes from "./routes/v1/events.js";
+import trackRoutes from "./routes/v1/track.js";
 import programsRoutes from "./routes/v1/programs.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -60,8 +60,8 @@ export async function buildApp(): Promise<FastifyInstance> {
     // Widget routes
     await fastify.register(widgetInitRoutes, { prefix: "/widget" });
 
-    // Events routes
-    await fastify.register(eventsRoutes, { prefix: "/events" });
+    // Track routes (signup, purchase)
+    await fastify.register(trackRoutes, { prefix: "/track" });
 
     // Programs routes
     await fastify.register(programsRoutes, { prefix: "/programs" });
