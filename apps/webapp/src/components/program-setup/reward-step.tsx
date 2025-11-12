@@ -32,15 +32,15 @@ import {
 const rewardStepSchema = z.object({
   referrerReward: z.object({
     enabled: z.boolean(),
-    valueType: z.enum(["fixed", "percentage"]),
+    valueType: z.enum(["fixed", "percentage"] as const),
     value: z.number().positive().optional(),
-    currency: z.enum(["USD", "EUR", "GBP"]).optional(),
+    currency: z.enum(["USD", "EUR", "GBP"] as const).optional(),
   }),
   refereeReward: z.object({
     enabled: z.boolean(),
-    valueType: z.enum(["fixed", "percentage"]),
+    valueType: z.enum(["fixed", "percentage"] as const),
     value: z.number().positive().optional(),
-    currency: z.enum(["USD", "EUR", "GBP"]).optional(),
+    currency: z.enum(["USD", "EUR", "GBP"] as const).optional(),
     minPurchaseAmount: z.number().positive().optional(),
     validityDays: z.number().int().positive().optional(),
   }),
@@ -57,6 +57,7 @@ export const RewardStep = forwardRef<
   RewardStepProps
 >(({ programId }, ref) => {
   const form = useForm<RewardStepData>({
+    // @ts-expect-error - Zod v4 type compatibility issue with @hookform/resolvers
     resolver: zodResolver(rewardStepSchema),
     defaultValues: {
       referrerReward: {
