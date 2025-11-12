@@ -297,15 +297,39 @@ export const productSecrets = pgTable("product_secrets", {
   clientSecret: text("client_secret").notNull(),
 });
 
-export const referralLink = pgTable("referral_link", {
-  ...baseFields("referralLink"),
-  // Core relationships
-  participantId: text("participant_id")
-    .notNull()
-    .references(() => participant.id, { onDelete: "cascade" }),
-  // Link details
-  slug: text("slug").notNull().unique(), // Custom path segment
-});
+export const referralLink = pgTable(
+  "referral_link",
+  {
+    ...baseFields("referralLink"),
+    // Core relationships
+    participantId: text("participant_id")
+      .notNull()
+      .references(() => participant.id, { onDelete: "cascade" }),
+    // Link details
+    slug: text("slug").notNull().unique(), // Custom path segment
+  },
+  (table) => ({
+    // Index for fast slug lookups (hot path for referral redirects)
+    slugIdx: index("referral_link_slug_idx").on(table.slug),
+  }),
+);
+
+// Relations for referralLink
+export const referralLinkRelations = relations(referralLink, ({ one }) => ({
+  participant: one(participant, {
+    fields: [referralLink.participantId],
+    references: [participant.id],
+  }),
+}));
+
+// Relations for participant
+export const participantRelations = relations(participant, ({ one, many }) => ({
+  product: one(product, {
+    fields: [participant.productId],
+    references: [product.id],
+  }),
+  referralLinks: many(referralLink),
+}));
 
 export const programRelations = relations(program, ({ one }) => ({
   programTemplate: one(programTemplate, {

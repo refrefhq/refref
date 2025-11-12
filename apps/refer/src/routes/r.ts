@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { schema } from "@refref/coredb";
-const { referralLink, participant, product } = schema;
+const { referralLink } = schema;
 import { eq } from "drizzle-orm";
 
 interface ReferralParams {
@@ -21,30 +21,27 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
       try {
         const { id } = request.params;
 
-        // Find the referral link by slug
-        const link = await request.db.query.referralLink.findFirst({
+        // Single optimized query using relations (1 query instead of 3)
+        // This does a JOIN under the hood: referralLink → participant → product
+        const result = await request.db.query.referralLink.findFirst({
           where: eq(referralLink.slug, id),
+          with: {
+            participant: {
+              with: {
+                product: true,
+              },
+            },
+          },
         });
 
-        if (!link) {
+        if (!result || !result.participant) {
           return reply.code(404).send({ error: "Referral link not found" });
         }
 
-        // Find the participant by participantId from the referral link
-        const participantRecord = await request.db.query.participant.findFirst({
-          where: eq(participant.id, link.participantId),
-        });
-
-        if (!participantRecord) {
-          return reply.code(404).send({ error: "Participant not found" });
-        }
-
-        // Look up the product to get the redirect URL
-        const productRecord = await request.db.query.product.findFirst({
-          where: eq(product.id, participantRecord.productId),
-        });
-
-        // Use product URL if available
+        // Type assertion needed due to Drizzle's type inference limitations with nested relations
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const participantRecord = result.participant as any;
+        const productRecord = participantRecord.product;
         const redirectUrl = productRecord?.url;
 
         if (!redirectUrl) {
