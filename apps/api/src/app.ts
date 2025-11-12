@@ -2,8 +2,8 @@ import Fastify, { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
 import { coredbPlugin } from "@refref/utils";
 import { createDb } from "@refref/coredb";
-import { healthHandler } from "./handlers/health.js";
-import { openapiHandler } from "./handlers/openapi.js";
+import healthRoutes from "./routes/health.js";
+import openapiRoutes from "./routes/openapi.js";
 import betterAuthPlugin from "./plugins/better-auth.js";
 import jwtAuthPlugin from "./plugins/jwt-auth.js";
 import widgetInitRoutes from "./routes/v1/widget/init.js";
@@ -50,11 +50,10 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(jwtAuthPlugin);
 
   // Register health check routes
-  app.get("/", healthHandler);
-  app.get("/health", healthHandler);
+  await app.register(healthRoutes);
 
   // Register OpenAPI spec route
-  app.get("/openapi", openapiHandler);
+  await app.register(openapiRoutes);
 
   // Register v1 API routes
   await app.register(async (fastify) => {

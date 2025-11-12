@@ -1,7 +1,12 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { sql } from "drizzle-orm";
 
-export async function healthHandler(
+export default async function healthRoutes(fastify: FastifyInstance) {
+  fastify.get("/", healthHandler);
+  fastify.get("/health", healthHandler);
+}
+
+async function healthHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {

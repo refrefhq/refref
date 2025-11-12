@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,7 +12,11 @@ const openapiSpec = readFileSync(
   "utf-8"
 );
 
-export async function openapiHandler(
+export default async function openapiRoutes(fastify: FastifyInstance) {
+  fastify.get("/openapi", openapiHandler);
+}
+
+async function openapiHandler(
   _request: FastifyRequest,
   reply: FastifyReply
 ) {
