@@ -18,11 +18,11 @@ services:
       timeout: 5s
       retries: 5
 
-  admin:
+  webapp:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: refref-admin
+    container_name: refref-webapp
     ports:
       - "3000:3000"
     environment:
@@ -37,13 +37,13 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./apps/admin/.env:/app/apps/admin/.env
+      - ./apps/webapp/.env:/app/apps/webapp/.env
     command: >
       sh -c "
         cd /app &&
         pnpm -F @refref/coredb db:push &&
         pnpm -F @refref/coredb db:seed &&
-        cd /app/apps/admin &&
+        cd /app/apps/webapp &&
         pnpm start
       "
 

@@ -18,7 +18,7 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
 
-  apps/admin:
+  apps/webapp:
     dependencies:
       '@daveyplate/better-auth-ui':
         specifier: ^3.2.6

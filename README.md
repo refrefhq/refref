@@ -55,14 +55,14 @@ cd refref
 docker-compose up
 ```
 
-That's it! 🎉 The admin portal will be available at http://localhost:3000
+That's it! 🎉 The webapp portal will be available at http://localhost:3000
 
 Docker Compose automatically handles:
 
 - PostgreSQL database setup
 - Database migrations
 - Initial data seeding
-- Admin portal configuration
+- Webapp portal configuration
 
 ### Local Development Setup
 
@@ -81,22 +81,22 @@ If you prefer running RefRef locally without Docker:
 pnpm install
 
 # Set up environment variables
-cp apps/admin/.env.example apps/admin/.env
+cp apps/webapp/.env.example apps/webapp/.env
 
 # Edit .env and add your database URL and auth secret
 # Generate auth secret with: openssl rand -base64 32
 
 # Push database schema
-pnpm -F @refref/admin db:push
+pnpm -F @refref/webapp db:push
 
 # (Optional) Seed with template data
-pnpm -F @refref/admin db:seed
+pnpm -F @refref/webapp db:seed
 
 # Start development server
 pnpm dev
 ```
 
-The admin portal will be available at http://localhost:3000
+The webapp will be available at http://localhost:3000
 
 ### Environment Variables
 
@@ -130,10 +130,10 @@ pnpm format
 pnpm check-types
 
 # Database commands
-pnpm -F @refref/admin db:push     # Push schema changes
-pnpm -F @refref/admin db:migrate  # Run migrations
-pnpm -F @refref/admin db:studio   # Open Drizzle Studio GUI
-pnpm -F @refref/admin db:seed     # Seed with templates
+pnpm -F @refref/coredb db:push     # Push schema changes
+pnpm -F @refref/coredb db:migrate  # Run migrations
+pnpm -F @refref/coredb db:studio   # Open Drizzle Studio GUI
+pnpm -F @refref/coredb db:seed     # Seed with templates
 ```
 
 ## ✨ Features
