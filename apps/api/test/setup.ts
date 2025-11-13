@@ -25,7 +25,7 @@ vi.mock("@refref/coredb", async (importOriginal) => {
       participant: {
         findFirst: vi.fn().mockResolvedValue(null),
       },
-      referralLink: {
+      refcode: {
         findFirst: vi.fn().mockResolvedValue(null),
       },
       productSecrets: {

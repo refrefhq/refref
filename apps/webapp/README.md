@@ -1,4 +1,4 @@
-# Create T3 App
+# Console app
 
 This is a [T3 Stack](https://create.t3.gg/) product bootstrapped with `create-t3-app`.
 
@@ -27,8 +27,6 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
-
-# RefRef Beta
 
 ## Authentication and Route Protection
 
@@ -108,3 +106,39 @@ export default function YourComponent() {
   return <div>Protected Content for {session?.user?.email}</div>;
 }
 ```
+## Refcode Concept
+
+### Global vs Local Codes
+
+RefRef now supports two types of referral codes:
+
+#### 1. Global Codes
+- **Format**: 7 characters (numbers + lowercase letters: `23456789abcdefghjkmnpqrstuvwxyz`)
+- **Example**: `abc1234`
+- **URL Pattern**: `REFERRAL_HOST_URL/r/:code`
+  - Example: `https://refer.refref.app/r/abc1234`
+- **Uniqueness**: Globally unique across the entire RefRef system
+- **Generation**: Auto-generated with profanity filtering
+- **Use Case**: Default referral codes for all participants
+
+#### 2. Local Codes
+- **Format**: User-specified vanity strings (3-50 characters, alphanumeric + hyphens)
+- **Example**: `john-doe`, `ceo`, `founder`
+- **URL Pattern**: `REFERRAL_HOST_URL/r/:product_slug/:code`
+  - Example: `https://refer.refref.app/r/acme/john-doe`
+- **Uniqueness**: Unique within a specific product
+- **Generation**: User-provided (validated for length, characters, and profanity)
+- **Use Case**: Custom vanity URLs for branding and memorability
+
+### Key Characteristics
+
+Both code types share these properties:
+- **Case-insensitive**: Stored and compared in lowercase
+- **Program Association**: Every refcode belongs to a specific program and participant
+- **Product Association**: Every refcode is associated with a product
+- **Profanity Filtered**: All codes are checked against a profanity filter
+- **Attribution-ready**: Can be used in cookies, URL params, and form fields as `refcode`
+- **Multiple Codes**: A participant can have multiple refcodes for a program (e.g., both global and local codes)
+  - When fetching for display/widget, always use the **most recent** one (ORDER BY created_at DESC)
+
+---

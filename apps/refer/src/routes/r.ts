@@ -1,19 +1,27 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { schema } from "@refref/coredb";
-const { referralLink } = schema;
-import { eq } from "drizzle-orm";
+const { refcode, product } = schema;
+import { eq, and } from "drizzle-orm";
+import { normalizeCode } from "@refref/utils";
 
-interface ReferralParams {
-  id: string;
+interface GlobalCodeParams {
+  code: string;
+}
+
+interface LocalCodeParams {
+  productSlug: string;
+  code: string;
 }
 
 export default async function referralRedirectRoutes(fastify: FastifyInstance) {
   /**
-   * Handles GET requests to /r/:id.
-   * Reads the id slug, fetches participant details, and redirects with encoded params.
+   * Handles GET requests to /r/:code (global codes)
+   * Example: /r/abc1234
+   *
+   * Global codes are unique across the entire system and don't require product context.
    */
-  fastify.get<{ Params: ReferralParams }>(
-    "/:id",
+  fastify.get<{ Params: GlobalCodeParams }>(
+    "/:code",
     {
       config: {
         rateLimit: {
@@ -23,16 +31,17 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
       },
     },
     async (
-      request: FastifyRequest<{ Params: ReferralParams }>,
+      request: FastifyRequest<{ Params: GlobalCodeParams }>,
       reply: FastifyReply,
     ) => {
       try {
-        const { id } = request.params;
+        const { code } = request.params;
+        const normalizedCode = normalizeCode(code);
 
         // Single optimized query using relations (1 query instead of 3)
-        // This does a JOIN under the hood: referralLink → participant → product
-        const result = await request.db.query.referralLink.findFirst({
-          where: eq(referralLink.slug, id),
+        // This does a JOIN under the hood: refcode → participant → product
+        const result = await request.db.query.refcode.findFirst({
+          where: and(eq(refcode.code, normalizedCode), eq(refcode.global, true)),
           with: {
             participant: {
               with: {
@@ -43,7 +52,7 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         });
 
         if (!result || !result.participant) {
-          return reply.code(404).send({ error: "Referral link not found" });
+          return reply.code(404).send({ error: "Referral code not found" });
         }
 
         // Type assertion needed due to Drizzle's type inference limitations with nested relations
@@ -77,7 +86,106 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         Object.entries(paramsObj).forEach(([key, value]) => {
           if (value) searchParams.set(key, value);
         });
-        searchParams.set("rfc", id);
+        searchParams.set("refcode", normalizedCode);
+
+        // Redirect with 307 to the product URL with encoded params
+        return reply
+          .code(307)
+          .redirect(`${redirectUrl}?${searchParams.toString()}`);
+      } catch (error) {
+        // Log error and return 500
+        request.log.error({ error }, "Error in referral redirect handler");
+        return reply.code(500).send({ error: "Internal Server Error" });
+      }
+    },
+  );
+
+  /**
+   * Handles GET requests to /r/:productSlug/:code (local/product-scoped codes)
+   * Example: /r/acme/john-doe
+   *
+   * Local codes are unique within a product and require the product slug for disambiguation.
+   * This allows for vanity URLs like /r/acme/ceo or /r/startup/founder
+   */
+  fastify.get<{ Params: LocalCodeParams }>(
+    "/:productSlug/:code",
+    {
+      config: {
+        rateLimit: {
+          max: 100,
+          timeWindow: "1 minute",
+        },
+      },
+    },
+    async (
+      request: FastifyRequest<{ Params: LocalCodeParams }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const { productSlug, code } = request.params;
+        const normalizedCode = normalizeCode(code);
+
+        // First find the product by slug
+        const productRecord = await request.db.query.product.findFirst({
+          where: eq(product.slug, productSlug),
+        });
+
+        if (!productRecord) {
+          return reply.code(404).send({ error: "Product not found" });
+        }
+
+        // Single optimized query using relations
+        // This does a JOIN under the hood: refcode → participant → product
+        const result = await request.db.query.refcode.findFirst({
+          where: and(
+            eq(refcode.code, normalizedCode),
+            eq(refcode.productId, productRecord.id),
+            eq(refcode.global, false),
+          ),
+          with: {
+            participant: {
+              with: {
+                product: true,
+              },
+            },
+          },
+        });
+
+        if (!result || !result.participant) {
+          return reply.code(404).send({ error: "Referral code not found" });
+        }
+
+        // Type assertion needed due to Drizzle's type inference limitations with nested relations
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const participantRecord = result.participant as any;
+        const redirectUrl = productRecord.url;
+
+        if (!redirectUrl) {
+          request.log.error({
+            productId: productRecord.id,
+            message: "No redirect URL configured",
+          });
+          return reply
+            .code(500)
+            .send({ error: "Redirect URL not configured for this product" });
+        }
+
+        // Helper to encode and only add non-empty values
+        const encode = (value: string | null | undefined) =>
+          value ? Buffer.from(value, "utf-8").toString("base64") : undefined;
+
+        // Extra params, potentially enabled/disabled via config
+        const paramsObj: Record<string, string | undefined> = {
+          name: encode(participantRecord.name),
+          email: encode(participantRecord.email),
+          participantId: encode(participantRecord.id),
+        };
+
+        const searchParams = new URLSearchParams();
+        Object.entries(paramsObj).forEach(([key, value]) => {
+          if (value) searchParams.set(key, value);
+        });
+        searchParams.set("refcode", normalizedCode);
 
         // Redirect with 307 to the product URL with encoded params
         return reply

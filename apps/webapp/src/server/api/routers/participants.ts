@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { db, schema } from "@/server/db";
-const { participant, referral, referralLink, event } = schema;
+import { schema } from "@/server/db";
+const { participant, referral, refcode, event } = schema;
 import { and, count, eq, ilike, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -118,11 +118,12 @@ export const participantsRouter = createTRPCRouter({
         });
       }
 
-      // Get referral link for this participant
-      const [referralLinkData] = await ctx.db
+      // Get refcode for this participant (most recent one)
+      const [refcodeData] = await ctx.db
         .select()
-        .from(referralLink)
-        .where(eq(referralLink.participantId, id))
+        .from(refcode)
+        .where(eq(refcode.participantId, id))
+        .orderBy(sql`${refcode.createdAt} DESC`)
         .limit(1);
 
       // Get referral count (how many people this participant has referred)
@@ -153,7 +154,7 @@ export const participantsRouter = createTRPCRouter({
 
       return {
         ...participantData,
-        referralLink: referralLinkData,
+        refcode: refcodeData,
         referralCount: referralCountResult?.count ?? 0,
         eventsCount: eventsCountResult?.count ?? 0,
         recentReferrals,

@@ -66,6 +66,6 @@ export type JwtPayloadType = z.infer<typeof jwtPayloadSchema>;
 
 export const widgetInitRequestSchema = z.object({
   productId: z.string(),
-  referralCode: z.string().optional(),
+  refcode: z.string().optional(),
 });
 export type WidgetInitRequestType = z.infer<typeof widgetInitRequestSchema>;

@@ -89,15 +89,15 @@ class RefRefImpl implements RefRef {
       }
 
       // Normal mode: make API call
-      // Check for referral code (RFC) to enable auto-attribution
+      // Check for referral code (refcode) to enable auto-attribution
       // 1. Query string parameters (freshest intent, works even with cookies blocked, available in SSR)
       // 2. Cookie (persistent across sessions and page navigations, but may be blocked by privacy settings)
       const urlParams = new URLSearchParams(window.location.search);
-      const rfcFromQuery = urlParams.get("rfc");
-      const rfcFromCookie = getCookie("refref-unique-code");
+      const refcodeFromQuery = urlParams.get("refcode");
+      const refcodeFromCookie = getCookie("refref-refcode");
 
       // Query string takes priority as it represents the most recent referral click
-      const referralCode = rfcFromQuery || rfcFromCookie || undefined;
+      const refcode = refcodeFromQuery || refcodeFromCookie || undefined;
 
       // Use provided apiUrl or fall back to relative path for backward compatibility
       const widgetInitUrl = apiUrl
@@ -112,7 +112,7 @@ class RefRefImpl implements RefRef {
         },
         body: JSON.stringify({
           productId,
-          referralCode,
+          refcode,
         } satisfies WidgetInitRequestType),
       });
 

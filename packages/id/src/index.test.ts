@@ -52,7 +52,7 @@ describe("@refref/id", () => {
         ["rewardRule", "rwr"],
         ["reward", "rwd"],
         ["productSecrets", "sec"],
-        ["referralLink", "rfl"],
+        ["refcode", "rc"],
         ["referral", "ref"],
         ["event", "evt"],
       ];

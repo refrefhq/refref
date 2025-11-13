@@ -31,9 +31,9 @@ interface ParticipantCardProps {
     email: string | null;
     externalId: string | null;
     createdAt: string | Date;
-    referralLink?: {
+    refcode?: {
       id: string;
-      slug: string;
+      code: string;
     } | null;
     referralCount: number;
     eventsCount: number;
@@ -66,10 +66,10 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
   };
 
   const copyReferralLink = async () => {
-    if (!participant.referralLink || typeof window === "undefined") return;
+    if (!participant.refcode || typeof window === "undefined") return;
 
     const baseUrl = window.location.origin;
-    const referralUrl = `${baseUrl}/r/${participant.referralLink.slug}`;
+    const referralUrl = `${baseUrl}/r/${participant.refcode.code}`;
 
     try {
       await navigator.clipboard.writeText(referralUrl);
@@ -82,10 +82,10 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
   };
 
   const openReferralLink = () => {
-    if (!participant.referralLink || typeof window === "undefined") return;
+    if (!participant.refcode || typeof window === "undefined") return;
 
     const baseUrl = window.location.origin;
-    const referralUrl = `${baseUrl}/r/${participant.referralLink.slug}`;
+    const referralUrl = `${baseUrl}/r/${participant.refcode.code}`;
     window.open(referralUrl, "_blank");
   };
 
@@ -98,8 +98,8 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
   };
 
   const referralUrl =
-    participant.referralLink && typeof window !== "undefined"
-      ? `${window.location.origin}/r/${participant.referralLink.slug}`
+    participant.refcode && typeof window !== "undefined"
+      ? `${window.location.origin}/r/${participant.refcode.code}`
       : null;
 
   return (

@@ -1,14 +1,14 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { schema } from "@refref/coredb";
-const { participant, referralLink, referral } = schema;
+const { participant, refcode, referral } = schema;
 import { createId } from "@refref/id";
-import { createId as createUnprefixedId } from "@paralleldrive/cuid2";
 import {
   widgetInitRequestSchema,
   type WidgetInitResponseType,
 } from "@refref/types";
 import { createEvent } from "../../../services/events.js";
+import { generateGlobalCode, normalizeCode } from "@refref/utils";
 
 export default async function widgetInitRoutes(fastify: FastifyInstance) {
   /**
@@ -24,7 +24,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
       try {
         // Parse and validate request body
         const body = widgetInitRequestSchema.parse(request.body);
-        const { productId, referralCode } = body;
+        const { productId, refcode: refcodeParam } = body;
 
         // Verify user is authenticated
         if (!request.user) {
@@ -93,23 +93,30 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           });
         }
 
-        // Auto-attribution: Create referral if RFC provided and participant is new
+        // Auto-attribution: Create referral if refcode provided and participant is new
         let referralRecordId: string | null = null;
-        if (referralCode && !existingParticipant) {
+        if (refcodeParam && !existingParticipant) {
           try {
-            // Find the referral link by slug
-            const referrerLink = await request.db.query.referralLink.findFirst({
-              where: (referralLink, { eq }) => eq(referralLink.slug, referralCode),
+            const normalizedRefcode = normalizeCode(refcodeParam);
+
+            // Find the refcode within this product only (enforce product boundary)
+            // Note: global flag only means the code uses 7-char format, not that it works across products
+            const referrerCode = await request.db.query.refcode.findFirst({
+              where: (refcode, { eq, and }) =>
+                and(
+                  eq(refcode.code, normalizedRefcode),
+                  eq(refcode.productId, productId)
+                ),
             });
 
-            if (referrerLink) {
+            if (referrerCode) {
               // Create referral record linking the new participant (referee) to the referrer
               const referralId = createId("referral");
               const [newReferral] = await request.db
                 .insert(referral)
                 .values({
                   id: referralId,
-                  referrerId: referrerLink.participantId,
+                  referrerId: referrerCode.participantId,
                   externalId: request.user.sub,
                   email: request.user.email,
                   name: request.user.name,
@@ -120,8 +127,8 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
               if (newReferral) {
                 referralRecordId = newReferral.id;
                 request.log.info({
-                  referralCode,
-                  referrerId: referrerLink.participantId,
+                  refcode: normalizedRefcode,
+                  referrerId: referrerCode.participantId,
                   refereeId: request.user.sub,
                   referralId: referralRecordId,
                 }, "Auto-attribution successful");
@@ -147,7 +154,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
                 }
               }
             } else {
-              request.log.warn({ referralCode }, "Referral code not found");
+              request.log.warn({ refcode: normalizedRefcode }, "Referral code not found");
             }
           } catch (error) {
             // Log but don't fail widget init on attribution errors
@@ -155,36 +162,74 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           }
         }
 
-        // Get or create referral link
-        let referralLinkRecord = await request.db.query.referralLink.findFirst({
-          where: (referralLink, { eq }) => eq(referralLink.participantId, participantRecord.id),
+        // Get or create refcode (global code by default)
+        // If multiple refcodes exist, get the most recent one
+        let refcodeRecord = await request.db.query.refcode.findFirst({
+          where: (refcode, { eq, and }) =>
+            and(
+              eq(refcode.participantId, participantRecord.id),
+              eq(refcode.programId, activeProgram.id)
+            ),
+          orderBy: (refcode, { desc }) => [desc(refcode.createdAt)],
         });
 
-        if (!referralLinkRecord) {
-          let retries = 3;
-          while (retries > 0 && !referralLinkRecord) {
-            const slug = createUnprefixedId().slice(0, 8);
-            const [newLink] = await request.db
-              .insert(referralLink)
-              .values({
-                id: createId("referralLink"),
-                participantId: participantRecord.id,
-                slug: slug,
-              })
-              .onConflictDoNothing()
-              .returning();
-            referralLinkRecord = newLink;
-            if (!referralLinkRecord) {
-              retries--;
-              request.log.warn({ participantId: participantRecord.id, slug }, "Referral link slug collision, retrying...");
+        if (!refcodeRecord) {
+          // Generate global code with built-in retries (5 attempts)
+          const generatedCode = generateGlobalCode(5);
+
+          if (!generatedCode) {
+            return reply.code(500).send({
+              error: "Internal Server Error",
+              message: "Failed to generate unique refcode after multiple attempts"
+            });
+          }
+
+          // Try to insert the refcode
+          let insertRetries = 3;
+          while (insertRetries > 0 && !refcodeRecord) {
+            try {
+              const [newRefcode] = await request.db
+                .insert(refcode)
+                .values({
+                  id: createId("refcode"),
+                  code: generatedCode,
+                  participantId: participantRecord.id,
+                  programId: activeProgram.id,
+                  productId: productId,
+                  global: true,
+                })
+                .onConflictDoNothing()
+                .returning();
+
+              refcodeRecord = newRefcode;
+
+              if (!refcodeRecord) {
+                insertRetries--;
+                request.log.warn({
+                  participantId: participantRecord.id,
+                  code: generatedCode
+                }, "Refcode collision on insert, retrying with new code...");
+
+                // Generate a new code for next retry
+                const newCode = generateGlobalCode(5);
+                if (!newCode) {
+                  break;
+                }
+              }
+            } catch (error) {
+              insertRetries--;
+              request.log.error({ error }, "Error inserting refcode");
+              if (insertRetries === 0) {
+                throw error;
+              }
             }
           }
         }
 
-        if (!referralLinkRecord) {
+        if (!refcodeRecord) {
           return reply.code(500).send({
             error: "Internal Server Error",
-            message: "Failed to create or find referral link"
+            message: "Failed to create or find refcode"
           });
         }
 
@@ -195,8 +240,8 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
 
         const widgetData = programData?.config?.widgetConfig;
 
-        // Get APP_URL from environment
-        const appUrl = process.env.APP_URL || "http://localhost:3000";
+        // Get REFERRAL_HOST_URL from environment
+        const referralHostUrl = process.env.REFERRAL_HOST_URL || "http://localhost:3002";
 
         if (!widgetData) {
           return reply.code(404).send({
@@ -205,10 +250,31 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           });
         }
 
+        // Build referral URL based on code type
+        let referralUrl: string;
+        if (refcodeRecord.global) {
+          // Global code: /r/:code
+          referralUrl = `${referralHostUrl}/r/${refcodeRecord.code}`;
+        } else {
+          // Local code: /r/:productSlug/:code (need product slug)
+          const productData = await request.db.query.product.findFirst({
+            where: (product, { eq }) => eq(product.id, productId),
+          });
+
+          if (!productData?.slug) {
+            return reply.code(500).send({
+              error: "Internal Server Error",
+              message: "Product slug not configured for local refcode"
+            });
+          }
+
+          referralUrl = `${referralHostUrl}/r/${productData.slug}/${refcodeRecord.code}`;
+        }
+
         // Return the widget configuration
         const response: WidgetInitResponseType = {
           ...widgetData,
-          referralLink: `${appUrl}/r/${referralLinkRecord.slug}`,
+          referralLink: referralUrl,
         };
 
         return reply.send(response);

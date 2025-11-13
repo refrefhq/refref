@@ -11,6 +11,7 @@
     "test:run": "turbo run test:run"
   },
   "devDependencies": {
+    "@types/bad-words": "^3.0.3",
     "prettier": "^3.5.0",
     "turbo": "^2.4.2",
     "typescript": "5.7.3"
@@ -18,5 +19,8 @@
   "packageManager": "pnpm@10.15.0",
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "bad-words": "^4.0.0"
   }
 }

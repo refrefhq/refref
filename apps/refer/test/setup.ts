@@ -19,7 +19,7 @@ vi.mock("@refref/coredb", async (importOriginal) => {
     set: vi.fn().mockReturnThis(),
     transaction: vi.fn(async (fn) => fn(mockDb)),
     query: {
-      referralLink: {
+      refcode: {
         findFirst: vi.fn().mockResolvedValue(null),
       },
       participant: {

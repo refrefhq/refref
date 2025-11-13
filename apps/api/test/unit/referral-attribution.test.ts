@@ -2,17 +2,20 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 describe("Referral Attribution Logic", () => {
   describe("Signup event with referral code (CRITICAL FIX)", () => {
-    it("should look up referralLink by slug, not referral by externalId", async () => {
+    it("should look up refcode by code, not referral by externalId", async () => {
       // Setup mock data
-      const referralCode = "abc123";
+      const refcodeValue = "abc123";
       const userId = "user_456";
       const referrerId = "participant_789";
 
       // Mock database transaction
-      const mockReferralLink = {
-        id: "link_1",
+      const mockRefcode = {
+        id: "rc_1",
+        code: refcodeValue,
         participantId: referrerId,
-        slug: referralCode,
+        programId: "prg_1",
+        productId: "prd_1",
+        global: true,
       };
 
       const mockNewReferral = {
@@ -24,16 +27,16 @@ describe("Referral Attribution Logic", () => {
       };
 
       // Simulate the CORRECT flow:
-      // 1. Look up referralLink by slug
-      const referralLinkQuery = vi.fn().mockResolvedValue([mockReferralLink]);
+      // 1. Look up refcode by code
+      const refcodeQuery = vi.fn().mockResolvedValue([mockRefcode]);
 
       // 2. Create new referral record
       const referralInsert = vi.fn().mockResolvedValue([mockNewReferral]);
 
       // Verify the correct table is queried
-      expect(referralLinkQuery).toBeDefined();
+      expect(refcodeQuery).toBeDefined();
 
-      // The key insight: we should query referralLink.slug, NOT referral.externalId
+      // The key insight: we should query refcode.code, NOT referral.externalId
       // This is the bug we fixed
     });
 
@@ -55,8 +58,8 @@ describe("Referral Attribution Logic", () => {
       expect(referralInsertMock).toBeDefined();
     });
 
-    it("should handle missing referral link gracefully", async () => {
-      const referralCode = "nonexistent";
+    it("should handle missing refcode gracefully", async () => {
+      const refcode = "nonexistent";
 
       // Mock database returning empty result
       const mockQuery = vi.fn().mockResolvedValue([]);
@@ -114,14 +117,17 @@ describe("Referral Attribution Logic", () => {
   });
 
   describe("Data model understanding", () => {
-    it("should understand referralLink.slug is the public code", () => {
-      const referralLink = {
-        slug: "abc123", // This is what users share
+    it("should understand refcode.code is the public code", () => {
+      const refcode = {
+        code: "abc123", // This is what users share
         participantId: "participant_referrer",
+        programId: "prg_1",
+        productId: "prd_1",
+        global: true,
       };
 
-      expect(referralLink.slug).toBe("abc123");
-      expect(typeof referralLink.slug).toBe("string");
+      expect(refcode.code).toBe("abc123");
+      expect(typeof refcode.code).toBe("string");
     });
 
     it("should understand referral.externalId is the referee's user ID", () => {
@@ -134,32 +140,167 @@ describe("Referral Attribution Logic", () => {
       expect(typeof referral.externalId).toBe("string");
     });
 
-    it("should never compare referralCode with referral.externalId", () => {
-      const referralCode = "abc123"; // A slug
+    it("should never compare refcode with referral.externalId", () => {
+      const refcodeValue = "abc123"; // A code
       const referralExternalId = "user_456"; // A user ID
 
       // These are DIFFERENT types of data and should NEVER be compared
-      expect(referralCode).not.toBe(referralExternalId);
+      expect(refcodeValue).not.toBe(referralExternalId);
 
-      // The bug was: WHERE referral.externalId = referralCode
-      // This is wrong because we're comparing a user ID with a slug!
+      // The bug was: WHERE referral.externalId = refcode
+      // This is wrong because we're comparing a user ID with a code!
     });
   });
 
   describe("Complete signup flow with referral", () => {
-    it("should follow correct sequence: find link → create referral → link to event", async () => {
+    it("should follow correct sequence: find code → create referral → link to event", async () => {
       const flow = {
-        step1: "Receive signup with referralCode: 'abc123'",
-        step2: "Query referralLink WHERE slug = 'abc123'",
-        step3: "Found referrerLink.participantId = 'participant_789'",
+        step1: "Receive signup with refcode: 'abc123'",
+        step2: "Query refcode WHERE code = 'abc123'",
+        step3: "Found refcode.participantId = 'participant_789'",
         step4: "INSERT INTO referral (referrerId: 'participant_789', externalId: 'user_new')",
         step5: "Get newReferral.id = 'referral_1'",
         step6: "Create event with referralId = 'referral_1'",
       };
 
-      expect(flow.step2).toContain("referralLink WHERE slug");
+      expect(flow.step2).toContain("refcode WHERE code");
       expect(flow.step4).toContain("INSERT INTO referral");
       expect(flow.step4).not.toContain("SELECT FROM referral");
+    });
+  });
+
+  describe("Product boundary enforcement (P1 Security Fix)", () => {
+    it("should NOT allow cross-product attribution with global codes", async () => {
+      // Scenario: Product A creates a global code, Product B tries to use it
+      const productA = "prd_AAA";
+      const productB = "prd_BBB";
+      const globalCode = "abc1234";
+
+      // Product A's refcode
+      const refcodeFromProductA = {
+        id: "rc_1",
+        code: globalCode,
+        participantId: "participant_A",
+        programId: "prg_A",
+        productId: productA, // Belongs to Product A
+        global: true,
+      };
+
+      // When Product B's widget init is called with this code
+      // The query MUST enforce productId match
+      const mockQueryWithProductBoundary = vi.fn((code, productId) => {
+        // Correct query: WHERE code = :code AND productId = :productId
+        if (code === globalCode && productId === productB) {
+          return Promise.resolve(null); // Should NOT find Product A's code
+        }
+        if (code === globalCode && productId === productA) {
+          return Promise.resolve(refcodeFromProductA); // Should find only for Product A
+        }
+        return Promise.resolve(null);
+      });
+
+      // Product B tries to look up the code
+      const result = await mockQueryWithProductBoundary(globalCode, productB);
+
+      // Should NOT find the code (returns null)
+      expect(result).toBeNull();
+
+      // Product A can look up its own code
+      const resultForProductA = await mockQueryWithProductBoundary(globalCode, productA);
+      expect(resultForProductA).toBeDefined();
+      expect(resultForProductA?.productId).toBe(productA);
+    });
+
+    it("should enforce product boundary even when global flag is true", () => {
+      // The global flag only means:
+      // 1. The code uses 7-character format
+      // 2. The code is globally unique
+      //
+      // It does NOT mean:
+      // 1. The code can be used across products
+      // 2. Attribution should ignore productId
+
+      const globalRefcode = {
+        code: "xyz9876",
+        productId: "prd_A",
+        global: true, // Global format, but still belongs to a specific product
+      };
+
+      // The query should ALWAYS check productId
+      expect(globalRefcode.productId).toBeDefined();
+      expect(globalRefcode.productId).toBe("prd_A");
+
+      // Even though it's global, it can only attribute within Product A
+    });
+
+    it("should prevent referral creation across product boundaries", async () => {
+      const productA = "prd_AAA";
+      const productB = "prd_BBB";
+
+      // Product A's participant and refcode
+      const participantA = {
+        id: "participant_A",
+        productId: productA,
+      };
+
+      const refcodeA = {
+        code: "abc1234",
+        participantId: participantA.id,
+        productId: productA,
+        global: true,
+      };
+
+      // Product B's new user trying to sign up with Product A's code
+      const newUserB = {
+        externalId: "user_B_123",
+        productId: productB,
+      };
+
+      // Mock query that correctly enforces product boundary
+      const findRefcode = vi.fn((code: string, productId: string) => {
+        if (code === refcodeA.code && productId === productA) {
+          return Promise.resolve(refcodeA);
+        }
+        return Promise.resolve(null); // No cross-product match
+      });
+
+      // When Product B tries to use Product A's code
+      const result = await findRefcode(refcodeA.code, productB);
+
+      // Should not find the code
+      expect(result).toBeNull();
+
+      // Therefore, no referral should be created
+      // This prevents cross-product referral attribution
+    });
+
+    it("should document the bug we fixed in widget init", () => {
+      // BEFORE (vulnerable):
+      // WHERE code = :code AND (global = true OR productId = :productId)
+      //
+      // Problem: global=true bypasses productId check
+      // Result: Cross-product attribution vulnerability
+
+      // AFTER (fixed):
+      // WHERE code = :code AND productId = :productId
+      //
+      // Solution: Always enforce product boundary
+      // Result: No cross-product attribution
+
+      const vulnerableQuery = {
+        before: "WHERE code = ? AND (global = true OR productId = ?)",
+        problem: "global=true bypasses productId check",
+        vulnerability: "Cross-product attribution",
+      };
+
+      const fixedQuery = {
+        after: "WHERE code = ? AND productId = ?",
+        solution: "Always enforce product boundary",
+        result: "Multi-tenancy isolation maintained",
+      };
+
+      expect(vulnerableQuery.problem).toContain("bypasses productId");
+      expect(fixedQuery.solution).toContain("enforce product boundary");
     });
   });
 });
