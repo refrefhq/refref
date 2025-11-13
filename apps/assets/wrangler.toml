@@ -1,0 +1,14 @@
+# Wrangler configuration for RefRef Assets
+# https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "refref-assets"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# Dev/Preview environment
+[env.dev]
+name = "refref-assets-dev"

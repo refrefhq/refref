@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --mode production",
     "clean": "rm -rf dist src/**/*.js src/**/*.js.map",
     "lint": "eslint . --report-unused-disable-directives",
     "test": "jest --passWithNoTests",

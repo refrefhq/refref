@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import dts from "vite-plugin-dts";
 
 // https://vite.dev/config/
@@ -38,10 +37,24 @@ export default defineConfig(({ mode }) => ({
       fileName: (format) => `widget.${format}.js`,
       formats: ["es", "umd"],
     },
-    minify: mode === "production",
+    minify: mode === "production" ? "esbuild" : false,
     cssCodeSplit: false,
     sourcemap: mode !== "production",
     outDir: "dist",
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Aggressive minification options
+        compact: true,
+        // Tree-shaking and dead code elimination
+        generatedCode: {
+          constBindings: true,
+        },
+      },
+      treeshake: {
+        preset: "recommended",
+        moduleSideEffects: false,
+      },
+    },
   },
 }));

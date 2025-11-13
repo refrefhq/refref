@@ -8,6 +8,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { TRPCReactProvider } from "@/trpc/react";
 import { AuthUIProvider } from "@/components/providers/auth-ui-provider";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
   title: "RefRef - Referral Management Platform",
@@ -31,7 +32,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           type="module"
-          src={`${process.env.NEXT_PUBLIC_REFER_URL || 'http://localhost:3002'}/scripts/attribution.js`}
+          src={`${env.NEXT_PUBLIC_ASSETS_URL}/attribution.v1.js`}
           strategy="beforeInteractive"
         />
         <Script
@@ -46,7 +47,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           type="module"
-          src={`${process.env.NEXT_PUBLIC_REFER_URL || 'http://localhost:3002'}/scripts/widget.js`}
+          src={`${env.NEXT_PUBLIC_ASSETS_URL}/widget.v1.js`}
           strategy="afterInteractive"
           defer
         />

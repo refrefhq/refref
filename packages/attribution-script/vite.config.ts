@@ -26,10 +26,22 @@ export default defineConfig(({ mode }) => ({
       fileName: (format) => `attribution-script.${format}.js`,
       formats: ["es", "umd"],
     },
-    minify: mode === "production",
+    minify: mode === "production" ? "esbuild" : false,
     cssCodeSplit: false,
     sourcemap: mode !== "production",
     outDir: "dist",
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        compact: true,
+        generatedCode: {
+          constBindings: true,
+        },
+      },
+      treeshake: {
+        preset: "recommended",
+        moduleSideEffects: false,
+      },
+    },
   },
 }));
