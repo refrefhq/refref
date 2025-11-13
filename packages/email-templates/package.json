@@ -1,0 +1,46 @@
+{
+  "name": "@refref/email-templates",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/es/index.d.ts",
+        "default": "./dist/es/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bunchee",
+    "clean": "rm -rf dist",
+    "dev": "email dev --dir ./src/templates",
+    "lint": "eslint src/",
+    "type:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-email/components": "^0.0.29",
+    "@react-email/render": "^1.0.3",
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@refref/eslint-config": "workspace:*",
+    "@refref/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.2.0",
+    "bunchee": "^6.4.0",
+    "eslint": "^9.26.0",
+    "react-email": "^3.0.3",
+    "typescript": "5.8.3"
+  }
+}

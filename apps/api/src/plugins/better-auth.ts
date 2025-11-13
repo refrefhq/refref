@@ -1,10 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { apiKey } from "better-auth/plugins";
-import { schema } from "@refref/coredb";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { getAuth } from "@refref/auth";
+import { schema, type DBType } from "@refref/coredb";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -26,17 +23,16 @@ declare module "fastify" {
  * Better Auth API Key verification plugin for Fastify
  * Uses Better Auth's built-in verifyApiKey function with rate limiting and hashing
  */
-const betterAuthPlugin = fp(async (fastify: FastifyInstance, opts: { db: PostgresJsDatabase<typeof schema> }) => {
-  // Create Better Auth instance with the provided database connection
-  const auth = betterAuth({
-    database: drizzleAdapter(opts.db, {
-      provider: "pg",
-      schema: {
-        ...schema,
-      },
-    }),
-    plugins: [apiKey()],
-    secret: process.env.BETTER_AUTH_SECRET || "secret-for-development-only",
+const betterAuthPlugin = fp(async (fastify: FastifyInstance, opts: { db: DBType }) => {
+  // Create Better Auth instance using shared @refref/auth package
+  const auth = getAuth({
+    baseURL: process.env.APP_URL || "http://localhost:4000",
+    resendApiKey: process.env.RESEND_API_KEY || "debug_key",
+    db: opts.db,
+    schema,
+    enabledSocialAuth: [],
+    enablePasswordAuth: false,
+    enableMagicLinkAuth: false,
   });
 
   if (!fastify.hasRequestDecorator("apiKey")) {

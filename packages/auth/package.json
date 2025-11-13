@@ -1,0 +1,47 @@
+{
+  "name": "@refref/auth",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/es/index.d.ts",
+        "default": "./dist/es/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "bunchee",
+    "clean": "rm -rf dist",
+    "lint": "eslint src/",
+    "type:check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@refref/eslint-config": "workspace:*",
+    "@refref/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "bunchee": "^6.4.0",
+    "eslint": "^9.26.0",
+    "typescript": "5.8.3"
+  },
+  "dependencies": {
+    "@refref/coredb": "workspace:*",
+    "@refref/email-templates": "workspace:*",
+    "@refref/utils": "workspace:*",
+    "@refref/types": "workspace:*",
+    "better-auth": "^1.3.34",
+    "resend": "^4.6.0",
+    "drizzle-orm": "0.44.7"
+  }
+}
