@@ -97,7 +97,7 @@ The `refcode` entity has two distinct identifiers:
 
 - **`code` field**: User-facing referral code (e.g., `abc1234` or `john-doe`)
   - Generated using `@refref/utils` functions (`generateGlobalCode()` or validated via `validateVanityCode()`)
-  - Visible in referral URLs: `REFERRAL_HOST_URL/r/:code`
+  - Visible in referral URLs: `REFERRAL_HOST_URL/:code`
   - Unique per scope (global or product-level)
 
 This separation allows for user-friendly, short referral codes while maintaining robust database integrity with collision-resistant CUIDs.

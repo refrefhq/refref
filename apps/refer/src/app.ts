@@ -60,8 +60,8 @@ export async function buildApp(): Promise<FastifyInstance> {
   // Register health check routes
   await app.register(healthRoutes);
 
-  // Register referral redirect routes (/r/:id)
-  await app.register(referralRedirectRoutes, { prefix: "/r" });
+  // Register referral redirect routes (/:id)
+  await app.register(referralRedirectRoutes);
 
   return app;
 }

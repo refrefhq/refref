@@ -5,7 +5,7 @@ Public-facing Fastify server for handling referral redirects.
 ## Overview
 
 The refer server provides public endpoints for:
-- **Referral Link Redirects** (`/r/:id`) - Redirects referral links to target URLs with attribution
+- **Referral Link Redirects** (`/:id`) - Redirects referral links to target URLs with attribution
 
 ## Development
 
@@ -42,7 +42,7 @@ NODE_ENV="development"
 ### Referral Link Redirect
 
 ```
-GET /r/:slug
+GET /:slug
 ```
 
 Redirects to the target URL associated with the referral link slug.
@@ -102,7 +102,7 @@ apps/refer/
 
 ### Referral Redirect Deployment
 
-The `/r/:id` redirect endpoint can be deployed as:
+The `/:id` redirect endpoint can be deployed as:
 - **Cloudflare Workers** - Global edge deployment
 - **Vercel/Netlify** - Serverless functions
 - **Traditional Server** - Docker container or VPS
@@ -131,7 +131,7 @@ Tests use:
 
 ### Referral Redirect Optimization
 
-The `/r/:slug` endpoint is highly optimized:
+The `/:slug` endpoint is highly optimized:
 
 1. **Database Index** - `referral_link.slug` has an index for fast lookups
 2. **Single Query** - Uses JOIN to fetch all data in one query

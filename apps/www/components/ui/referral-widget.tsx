@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 
 export default function ReferralWidget() {
   const [copied, setCopied] = useState(false);
-  const referralLink = "acme.refref.ai/r/th5tdf";
+  const referralLink = "acme.refref.ai/th5tdf";
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);

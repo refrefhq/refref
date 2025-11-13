@@ -255,10 +255,10 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         // Build referral URL based on code type
         let referralUrl: string;
         if (refcodeRecord.global) {
-          // Global code: /r/:code
-          referralUrl = `${referralHostUrl}/r/${refcodeRecord.code}`;
+          // Global code: /:code
+          referralUrl = `${referralHostUrl}/${refcodeRecord.code}`;
         } else {
-          // Local code: /r/:productSlug/:code (need product slug)
+          // Local code: /:productSlug/:code (need product slug)
           const productData = await request.db.query.product.findFirst({
             where: (product, { eq }) => eq(product.id, productId),
           });
@@ -270,7 +270,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
             });
           }
 
-          referralUrl = `${referralHostUrl}/r/${productData.slug}/${refcodeRecord.code}`;
+          referralUrl = `${referralHostUrl}/${productData.slug}/${refcodeRecord.code}`;
         }
 
         // Return the widget configuration
