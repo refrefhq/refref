@@ -4,7 +4,15 @@ Static assets service for serving RefRef scripts (attribution tracking and refer
 
 ## Overview
 
-This app bundles and prepares RefRef scripts for deployment to Cloudflare Workers/Pages as a static site. Scripts are served with proper caching headers and CORS configuration for optimal performance.
+This app bundles and prepares RefRef scripts for deployment using **Cloudflare Workers Static Assets**. It combines a minimal Worker script with static file hosting to provide custom routing, headers, and caching for optimal performance.
+
+### Architecture
+
+- **Worker Script** (`src/index.ts`): Handles routing, redirects, and custom headers
+- **Static Assets** (`public/`): Versioned JavaScript bundles served from Cloudflare's network
+- **Assets Binding**: Worker fetches files from Cloudflare's asset storage via `env.ASSETS.fetch()`
+
+This is Cloudflare's new unified approach that replaces the separate Pages and Workers platforms.
 
 ## Production vs Development
 
@@ -88,8 +96,16 @@ pnpm -F @refref/assets preview
 # Login to Cloudflare (one-time)
 pnpm -F @refref/assets exec wrangler login
 
+# Select your Cloudflare account when prompted
 # Then deploy
 pnpm -F @refref/assets deploy:cloudflare
+```
+
+**If you get auth errors:**
+```bash
+# Re-authenticate if token expires
+pnpm -F @refref/assets exec wrangler logout
+pnpm -F @refref/assets exec wrangler login
 ```
 
 **Deployment Process:**
@@ -103,9 +119,21 @@ The deploy commands automatically:
 
 **After Deployment:**
 
-Your scripts will be available at:
-- Production: `https://refref-assets.workers.dev/attribution.v1.js`
-- Dev: `https://refref-assets-dev.workers.dev/attribution.v1.js`
+Your scripts will be available at your workers.dev URL:
+- Production: `https://refref-assets.<account-name>.workers.dev/attribution.v1.js`
+- Dev: `https://refref-assets-dev.<account-name>.workers.dev/attribution.v1.js`
+
+Example (replace with your account subdomain):
+```
+https://refref-assets.exa-fc4.workers.dev/attribution.v1.js
+https://refref-assets.exa-fc4.workers.dev/widget.v1.js
+```
+
+Test your deployment:
+```bash
+# Check if scripts are accessible
+curl -I https://refref-assets.<your-account>.workers.dev/attribution.v1.js
+```
 
 **Custom Domain Setup:**
 
@@ -196,20 +224,27 @@ jobs:
 2. Add as `CLOUDFLARE_API_TOKEN` in GitHub Secrets
 3. Push changes to trigger deployment
 
-### Cloudflare Configuration Files
+### Configuration Files
 
-- **_headers** - Sets cache control and CORS headers
-  - Versioned files: 1 year immutable cache
-  - Latest aliases: 1 hour cache
+**wrangler.toml** - Wrangler configuration for Workers Assets:
+```toml
+name = "refref-assets"
+main = "src/index.ts"              # Worker script
+compatibility_date = "2024-01-01"
 
-- **_redirects** - URL rewrites for latest aliases
-  - `/attribution.latest.js` → `/attribution.v1.js`
-  - `/widget.latest.js` → `/widget.v1.js`
+[assets]
+directory = "./public"              # Static assets directory
+binding = "ASSETS"                  # Binding name for env.ASSETS
 
-- **wrangler.jsonc** - Wrangler configuration
-  - Worker name: `refref-assets`
-  - Assets directory: `./public`
-  - Dev environment: `refref-assets-dev`
+[env.dev]
+name = "refref-assets-dev"         # Dev environment
+```
+
+**src/index.ts** - Worker script that handles:
+- **Routing**: Redirects aliases (`/attribution.latest.js` → `/attribution.v1.js`)
+- **Backward compatibility**: Maps `/scripts/*` to root files
+- **Cache headers**: Immutable caching for versioned files
+- **CORS**: Allows cross-origin requests for scripts
 
 ## Usage
 
@@ -265,17 +300,41 @@ The refer server reads from package dist files, allowing hot-reloading during de
   - Significant behavior changes
   - Major feature additions
 
+## How It Works
+
+### Request Flow
+
+1. **Request arrives** at Cloudflare Worker
+2. **Worker checks** if path needs rewriting (e.g., `/scripts/widget.js` → `/widget.v1.js`)
+3. **Worker fetches** asset from Cloudflare's asset storage via `env.ASSETS.fetch()`
+4. **Worker adds** custom headers (cache control, CORS)
+5. **Response sent** to client with optimized caching
+
+### Supported Routes
+
+| Request URL | Serves | Cache |
+|-------------|--------|-------|
+| `/attribution.v1.js` | Direct file | 1 year immutable |
+| `/widget.v1.js` | Direct file | 1 year immutable |
+| `/attribution.latest.js` | Redirects to v1 | 1 hour |
+| `/widget.latest.js` | Redirects to v1 | 1 hour |
+| `/attribution.js` | Redirects to v1 | 1 hour |
+| `/widget.js` | Redirects to v1 | 1 hour |
+| `/scripts/attribution.js` | Redirects to v1 | 1 hour |
+| `/scripts/widget.js` | Redirects to v1 | 1 hour |
+
 ## File Structure
 
 ```
 apps/assets/
 ├── public/              # Output directory (deployed to Cloudflare)
-│   ├── _headers        # Cache control & CORS config
-│   ├── _redirects      # URL rewrites
 │   ├── attribution.v1.js   # Generated (gitignored)
 │   └── widget.v1.js        # Generated (gitignored)
+├── src/
+│   └── index.ts         # Worker script (routing, headers)
 ├── scripts/
-│   └── build.ts        # Build script
+│   └── build.ts         # Build script (copies bundles)
+├── wrangler.toml        # Wrangler configuration
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -293,11 +352,20 @@ pnpm -F @refref/widget build
 
 ### Wrangler deployment fails
 
-**Authentication Error:**
+**Authentication Error (`Failed to fetch auth token` or `Body is unusable`):**
+
+This happens when the Wrangler auth token expires or is invalid.
+
 ```bash
-# Login to Cloudflare
+# Clear existing auth and re-login
+pnpm -F @refref/assets exec wrangler logout
 pnpm -F @refref/assets exec wrangler login
+
+# Then retry deployment
+pnpm -F @refref/assets deploy:cloudflare
 ```
+
+The login will open your browser for OAuth authentication. Select your account when prompted.
 
 **Build Errors:**
 ```bash

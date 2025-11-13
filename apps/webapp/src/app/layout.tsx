@@ -32,7 +32,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           type="module"
-          src={`${env.NEXT_PUBLIC_ASSETS_URL}/scripts/attribution.js`}
+          src={`${env.NEXT_PUBLIC_ASSETS_URL}/attribution.v1.js`}
           strategy="beforeInteractive"
         />
         <Script
@@ -47,7 +47,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           type="module"
-          src={`${env.NEXT_PUBLIC_ASSETS_URL}/scripts/widget.js`}
+          src={`${env.NEXT_PUBLIC_ASSETS_URL}/widget.v1.js`}
           strategy="afterInteractive"
           defer
         />
