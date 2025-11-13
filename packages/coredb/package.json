@@ -16,10 +16,10 @@
     }
   },
   "scripts": {
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
+    "db:generate": "infisical run --env=dev -- drizzle-kit generate",
+    "db:migrate": "infisical run --env=dev -- drizzle-kit migrate",
+    "db:push": "infisical run --env=dev -- drizzle-kit push",
+    "db:studio": "infisical run --env=dev -- drizzle-kit studio",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc",

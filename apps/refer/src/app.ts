@@ -5,7 +5,6 @@ import { coredbPlugin } from "@refref/utils";
 import { createDb } from "@refref/coredb";
 import healthRoutes from "./routes/health.js";
 import referralRedirectRoutes from "./routes/r.js";
-import scriptRoutes from "./routes/scripts.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
   // Validate required environment variables
@@ -63,9 +62,6 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   // Register referral redirect routes (/r/:id)
   await app.register(referralRedirectRoutes, { prefix: "/r" });
-
-  // Register script serving routes (/scripts/*)
-  await app.register(scriptRoutes, { prefix: "/scripts" });
 
   return app;
 }

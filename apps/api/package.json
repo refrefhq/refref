@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "infisical run --env=dev -- tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run",
+    "test": "infisical run --env=dev -- vitest run",
+    "test:watch": "infisical run --env=dev -- vitest",
+    "test:ui": "infisical run --env=dev -- vitest --ui",
+    "test:run": "infisical run --env=dev -- vitest run",
     "type:check": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write ."

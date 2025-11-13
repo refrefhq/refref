@@ -7,10 +7,9 @@
   "scripts": {
     "build": "tsx scripts/build.ts",
     "clean": "rm -rf public/*.js public/*.map",
-    "dev": "tsx scripts/build.ts --watch",
+    "dev": "infisical run --env=dev -- concurrently \"tsx scripts/build.ts --watch\" \"wrangler dev --port 8787\"",
     "deploy:cloudflare": "pnpm build && wrangler deploy",
-    "deploy:cloudflare:dev": "pnpm build && wrangler deploy --env dev",
-    "preview": "wrangler dev"
+    "deploy:cloudflare:dev": "pnpm build && wrangler deploy --env dev"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250115.0",
@@ -18,6 +17,8 @@
     "@refref/typescript-config": "workspace:*",
     "@refref/widget": "workspace:*",
     "@types/node": "^24.9.1",
+    "chokidar": "^4.0.1",
+    "concurrently": "^9.1.0",
     "tsx": "^4.7.1",
     "typescript": "^5.9.2",
     "wrangler": "^4.0.0"

@@ -3,12 +3,12 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "infisical run --env=dev -- turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "type:check": "turbo run type:check",
-    "test": "turbo run test",
-    "test:run": "turbo run test:run"
+    "test": "infisical run --env=dev -- turbo run test",
+    "test:run": "infisical run --env=dev -- turbo run test:run"
   },
   "devDependencies": {
     "@types/bad-words": "^3.0.3",

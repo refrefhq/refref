@@ -24,7 +24,7 @@
   "scripts": {
     "build": "bunchee",
     "clean": "rm -rf dist",
-    "dev": "email dev --dir ./src/templates",
+    "dev": "email dev --dir ./src/templates -p 3005",
     "lint": "eslint src/",
     "type:check": "tsc --noEmit"
   },
