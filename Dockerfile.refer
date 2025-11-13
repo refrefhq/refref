@@ -1,0 +1,72 @@
+FROM node:24-alpine AS base
+
+# Accept git SHA as build argument
+ARG GIT_SHA
+LABEL git.sha=${GIT_SHA}
+ENV GIT_SHA=${GIT_SHA}
+
+# Install pnpm, infisical CLI, and ca-certificates
+RUN npm install -g pnpm@10.15.0
+RUN apk add --no-cache curl ca-certificates bash && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.alpine.sh' | distro=alpine version=3.18.0 codename= bash && \
+    apk add infisical && \
+    update-ca-certificates
+
+# Set the working directory
+WORKDIR /app
+
+# Copy workspace files
+COPY pnpm-workspace.yaml ./
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+
+# Copy all packages (workspace dependencies)
+COPY packages/ ./packages/
+COPY apps/refer/ ./apps/refer/
+
+# Install dependencies using pnpm
+RUN pnpm install --frozen-lockfile
+
+# Build all workspace packages first
+RUN pnpm --filter "./packages/*" build
+
+# Build the refer service
+WORKDIR /app/apps/refer
+RUN pnpm build
+
+# Production stage
+FROM node:24-alpine AS runner
+
+# Install pnpm, infisical CLI, and ca-certificates
+RUN npm install -g pnpm@10.15.0
+RUN apk add --no-cache curl ca-certificates bash && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.alpine.sh' | distro=alpine version=3.18.0 codename= bash && \
+    apk add infisical && \
+    update-ca-certificates
+
+WORKDIR /app
+
+# Copy workspace files
+COPY pnpm-workspace.yaml ./
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+
+# Copy built packages
+COPY --from=base /app/packages/ ./packages/
+COPY --from=base /app/apps/refer/dist/ ./apps/refer/dist/
+COPY --from=base /app/apps/refer/package.json ./apps/refer/package.json
+
+# Copy ca-certificates from build stage
+COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod
+
+# Set working directory to refer app
+WORKDIR /app/apps/refer
+
+# Expose port
+EXPOSE 3000
+
+# Start the application
+CMD ["pnpm", "start"]

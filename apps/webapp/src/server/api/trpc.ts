@@ -10,10 +10,11 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { db } from "@/server/db";
+import { db, schema } from "@/server/db";
 import { logger } from "@/lib/logger";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { eq } from "drizzle-orm";
 
 /**
  * 1. CONTEXT
@@ -36,6 +37,16 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   const organizationUser = await auth.api.getActiveMember({
     headers,
   });
+
+  // Get the active product for the active organization (one product per org for now)
+  let activeProductId: string | null = null;
+  if (session?.session?.activeOrganizationId) {
+    const product = await db.query.product.findFirst({
+      where: eq(schema.product.orgId, session.session.activeOrganizationId),
+    });
+    activeProductId = product?.id ?? null;
+  }
+
   return {
     db,
     headers,
@@ -46,8 +57,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
       | "owner"
       | "admin"
       | "member",
-    //! TODO: @haritabh-z01 to be fixed post nc changes
-    activeProductId: "temp-ts",
+    activeProductId,
     userId: session?.user?.id,
     logger: logger,
   };
@@ -141,7 +151,7 @@ export const onboardingProcedure = t.procedure.use(async ({ ctx, next }) => {
   });
 });
 
-//! these require the presence of an active organization id
+//! these require the presence of an active organization id and active product
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   console.error("ctx is ", ctx.session);
   // check both cause ts :)
@@ -151,6 +161,12 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.activeOrganizationId || !ctx.organizationUserId) {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
+  if (!ctx.activeProductId) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "No product found. Please complete onboarding.",
+    });
+  }
 
   return next({
     ctx: {
@@ -158,6 +174,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
       activeOrganizationId: ctx.activeOrganizationId,
       organizationUserId: ctx.organizationUserId,
       organizationUserRole: ctx.organizationUserRole,
+      activeProductId: ctx.activeProductId,
       userId: ctx.userId,
     },
   });

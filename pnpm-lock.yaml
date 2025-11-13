@@ -136,18 +136,12 @@ importers:
       '@fastify/rate-limit':
         specifier: ^10.3.0
         version: 10.3.0
-      '@refref/attribution-script':
-        specifier: workspace:*
-        version: link:../../packages/attribution-script
       '@refref/coredb':
         specifier: workspace:*
         version: link:../../packages/coredb
       '@refref/utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      '@refref/widget':
-        specifier: workspace:*
-        version: link:../../packages/widget
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3

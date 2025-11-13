@@ -13,7 +13,8 @@
     "test:run": "infisical run --env=dev -- vitest run",
     "type:check": "tsc --noEmit",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "fly:deploy": "cd ../../ && flyctl deploy --app refref-refer --dockerfile Dockerfile.refer --config apps/refer/fly.toml --build-arg GIT_SHA=$(git rev-parse --short HEAD) --env GIT_SHA=$(git rev-parse --short HEAD)"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",
