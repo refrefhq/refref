@@ -174,10 +174,10 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         });
 
         if (!refcodeRecord) {
-          // Generate global code with built-in retries (5 attempts)
-          const generatedCode = generateGlobalCode(5);
+          // Generate global code with profanity filtering (up to 5 attempts)
+          let currentCode = generateGlobalCode(5);
 
-          if (!generatedCode) {
+          if (!currentCode) {
             return reply.code(500).send({
               error: "Internal Server Error",
               message: "Failed to generate unique refcode after multiple attempts"
@@ -192,7 +192,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
                 .insert(refcode)
                 .values({
                   id: createId("refcode"),
-                  code: generatedCode,
+                  code: currentCode,
                   participantId: participantRecord.id,
                   programId: activeProgram.id,
                   productId: productId,
@@ -207,7 +207,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
                 insertRetries--;
                 request.log.warn({
                   participantId: participantRecord.id,
-                  code: generatedCode
+                  code: currentCode
                 }, "Refcode collision on insert, retrying with new code...");
 
                 // Generate a new code for next retry
@@ -215,6 +215,8 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
                 if (!newCode) {
                   break;
                 }
+                // Actually use the new code in the next iteration
+                currentCode = newCode;
               }
             } catch (error) {
               insertRetries--;

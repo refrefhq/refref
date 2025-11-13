@@ -48,15 +48,15 @@ const VANITY_CODE_PATTERN = /^[a-z0-9-]+$/; // alphanumeric + hyphens only
  * - Checked for profanity
  * - Retried on collision or profanity failure
  *
- * @param retries - Number of generation attempts (default: 5)
- * @returns Generated code or null if all retries exhausted
+ * @param maxAttempts - Maximum number of generation attempts (default: 5)
+ * @returns Generated code or null if all attempts exhausted
  *
  * @example
  * const code = generateGlobalCode();
  * // Returns: "abc1234" or null
  */
-export function generateGlobalCode(retries: number = 5): string | null {
-  for (let attempt = 0; attempt < retries; attempt++) {
+export function generateGlobalCode(maxAttempts: number = 5): string | null {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     let code = "";
 
     // Generate random code
@@ -71,7 +71,7 @@ export function generateGlobalCode(retries: number = 5): string | null {
     }
   }
 
-  // All retries exhausted
+  // All attempts exhausted
   return null;
 }
 

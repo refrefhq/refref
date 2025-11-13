@@ -55,22 +55,22 @@ describe("refcode utilities", () => {
       expect(typeof code).toBe("string");
     });
 
-    it("should return null after exhausting retries", () => {
+    it("should return null after exhausting attempts", () => {
       // Mock the bad-words filter to always return true (profane)
       const mockFilter = {
         isProfane: vi.fn().mockReturnValue(true),
       };
 
       // We can't easily mock the internal filter, so this test documents the behavior
-      // In practice, with 0 retries and a profane generator, it should return null
+      // In practice, with 0 maxAttempts and a profane generator, it should return null
       const code = generateGlobalCode(0);
-      // With 0 retries, it won't even try once, so it returns null
+      // With 0 maxAttempts, it won't even try once, so it returns null
       expect(code).toBeNull();
     });
 
-    it("should accept custom retry count", () => {
+    it("should accept custom maxAttempts count", () => {
       const code = generateGlobalCode(3);
-      // Should work with custom retry count
+      // Should work with custom maxAttempts count
       expect(code).toBeDefined();
       expect(code).toHaveLength(7);
     });

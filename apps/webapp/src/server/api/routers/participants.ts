@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { schema } from "@/server/db";
-const { participant, referral, refcode, event } = schema;
+const { participant, referral, refcode, event, product } = schema;
 import { and, count, eq, ilike, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { env } from "@/env";
 
 export const participantsRouter = createTRPCRouter({
   /**
@@ -152,9 +153,33 @@ export const participantsRouter = createTRPCRouter({
         .orderBy(sql`${referral.createdAt} DESC`)
         .limit(5);
 
+      // Build referral URL if refcode exists
+      let referralUrl: string | null = null;
+      if (refcodeData) {
+        const referralHostUrl = env.NEXT_PUBLIC_REFER_URL;
+
+        if (refcodeData.global) {
+          // Global code: /r/:code
+          referralUrl = `${referralHostUrl}/r/${refcodeData.code}`;
+        } else {
+          // Local code: /r/:productSlug/:code
+          // Need to get product slug
+          const [productData] = await ctx.db
+            .select({ slug: product.slug })
+            .from(product)
+            .where(eq(product.id, participantData.productId))
+            .limit(1);
+
+          if (productData?.slug) {
+            referralUrl = `${referralHostUrl}/r/${productData.slug}/${refcodeData.code}`;
+          }
+        }
+      }
+
       return {
         ...participantData,
         refcode: refcodeData,
+        referralUrl,
         referralCount: referralCountResult?.count ?? 0,
         eventsCount: eventsCountResult?.count ?? 0,
         recentReferrals,
