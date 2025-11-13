@@ -1,0 +1,12 @@
+{
+	"name": "refref-assets",
+	"compatibility_date": "2025-06-20",
+	"assets": {
+		"directory": "./public"
+	},
+	"env": {
+		"dev": {
+			"name": "refref-assets-dev"
+		}
+	}
+}

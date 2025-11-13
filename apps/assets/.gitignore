@@ -1,0 +1,21 @@
+# Build outputs
+dist/
+
+# Generated assets (built from packages)
+public/*.js
+public/*.js.map
+
+# Keep configuration files
+!public/_headers
+!public/_redirects
+
+# Dependencies
+node_modules/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local

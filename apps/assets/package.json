@@ -1,0 +1,24 @@
+{
+  "name": "@refref/assets",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static assets service for RefRef scripts (attribution, widget)",
+  "type": "module",
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "clean": "rm -rf public/*.js public/*.map",
+    "dev": "tsx scripts/build.ts --watch",
+    "deploy:cloudflare": "pnpm build && wrangler deploy",
+    "deploy:cloudflare:dev": "pnpm build && wrangler deploy --env dev",
+    "preview": "wrangler dev"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@refref/attribution-script": "workspace:*",
+    "@refref/widget": "workspace:*",
+    "@refref/typescript-config": "workspace:*",
+    "tsx": "^4.7.1",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.0.0"
+  }
+}
