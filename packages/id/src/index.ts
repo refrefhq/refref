@@ -19,7 +19,7 @@ const ENTITY_PREFIXES = {
   rewardRule: "rwr",
   reward: "rwd",
   productSecrets: "sec",
-  referralLink: "rfl",
+  refcode: "rc",
   referral: "ref",
   event: "evt",
 } as const;

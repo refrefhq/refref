@@ -41,7 +41,7 @@ const config: AttributionConfig = {
     sameSite: "Lax",
   },
   formOptions: {
-    codeField: "rfc", // Name of the hidden field for referral code
+    codeField: "refcode", // Name of the hidden field for referral code
   },
 };
 
@@ -74,7 +74,7 @@ RefRefAttribution.attachTo(form);
 #### Injected Form Fields
 
 - The script injects a hidden `<input>` field into each form with `data-refref`.
-- The field's `name` is set by the `codeField` option (default: `rfc`).
+- The field's `name` is set by the `codeField` option (default: `refcode`).
 - The field's `value` is set to the referral code (if present in URL or cookie).
 
 ### Getting the Attribution Code
@@ -97,13 +97,13 @@ The script automatically captures the following URL parameter:
 
 | Parameter | Description            |
 | --------- | ---------------------- |
-| `rfc`     | Referral code (string) |
+| `refcode` | Referral code (string) |
 
-- Only the `rfc` parameter is tracked by default. You can customize the field name in forms via the `codeField` option.
+- Only the `refcode` parameter is tracked by default. You can customize the field name in forms via the `codeField` option.
 
 ## Cookie Storage
 
-- The referral code is stored in a cookie with the key `refref-unique-code` (unless disabled).
+- The referral code is stored in a cookie with the key `refref-refcode` (unless disabled).
 - Cookie options are fully configurable (see below).
 
 ## Configuration Options
@@ -121,9 +121,9 @@ The script automatically captures the following URL parameter:
 
 ### Form Options
 
-| Option    | Type   | Default | Description                                |
-| --------- | ------ | ------- | ------------------------------------------ |
-| codeField | string | "rfc"   | Name of the hidden field for referral code |
+| Option    | Type   | Default    | Description                                |
+| --------- | ------ | ---------- | ------------------------------------------ |
+| codeField | string | "refcode"  | Name of the hidden field for referral code |
 
 ## Automatic Initialization
 

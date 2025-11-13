@@ -12,6 +12,7 @@ import {
   decimal,
   unique,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { createId as createCuid } from "@paralleldrive/cuid2";
 import { createId, isValidEntityType } from "@refref/id";
@@ -297,28 +298,56 @@ export const productSecrets = pgTable("product_secrets", {
   clientSecret: text("client_secret").notNull(),
 });
 
-export const referralLink = pgTable(
-  "referral_link",
+export const refcode = pgTable(
+  "refcode",
   {
-    ...baseFields("referralLink"),
+    ...baseFields("refcode"),
+    // User-facing code (e.g., "abc1234" for global, "john-doe" for local)
+    code: text("code").notNull(),
     // Core relationships
     participantId: text("participant_id")
       .notNull()
       .references(() => participant.id, { onDelete: "cascade" }),
-    // Link details
-    slug: text("slug").notNull().unique(), // Custom path segment
+    programId: text("program_id")
+      .notNull()
+      .references(() => program.id, { onDelete: "cascade" }),
+    productId: text("product_id")
+      .notNull()
+      .references(() => product.id, { onDelete: "cascade" }),
+    // Code scope: global (unique across system) or local (unique within product)
+    global: boolean("global").notNull().default(false),
   },
   (table) => ({
-    // Index for fast slug lookups (hot path for referral redirects)
-    slugIdx: index("referral_link_slug_idx").on(table.slug),
+    // Partial unique index for global codes (WHERE global = true)
+    globalCodeUnique: uniqueIndex("refcode_global_code_unique_idx")
+      .on(table.code)
+      .where(sql`${table.global} = true`),
+    // Partial unique index for local codes (WHERE global = false)
+    localCodeUnique: uniqueIndex("refcode_local_code_unique_idx")
+      .on(table.code, table.productId)
+      .where(sql`${table.global} = false`),
+    // Index for fast code lookups (hot path for referral redirects)
+    codeIdx: index("refcode_code_idx").on(table.code),
+    // Index for participant lookups
+    participantIdx: index("refcode_participant_id_idx").on(table.participantId),
+    // Index for program lookups
+    programIdx: index("refcode_program_id_idx").on(table.programId),
   }),
 );
 
-// Relations for referralLink
-export const referralLinkRelations = relations(referralLink, ({ one }) => ({
+// Relations for refcode
+export const refcodeRelations = relations(refcode, ({ one }) => ({
   participant: one(participant, {
-    fields: [referralLink.participantId],
+    fields: [refcode.participantId],
     references: [participant.id],
+  }),
+  program: one(program, {
+    fields: [refcode.programId],
+    references: [program.id],
+  }),
+  product: one(product, {
+    fields: [refcode.productId],
+    references: [product.id],
   }),
 }));
 
@@ -328,7 +357,7 @@ export const participantRelations = relations(participant, ({ one, many }) => ({
     fields: [participant.productId],
     references: [product.id],
   }),
-  referralLinks: many(referralLink),
+  refcodes: many(refcode),
 }));
 
 export const programRelations = relations(program, ({ one }) => ({

@@ -12,7 +12,9 @@
     "build": "tsc",
     "type:check": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@refref/coredb": "workspace:*",
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@refref/typescript-config": "workspace:*",
     "@types/node": "^22.10.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.9"
   }
 }

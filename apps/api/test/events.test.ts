@@ -111,13 +111,13 @@ describe("Track API", () => {
           userId: "user_new_123",
           email: "newuser@example.com",
           name: "New User",
-          referralCode: "abc123", // This should trigger referral attribution
+          refcode: "abc123", // This should trigger referral attribution
         },
       };
 
       // Note: This will fail auth but validates schema
       expect(signupEvent.payload.userId).toBeDefined();
-      expect(signupEvent.payload.referralCode).toBeDefined();
+      expect(signupEvent.payload.refcode).toBeDefined();
     });
   });
 
@@ -159,17 +159,17 @@ describe("Track API", () => {
   describe("Event Processing Flow", () => {
     it("should follow correct signup referral attribution flow", () => {
       const flow = {
-        input: "Signup with referralCode 'abc123'",
-        step1: "Look up referralLink WHERE slug = 'abc123'",
-        step2: "Find referrerLink.participantId",
+        input: "Signup with refcode 'abc123'",
+        step1: "Look up refcode WHERE code = 'abc123'",
+        step2: "Find refcode.participantId",
         step3: "INSERT new referral record",
         step4: "Create event with referralId",
         step5: "Process event for rewards asynchronously",
       };
 
       // Documented flow for testing
-      expect(flow.step1).toContain("referralLink");
-      expect(flow.step1).toContain("slug");
+      expect(flow.step1).toContain("refcode");
+      expect(flow.step1).toContain("code");
       expect(flow.step3).toContain("INSERT");
     });
 

@@ -31,10 +31,11 @@ interface ParticipantCardProps {
     email: string | null;
     externalId: string | null;
     createdAt: string | Date;
-    referralLink?: {
+    refcode?: {
       id: string;
-      slug: string;
+      code: string;
     } | null;
+    referralUrl: string | null;
     referralCount: number;
     eventsCount: number;
     recentReferrals: Array<{
@@ -66,13 +67,10 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
   };
 
   const copyReferralLink = async () => {
-    if (!participant.referralLink || typeof window === "undefined") return;
-
-    const baseUrl = window.location.origin;
-    const referralUrl = `${baseUrl}/r/${participant.referralLink.slug}`;
+    if (!participant.referralUrl) return;
 
     try {
-      await navigator.clipboard.writeText(referralUrl);
+      await navigator.clipboard.writeText(participant.referralUrl);
       setCopied(true);
       toast.success("Referral link copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
@@ -82,11 +80,9 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
   };
 
   const openReferralLink = () => {
-    if (!participant.referralLink || typeof window === "undefined") return;
+    if (!participant.referralUrl || typeof window === "undefined") return;
 
-    const baseUrl = window.location.origin;
-    const referralUrl = `${baseUrl}/r/${participant.referralLink.slug}`;
-    window.open(referralUrl, "_blank");
+    window.open(participant.referralUrl, "_blank");
   };
 
   const formatDate = (date: string | Date) => {
@@ -96,11 +92,6 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
       day: "numeric",
     });
   };
-
-  const referralUrl =
-    participant.referralLink && typeof window !== "undefined"
-      ? `${window.location.origin}/r/${participant.referralLink.slug}`
-      : null;
 
   return (
     <div className="space-y-6">
@@ -179,14 +170,16 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
           </div>
 
           {/* Referral Link Section */}
-          {referralUrl && (
+          {participant.referralUrl && (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <ExternalLink className="h-4 w-4 text-muted-foreground" />
                 <h3 className="font-semibold">Referral Link</h3>
               </div>
               <div className="flex items-center gap-2 p-3 rounded-lg border bg-muted/50">
-                <code className="flex-1 text-sm break-all">{referralUrl}</code>
+                <code className="flex-1 text-sm break-all">
+                  {participant.referralUrl}
+                </code>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"

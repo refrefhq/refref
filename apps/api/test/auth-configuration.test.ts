@@ -49,7 +49,7 @@ describe("Authentication Configuration", () => {
       const response = await apiContext.post("/v1/widget/init", {
         data: {
           productId: "test",
-          referralCode: "abc123",
+          refcode: "abc123",
         },
       });
 
@@ -67,7 +67,7 @@ describe("Authentication Configuration", () => {
         },
         data: {
           productId: "test",
-          referralCode: "abc123",
+          refcode: "abc123",
         },
       });
 

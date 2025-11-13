@@ -27,61 +27,67 @@ describe("Referral Redirect Endpoint", () => {
     await stopTestServer();
   });
 
-  describe("GET /r/:id - Error Cases", () => {
+  describe("GET /r/:code - Global Code Error Cases", () => {
     it("should return 404 when route path is incomplete", async () => {
       const response = await apiContext.get("/r/");
 
       expect(response.status()).toBe(404); // Fastify returns 404 for route not found
     });
 
-    it("should return 404 when referral link not found", async () => {
-      // Mock database to return null for referral link
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce(null);
+    it("should return 404 when refcode not found", async () => {
+      // Mock database to return null for refcode
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce(null);
 
-      const response = await apiContext.get("/r/nonexistent-slug");
+      const response = await apiContext.get("/r/abc1234");
 
       expect(response.status()).toBe(404);
 
       const body = await response.json();
-      expect(body.error).toBe("Referral link not found");
+      expect(body.error).toBe("Referral code not found");
     });
 
     it("should return 404 when participant not found", async () => {
-      // Mock database to return referral link but no participant (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_123",
-        slug: "test-slug",
-        participantId: "participant_123",
+      // Mock database to return refcode but no participant (relational query)
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_123",
+        code: "abc1234",
+        participantId: "prt_123",
+        programId: "prg_123",
+        productId: "prd_123",
+        global: true,
         participant: null, // No participant found in relation
       });
 
-      const response = await apiContext.get("/r/test-slug");
+      const response = await apiContext.get("/r/abc1234");
 
       expect(response.status()).toBe(404);
 
       const body = await response.json();
-      expect(body.error).toBe("Referral link not found");
+      expect(body.error).toBe("Referral code not found");
     });
 
     it("should return 500 when product URL not configured", async () => {
       // Mock database to return nested data with no product URL (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_123",
-        slug: "test-slug",
-        participantId: "participant_123",
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_123",
+        code: "abc1234",
+        participantId: "prt_123",
+        programId: "prg_123",
+        productId: "prd_123",
+        global: true,
         participant: {
-          id: "participant_123",
-          productId: "product_123",
+          id: "prt_123",
+          productId: "prd_123",
           name: "John Doe",
           email: "john@example.com",
           product: {
-            id: "product_123",
+            id: "prd_123",
             url: null, // No URL configured
           },
         },
       });
 
-      const response = await apiContext.get("/r/test-slug");
+      const response = await apiContext.get("/r/abc1234");
 
       expect(response.status()).toBe(500);
 
@@ -90,33 +96,36 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /r/:id - Success Cases", () => {
+  describe("GET /r/:code - Global Code Success Cases", () => {
     it("should redirect with encoded params when all data is present", async () => {
       // Mock complete happy path with nested data (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_123",
-        slug: "happy-slug",
-        participantId: "participant_123",
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_happy",
+        code: "abc1234",
+        participantId: "prt_123",
+        programId: "prg_123",
+        productId: "prd_123",
+        global: true,
         participant: {
-          id: "participant_123",
-          productId: "product_123",
+          id: "prt_123",
+          productId: "prd_123",
           name: "John Doe",
           email: "john@example.com",
           product: {
-            id: "product_123",
+            id: "prd_123",
             url: "https://example.com",
           },
         },
       });
 
-      const response = await apiContext.get("/r/happy-slug");
+      const response = await apiContext.get("/r/abc1234");
 
       expect(response.status()).toBe(307);
 
       const location = response.headers()["location"];
       expect(location).toBeDefined();
       expect(location).toContain("https://example.com");
-      expect(location).toContain("rfc=happy-slug");
+      expect(location).toContain("refcode=abc1234");
       expect(location).toContain("name="); // Base64 encoded name
       expect(location).toContain("email="); // Base64 encoded email
       expect(location).toContain("participantId="); // Base64 encoded participant ID
@@ -124,30 +133,33 @@ describe("Referral Redirect Endpoint", () => {
 
     it("should handle missing optional fields gracefully", async () => {
       // Mock with null name and email (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_456",
-        slug: "minimal-slug",
-        participantId: "participant_456",
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_minimal",
+        code: "xyz5678",
+        participantId: "prt_456",
+        programId: "prg_456",
+        productId: "prd_456",
+        global: true,
         participant: {
-          id: "participant_456",
-          productId: "product_456",
+          id: "prt_456",
+          productId: "prd_456",
           name: null,
           email: null,
           product: {
-            id: "product_456",
+            id: "prd_456",
             url: "https://minimal.example.com",
           },
         },
       });
 
-      const response = await apiContext.get("/r/minimal-slug");
+      const response = await apiContext.get("/r/xyz5678");
 
       expect(response.status()).toBe(307);
 
       const location = response.headers()["location"];
       expect(location).toBeDefined();
       expect(location).toContain("https://minimal.example.com");
-      expect(location).toContain("rfc=minimal-slug");
+      expect(location).toContain("refcode=xyz5678");
       // Should not include empty encoded params
       expect(location).not.toContain("name=");
       expect(location).not.toContain("email=");
@@ -155,53 +167,162 @@ describe("Referral Redirect Endpoint", () => {
 
     it("should preserve existing query params in product URL", async () => {
       // Mock with nested data (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_789",
-        slug: "query-slug",
-        participantId: "participant_789",
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_query",
+        code: "def9012",
+        participantId: "prt_789",
+        programId: "prg_789",
+        productId: "prd_789",
+        global: true,
         participant: {
-          id: "participant_789",
-          productId: "product_789",
+          id: "prt_789",
+          productId: "prd_789",
           name: "Jane Smith",
           email: "jane@example.com",
           product: {
-            id: "product_789",
+            id: "prd_789",
             url: "https://example.com?existing=param",
           },
         },
       });
 
-      const response = await apiContext.get("/r/query-slug");
+      const response = await apiContext.get("/r/def9012");
 
       expect(response.status()).toBe(307);
 
       const location = response.headers()["location"];
       expect(location).toBeDefined();
       // Should handle existing query params correctly
-      expect(location).toContain("rfc=query-slug");
+      expect(location).toContain("refcode=def9012");
+    });
+
+    it("should handle case-insensitive codes", async () => {
+      // Mock database (normalizeCode converts to lowercase)
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_case",
+        code: "abc1234", // stored in lowercase
+        participantId: "prt_case",
+        programId: "prg_case",
+        productId: "prd_case",
+        global: true,
+        participant: {
+          id: "prt_case",
+          productId: "prd_case",
+          name: "Case Test",
+          email: "case@example.com",
+          product: {
+            id: "prd_case",
+            url: "https://case.example.com",
+          },
+        },
+      });
+
+      // Request with uppercase should work
+      const response = await apiContext.get("/r/ABC1234");
+
+      expect(response.status()).toBe(307);
+      const location = response.headers()["location"];
+      expect(location).toContain("refcode=abc1234"); // normalized to lowercase
     });
   });
 
-  describe("GET /r/:id - Parameter Encoding", () => {
+  describe("GET /r/:productSlug/:code - Local Code Cases", () => {
+    it("should return 404 when product not found", async () => {
+      // Mock product lookup to return null
+      mockDb.query.product.findFirst.mockResolvedValueOnce(null);
+
+      const response = await apiContext.get("/r/nonexistent/john-doe");
+
+      expect(response.status()).toBe(404);
+
+      const body = await response.json();
+      expect(body.error).toBe("Product not found");
+    });
+
+    it("should return 404 when local refcode not found", async () => {
+      // Mock product lookup
+      mockDb.query.product.findFirst.mockResolvedValueOnce({
+        id: "prd_acme",
+        slug: "acme",
+        url: "https://acme.example.com",
+      });
+
+      // Mock refcode lookup to return null
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce(null);
+
+      const response = await apiContext.get("/r/acme/nonexistent");
+
+      expect(response.status()).toBe(404);
+
+      const body = await response.json();
+      expect(body.error).toBe("Referral code not found");
+    });
+
+    it("should redirect with local code when all data is present", async () => {
+      // Mock product lookup
+      mockDb.query.product.findFirst.mockResolvedValueOnce({
+        id: "prd_acme",
+        slug: "acme",
+        url: "https://acme.example.com",
+      });
+
+      // Mock refcode lookup
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_local",
+        code: "john-doe",
+        participantId: "prt_john",
+        programId: "prg_acme",
+        productId: "prd_acme",
+        global: false,
+        participant: {
+          id: "prt_john",
+          productId: "prd_acme",
+          name: "John Doe",
+          email: "john@acme.com",
+          product: {
+            id: "prd_acme",
+            slug: "acme",
+            url: "https://acme.example.com",
+          },
+        },
+      });
+
+      const response = await apiContext.get("/r/acme/john-doe");
+
+      expect(response.status()).toBe(307);
+
+      const location = response.headers()["location"];
+      expect(location).toBeDefined();
+      expect(location).toContain("https://acme.example.com");
+      expect(location).toContain("refcode=john-doe");
+      expect(location).toContain("name=");
+      expect(location).toContain("email=");
+    });
+  });
+
+  describe("GET /r/:code - Parameter Encoding", () => {
     it("should base64 encode participant details", async () => {
       // Mock with nested data (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_encode",
-        slug: "encode-test",
-        participantId: "participant_encode",
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_encode",
+        code: "enc0123",
+        participantId: "prt_encode",
+        programId: "prg_encode",
+        productId: "prd_encode",
+        global: true,
         participant: {
-          id: "participant_encode",
-          productId: "product_encode",
+          id: "prt_encode",
+          productId: "prd_encode",
           name: "Test User",
           email: "test@example.com",
           product: {
-            id: "product_encode",
+            id: "prd_encode",
             url: "https://test.example.com",
           },
         },
       });
 
-      const response = await apiContext.get("/r/encode-test");
+      const response = await apiContext.get("/r/enc0123");
 
       expect(response.status()).toBe(307);
 
@@ -232,29 +353,32 @@ describe("Referral Redirect Endpoint", () => {
         const decodedId = Buffer.from(participantIdParam, "base64").toString(
           "utf-8",
         );
-        expect(decodedId).toBe("participant_encode");
+        expect(decodedId).toBe("prt_encode");
       }
     });
 
     it("should handle special characters in participant data", async () => {
       // Mock with nested data (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_special",
-        slug: "special-chars",
-        participantId: "participant_special",
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_special",
+        code: "spc4567",
+        participantId: "prt_special",
+        programId: "prg_special",
+        productId: "prd_special",
+        global: true,
         participant: {
-          id: "participant_special",
-          productId: "product_special",
+          id: "prt_special",
+          productId: "prd_special",
           name: "John O'Brien & Co.",
           email: "john+test@example.com",
           product: {
-            id: "product_special",
+            id: "prd_special",
             url: "https://special.example.com",
           },
         },
       });
 
-      const response = await apiContext.get("/r/special-chars");
+      const response = await apiContext.get("/r/spc4567");
 
       expect(response.status()).toBe(307);
 
@@ -273,27 +397,30 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /r/:id - Performance", () => {
+  describe("GET /r/:code - Performance", () => {
     it("should respond quickly for valid redirect", async () => {
       // Mock with nested data (relational query)
-      mockDb.query.referralLink.findFirst.mockResolvedValueOnce({
-        id: "link_perf",
-        slug: "perf-test",
-        participantId: "participant_perf",
+      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
+        id: "rc_perf",
+        code: "prf8901",
+        participantId: "prt_perf",
+        programId: "prg_perf",
+        productId: "prd_perf",
+        global: true,
         participant: {
-          id: "participant_perf",
-          productId: "product_perf",
+          id: "prt_perf",
+          productId: "prd_perf",
           name: "Perf User",
           email: "perf@example.com",
           product: {
-            id: "product_perf",
+            id: "prd_perf",
             url: "https://perf.example.com",
           },
         },
       });
 
       const startTime = Date.now();
-      const response = await apiContext.get("/r/perf-test");
+      const response = await apiContext.get("/r/prf8901");
       const endTime = Date.now();
 
       expect(response.status()).toBe(307);

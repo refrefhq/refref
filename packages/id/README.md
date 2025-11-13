@@ -82,9 +82,25 @@ try {
 | rewardRule      | rwr    | rwr_cmcl0m4n000000p0q0k2l3m4n  |
 | reward          | rwd    | rwd_cmdm1n5o000000q0r1l3m4n5o  |
 | productSecrets  | sec    | sec_cmen2o6p000000r0s2m4n5o6p  |
-| referralLink    | rfl    | rfl_cmfo3p7q000000s0t3n5o6p7q  |
+| refcode         | rc     | rc_cmfo3p7q000000s0t3n5o6p7q   |
 | referral        | ref    | ref_cmgp4q8r000000t0u4o6p7q8r  |
 | event           | evt    | evt_cmhq5r9s000000u0v5p7q8r9s  |
+
+## Important Note: Refcode ID vs Code
+
+The `refcode` entity has two distinct identifiers:
+
+- **`id` field**: Database primary key (e.g., `rc_cmfo3p7q000000s0t3n5o6p7q`)
+  - Generated using `createId("refcode")`
+  - Used for internal database relationships and operations
+  - Never exposed to end users
+
+- **`code` field**: User-facing referral code (e.g., `abc1234` or `john-doe`)
+  - Generated using `@refref/utils` functions (`generateGlobalCode()` or validated via `validateVanityCode()`)
+  - Visible in referral URLs: `REFERRAL_HOST_URL/r/:code`
+  - Unique per scope (global or product-level)
+
+This separation allows for user-friendly, short referral codes while maintaining robust database integrity with collision-resistant CUIDs.
 
 ## API
 

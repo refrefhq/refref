@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db, schema } from "@/server/db";
 import { and, ilike, or, eq } from "drizzle-orm";
 
-const { participant, program, referralLink } = schema;
+const { participant, program, refcode } = schema;
 
 const settingsPages = [
   {
@@ -58,8 +58,8 @@ export const searchRouter = createTRPCRouter({
           })
           .from(participant)
           .leftJoin(
-            referralLink,
-            eq(participant.id, referralLink.participantId),
+            refcode,
+            eq(participant.id, refcode.participantId),
           )
           .where(
             and(
@@ -69,7 +69,7 @@ export const searchRouter = createTRPCRouter({
                 ilike(participant.id, searchPattern),
                 ilike(participant.name, searchPattern),
                 ilike(participant.externalId, searchPattern),
-                ilike(referralLink.slug, searchPattern),
+                ilike(refcode.code, searchPattern),
               ),
             ),
           )

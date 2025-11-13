@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { schema } from "@refref/coredb";
-const { participant, referral, referralLink } = schema;
+const { participant, referral, refcode } = schema;
 import { eq, and } from "drizzle-orm";
 import { type EventMetadataV1Type } from "@refref/types";
 import { createEvent } from "../../../services/events.js";
+import { normalizeCode } from "@refref/utils";
 
 // Signup event request schema (no eventType discriminator needed)
 const signupRequestSchema = z.object({
@@ -13,7 +14,7 @@ const signupRequestSchema = z.object({
   programId: z.string().optional(),
   payload: z.object({
     userId: z.string(),
-    referralCode: z.string().optional(),
+    refcode: z.string().optional(),
     email: z.string().email().optional(),
     name: z.string().optional(),
   }),
@@ -63,19 +64,28 @@ export default async function signupTrackRoutes(fastify: FastifyInstance) {
             participantId = newParticipant?.id;
           }
 
-          // If referral code provided, find referrer and create referral
-          if (body.payload.referralCode && participantId) {
-            const [referrerLink] = await tx
+          // If refcode provided, find referrer and create referral
+          if (body.payload.refcode && participantId) {
+            const normalizedRefcode = normalizeCode(body.payload.refcode);
+
+            // Look up refcode (could be global or local)
+            // For signup tracking, we don't know the product slug, so we match by code and productId
+            const [referrerCode] = await tx
               .select()
-              .from(referralLink)
-              .where(eq(referralLink.slug, body.payload.referralCode))
+              .from(refcode)
+              .where(
+                and(
+                  eq(refcode.code, normalizedRefcode),
+                  eq(refcode.productId, body.productId)
+                )
+              )
               .limit(1);
 
-            if (referrerLink) {
+            if (referrerCode) {
               const [newReferral] = await tx
                 .insert(referral)
                 .values({
-                  referrerId: referrerLink.participantId,
+                  referrerId: referrerCode.participantId,
                   externalId: body.payload.userId,
                   email: body.payload.email,
                   name: body.payload.name,
