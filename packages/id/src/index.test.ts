@@ -55,6 +55,8 @@ describe("@refref/id", () => {
         ["refcode", "rc"],
         ["referral", "ref"],
         ["event", "evt"],
+        ["org", "org"],
+        ["orgUser", "ou"],
       ];
 
       it.each(entityTests)(
@@ -94,9 +96,9 @@ describe("@refref/id", () => {
       expect(validTypes).toContain("program");
     });
 
-    it("should return all 18 entity types", () => {
+    it("should return all 20 entity types", () => {
       const validTypes = getValidEntityTypes();
-      expect(validTypes.length).toBe(18);
+      expect(validTypes.length).toBe(20);
     });
   });
 

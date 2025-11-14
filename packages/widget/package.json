@@ -19,9 +19,9 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --mode production",
-    "build:widget": "tsc && vite build --out-dir dist/widget --mode development",
-    "build:widget:production": "tsc && vite build --out-dir dist/widget --mode production",
+    "build": "vite build --mode production",
+    "build:widget": "vite build --out-dir dist/widget --mode development",
+    "build:widget:production": "vite build --out-dir dist/widget --mode production",
     "lint": "eslint . --report-unused-disable-directives",
     "preview": "vite preview",
     "type:check": "tsc --noEmit"

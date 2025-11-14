@@ -5,6 +5,8 @@ import { createId as createCuid } from "@paralleldrive/cuid2";
  */
 const ENTITY_PREFIXES = {
   user: "usr",
+  org: "org",
+  orgUser: "ou",
   session: "ses",
   account: "acc",
   verification: "ver",
