@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5174",
     "build": "vite build --mode production",
     "clean": "rm -rf dist src/**/*.js src/**/*.js.map",
     "lint": "eslint . --report-unused-disable-directives",

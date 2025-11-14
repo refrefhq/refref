@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 
 export default function NewProgramPage() {
@@ -12,7 +11,6 @@ export default function NewProgramPage() {
   const searchParams = useSearchParams();
   const templateId = searchParams?.get("templateId");
   const templateName = searchParams?.get("title");
-  const { data: activeProduct } = authClient.useActiveOrganization();
 
   // Create program mutation
   const createProgram = api.program.create.useMutation({
@@ -31,9 +29,9 @@ export default function NewProgramPage() {
     if (!templateId) router.replace("/programs");
   }, [templateId, router]);
 
-  // Create program as soon as templateId and activeProduct are available
+  // Create program as soon as templateId is available
   useEffect(() => {
-    if (!templateId || !activeProduct?.id) return;
+    if (!templateId) return;
     // Only trigger if not already loading or succeeded
     if (
       !createProgram.isPending &&
@@ -43,11 +41,10 @@ export default function NewProgramPage() {
       createProgram.mutate({
         name: templateName ?? "Untitled Program",
         description: "",
-        productId: activeProduct.id,
         templateId,
       });
     }
-  }, [templateId, activeProduct, createProgram]);
+  }, [templateId, createProgram]);
 
   // Minimal loading spinner
   return (

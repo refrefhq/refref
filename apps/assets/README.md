@@ -14,17 +14,18 @@ This app bundles and prepares RefRef scripts for deployment using **Cloudflare W
 
 This is Cloudflare's new unified approach that replaces the separate Pages and Workers platforms.
 
-## Production vs Development
+## Development and Production
 
-⚠️ **This service is for PRODUCTION deployments only.**
+✅ **This service now works for BOTH development and production.**
 
-### Development (apps/refer)
-- Use the refer server for local development
-- Scripts served dynamically at `http://localhost:3002/scripts/*`
-- Hot-reloading and no build step needed
-- See [apps/refer/README.md](../refer/README.md) for details
+### Development (Local - Port 8787)
+- Run `pnpm -F @refref/assets dev` to start local development server
+- Scripts served at `http://localhost:8787/*`
+- Automatic watch mode - rebuilds when packages change
+- Wrangler dev provides production-like Worker environment
+- Same routing and caching logic as production
 
-### Production (apps/assets - this service)
+### Production (Cloudflare Workers/Pages)
 - Deploy to Cloudflare Workers/Pages for CDN delivery
 - Scripts served from edge locations worldwide
 - Immutable caching for maximum performance
@@ -46,20 +47,34 @@ This is Cloudflare's new unified approach that replaces the separate Pages and W
 
 ## Development
 
-### Prerequisites
+### Local Development Server
 
-Make sure the required packages are built:
+Start the local development server with watch mode:
 
 ```bash
-# From monorepo root
-pnpm -F @refref/attribution-script build
-pnpm -F @refref/widget build
+# From monorepo root - starts all services including assets
+pnpm dev
+
+# Or run assets server individually
+pnpm -F @refref/assets dev
 ```
 
-### Build Assets
+This will:
+1. Watch attribution-script and widget dist files for changes
+2. Auto-copy updated bundles to `public/` directory
+3. Start Wrangler dev server on port 8787
+4. Provide production-like Worker environment locally
+
+Access scripts at:
+- `http://localhost:8787/attribution.v1.js`
+- `http://localhost:8787/widget.v1.js`
+- `http://localhost:8787/attribution.js` (convenience alias)
+- `http://localhost:8787/widget.js` (convenience alias)
+
+### Build Assets Manually
 
 ```bash
-# Build assets (copies bundles to public/)
+# Build assets once (copies bundles to public/)
 pnpm -F @refref/assets build
 
 # Clean generated files
@@ -278,18 +293,22 @@ Use the CDN URLs in your production application:
 
 ### In Development
 
-For local development, use the refer server instead:
+For local development, use the assets dev server:
 
 ```bash
-# Refer server serves scripts dynamically at:
-http://localhost:3002/scripts/attribution.js
-http://localhost:3002/scripts/widget.js
+# Assets server (wrangler dev) serves scripts at:
+http://localhost:8787/attribution.v1.js
+http://localhost:8787/widget.v1.js
 
-# Configure in apps/webapp/.env:
-NEXT_PUBLIC_ASSETS_URL="http://localhost:3002"
+# Or use convenience aliases:
+http://localhost:8787/attribution.js
+http://localhost:8787/widget.js
+
+# Configure in apps/webapp/.env (already set as default):
+NEXT_PUBLIC_ASSETS_URL="http://localhost:8787"
 ```
 
-The refer server reads from package dist files, allowing hot-reloading during development. See [apps/refer/README.md](../refer/README.md) for details.
+The assets dev server watches package dist files and auto-rebuilds when they change, providing the same routing and caching logic as production.
 
 ## Versioning Strategy
 
@@ -490,7 +509,7 @@ pnpm -F @refref/assets exec wrangler tail refref-assets
 
 ## Related Documentation
 
-- [apps/refer](../refer/README.md) - Development script serving
+- [apps/refer](../refer/README.md) - Referral redirect server
 - [apps/webapp](../webapp/README.md) - Web application using these scripts
 - [packages/attribution-script](../../packages/attribution-script/README.md) - Attribution tracking
 - [packages/widget](../../packages/widget/README.md) - Referral widget

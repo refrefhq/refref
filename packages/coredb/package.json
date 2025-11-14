@@ -16,10 +16,12 @@
     }
   },
   "scripts": {
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
+    "db:generate": "infisical run --env=dev -- drizzle-kit generate || drizzle-kit generate",
+    "db:migrate": "infisical run --env=dev -- drizzle-kit migrate || drizzle-kit migrate",
+    "db:push": "infisical run --env=dev -- drizzle-kit push || drizzle-kit push",
+    "db:studio": "infisical run --env=dev -- drizzle-kit studio || drizzle-kit studio",
+    "db:seed": "infisical run --env=dev -- tsx src/seed.ts seed || tsx src/seed.ts seed",
+    "db:deleteseed": "infisical run --env=dev -- tsx src/seed.ts delete || tsx src/seed.ts delete",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc",

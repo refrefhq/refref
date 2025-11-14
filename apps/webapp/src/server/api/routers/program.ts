@@ -72,30 +72,10 @@ export const programRouter = createTRPCRouter({
           .min(1, "Name is required")
           .max(100, "Name is too long"),
         description: z.string().max(255, "Description is too long").optional(),
-        productId: z.string().min(1, "Product is required"),
         templateId: z.string().min(1, "Template is required"),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify product belongs to active organization
-      const [selectedProduct] = await ctx.db
-        .select()
-        .from(product)
-        .where(
-          and(
-            eq(product.id, input.productId),
-            eq(product.id, ctx.activeProductId),
-          ),
-        )
-        .limit(1);
-
-      if (!selectedProduct) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Product not found or does not belong to your organization",
-        });
-      }
-
       // Get the selected template
       const [selectedTemplate] = await ctx.db
         .select()
@@ -116,7 +96,7 @@ export const programRouter = createTRPCRouter({
         .from(programTable)
         .where(
           and(
-            eq(programTable.productId, input.productId),
+            eq(programTable.productId, ctx.activeProductId),
             eq(programTable.programTemplateId, input.templateId),
           ),
         )
@@ -134,7 +114,7 @@ export const programRouter = createTRPCRouter({
         .insert(programTable)
         .values({
           name: input.name,
-          productId: input.productId,
+          productId: ctx.activeProductId,
           programTemplateId: input.templateId,
           status: "pending_setup", // Initial status
           config: undefined,

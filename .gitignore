@@ -40,3 +40,7 @@ CLAUDE.md
 .serena
 .local
 .claude
+.infisical.json
+.wrangler/tmp
+<<<<<<< HEAD
+fly.toml

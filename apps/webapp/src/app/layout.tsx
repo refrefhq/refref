@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  console.log("[ROOT LAYOUT] Rendering with NuqsAdapter");
   return (
     <html
       lang="en"

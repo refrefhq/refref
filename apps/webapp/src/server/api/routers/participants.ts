@@ -159,10 +159,10 @@ export const participantsRouter = createTRPCRouter({
         const referralHostUrl = env.NEXT_PUBLIC_REFER_URL;
 
         if (refcodeData.global) {
-          // Global code: /r/:code
-          referralUrl = `${referralHostUrl}/r/${refcodeData.code}`;
+          // Global code: /:code
+          referralUrl = `${referralHostUrl}/${refcodeData.code}`;
         } else {
-          // Local code: /r/:productSlug/:code
+          // Local code: /:productSlug/:code
           // Need to get product slug
           const [productData] = await ctx.db
             .select({ slug: product.slug })
@@ -171,7 +171,7 @@ export const participantsRouter = createTRPCRouter({
             .limit(1);
 
           if (productData?.slug) {
-            referralUrl = `${referralHostUrl}/r/${productData.slug}/${refcodeData.code}`;
+            referralUrl = `${referralHostUrl}/${productData.slug}/${refcodeData.code}`;
           }
         }
       }

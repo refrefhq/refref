@@ -3,7 +3,7 @@
 import { ReferralWidgetContent } from "@refref/ui/components/referral-widget/referral-widget-dialog-content";
 
 export default function ReferralWidgetPreview() {
-  const referralLink = "acme.refref.ai/r/th5tdf";
+  const referralLink = "acme.refref.ai/th5tdf";
 
   // Color values from screenshot
   const containerBgColor = "#23263a";

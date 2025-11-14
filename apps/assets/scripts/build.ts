@@ -5,6 +5,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { createHash } from "crypto";
 import { gzipSync, brotliCompressSync, constants as zlibConstants } from "zlib";
+import chokidar from "chokidar";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -167,5 +168,40 @@ async function build() {
   }
 }
 
-// Run build
-build();
+// Check if watch mode is enabled
+const isWatchMode = process.argv.includes("--watch");
+
+if (isWatchMode) {
+  console.log("👀 Starting watch mode...\n");
+
+  // Get all source paths to watch
+  const watchPaths = SCRIPTS.map((config) => config.sourcePath);
+
+  // Create watcher
+  const watcher = chokidar.watch(watchPaths, {
+    persistent: true,
+    ignoreInitial: false, // Trigger build on startup
+  });
+
+  watcher.on("add", async (filePath) => {
+    console.log(`\n📝 File added: ${filePath}`);
+    await build();
+  });
+
+  watcher.on("change", async (filePath) => {
+    console.log(`\n📝 File changed: ${filePath}`);
+    await build();
+  });
+
+  watcher.on("ready", () => {
+    console.log("✅ Watching for file changes...");
+    console.log(`📂 Watching: ${watchPaths.join(", ")}\n`);
+  });
+
+  watcher.on("error", (error) => {
+    console.error("❌ Watcher error:", error);
+  });
+} else {
+  // One-time build
+  build();
+}

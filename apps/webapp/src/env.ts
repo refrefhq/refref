@@ -35,7 +35,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ASSETS_URL: z
       .url()
       .optional()
-      .default("http://localhost:3002"),
+      .default("http://localhost:8787"),
     NEXT_PUBLIC_REFREF_PRODUCT_ID: z.string().optional(),
     NEXT_PUBLIC_REFREF_PROGRAM_ID: z.string().optional(),
     NEXT_PUBLIC_ENABLE_PASSWORD_AUTH: z

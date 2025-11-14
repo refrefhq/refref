@@ -7,6 +7,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
+import { db, schema } from "@/server/db";
+import { eq } from "drizzle-orm";
 
 export default async function MainLayout({
   children,
@@ -32,6 +34,17 @@ export default async function MainLayout({
         organizationId: organizations[0]!.id,
       },
     });
+  }
+
+  // Check if the active organization has any products
+  const activeOrgId =
+    session!.session.activeOrganizationId || organizations[0]!.id;
+  const existingProduct = await db.query.product.findFirst({
+    where: eq(schema.product.orgId, activeOrgId),
+  });
+
+  if (!existingProduct) {
+    redirect("/onboarding");
   }
 
   return (

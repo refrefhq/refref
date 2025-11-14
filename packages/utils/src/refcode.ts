@@ -8,13 +8,13 @@ import { Filter } from "bad-words";
  * 1. **Global Codes**: Auto-generated, globally unique codes
  *    - Format: 7 characters (numbers + lowercase letters only)
  *    - Example: abc1234
- *    - URL Pattern: REFERRAL_HOST_URL/r/:code
+ *    - URL Pattern: REFERRAL_HOST_URL/:code
  *    - Use Case: Default referral codes for participants
  *
  * 2. **Local Codes**: User-specified vanity codes, unique within a product
  *    - Format: 3-50 characters (alphanumeric + hyphens)
  *    - Example: john-doe
- *    - URL Pattern: REFERRAL_HOST_URL/r/:product_slug/:code
+ *    - URL Pattern: REFERRAL_HOST_URL/:product_slug/:code
  *    - Use Case: Custom vanity URLs for branding
  *
  * Both code types:

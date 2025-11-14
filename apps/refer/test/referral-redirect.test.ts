@@ -27,18 +27,12 @@ describe("Referral Redirect Endpoint", () => {
     await stopTestServer();
   });
 
-  describe("GET /r/:code - Global Code Error Cases", () => {
-    it("should return 404 when route path is incomplete", async () => {
-      const response = await apiContext.get("/r/");
-
-      expect(response.status()).toBe(404); // Fastify returns 404 for route not found
-    });
-
+  describe("GET /:code - Global Code Error Cases", () => {
     it("should return 404 when refcode not found", async () => {
       // Mock database to return null for refcode
       mockDb.query.refcode.findFirst.mockResolvedValueOnce(null);
 
-      const response = await apiContext.get("/r/abc1234");
+      const response = await apiContext.get("/abc1234");
 
       expect(response.status()).toBe(404);
 
@@ -58,7 +52,7 @@ describe("Referral Redirect Endpoint", () => {
         participant: null, // No participant found in relation
       });
 
-      const response = await apiContext.get("/r/abc1234");
+      const response = await apiContext.get("/abc1234");
 
       expect(response.status()).toBe(404);
 
@@ -87,7 +81,7 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/r/abc1234");
+      const response = await apiContext.get("/abc1234");
 
       expect(response.status()).toBe(500);
 
@@ -96,7 +90,7 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /r/:code - Global Code Success Cases", () => {
+  describe("GET /:code - Global Code Success Cases", () => {
     it("should redirect with encoded params when all data is present", async () => {
       // Mock complete happy path with nested data (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
@@ -118,7 +112,7 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/r/abc1234");
+      const response = await apiContext.get("/abc1234");
 
       expect(response.status()).toBe(307);
 
@@ -152,7 +146,7 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/r/xyz5678");
+      const response = await apiContext.get("/xyz5678");
 
       expect(response.status()).toBe(307);
 
@@ -186,7 +180,7 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/r/def9012");
+      const response = await apiContext.get("/def9012");
 
       expect(response.status()).toBe(307);
 
@@ -218,7 +212,7 @@ describe("Referral Redirect Endpoint", () => {
       });
 
       // Request with uppercase should work
-      const response = await apiContext.get("/r/ABC1234");
+      const response = await apiContext.get("/ABC1234");
 
       expect(response.status()).toBe(307);
       const location = response.headers()["location"];
@@ -226,12 +220,12 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /r/:productSlug/:code - Local Code Cases", () => {
+  describe("GET /:productSlug/:code - Local Code Cases", () => {
     it("should return 404 when product not found", async () => {
       // Mock product lookup to return null
       mockDb.query.product.findFirst.mockResolvedValueOnce(null);
 
-      const response = await apiContext.get("/r/nonexistent/john-doe");
+      const response = await apiContext.get("/nonexistent/john-doe");
 
       expect(response.status()).toBe(404);
 
@@ -250,7 +244,7 @@ describe("Referral Redirect Endpoint", () => {
       // Mock refcode lookup to return null
       mockDb.query.refcode.findFirst.mockResolvedValueOnce(null);
 
-      const response = await apiContext.get("/r/acme/nonexistent");
+      const response = await apiContext.get("/acme/nonexistent");
 
       expect(response.status()).toBe(404);
 
@@ -287,7 +281,7 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/r/acme/john-doe");
+      const response = await apiContext.get("/acme/john-doe");
 
       expect(response.status()).toBe(307);
 
@@ -300,7 +294,7 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /r/:code - Parameter Encoding", () => {
+  describe("GET /:code - Parameter Encoding", () => {
     it("should base64 encode participant details", async () => {
       // Mock with nested data (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
@@ -322,7 +316,7 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/r/enc0123");
+      const response = await apiContext.get("/enc0123");
 
       expect(response.status()).toBe(307);
 
@@ -378,7 +372,7 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/r/spc4567");
+      const response = await apiContext.get("/spc4567");
 
       expect(response.status()).toBe(307);
 
@@ -397,7 +391,7 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /r/:code - Performance", () => {
+  describe("GET /:code - Performance", () => {
     it("should respond quickly for valid redirect", async () => {
       // Mock with nested data (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
@@ -420,7 +414,7 @@ describe("Referral Redirect Endpoint", () => {
       });
 
       const startTime = Date.now();
-      const response = await apiContext.get("/r/prf8901");
+      const response = await apiContext.get("/prf8901");
       const endTime = Date.now();
 
       expect(response.status()).toBe(307);

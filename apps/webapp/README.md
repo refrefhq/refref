@@ -115,8 +115,8 @@ RefRef now supports two types of referral codes:
 #### 1. Global Codes
 - **Format**: 7 characters (numbers + lowercase letters: `23456789abcdefghjkmnpqrstuvwxyz`)
 - **Example**: `abc1234`
-- **URL Pattern**: `REFERRAL_HOST_URL/r/:code`
-  - Example: `https://refer.refref.app/r/abc1234`
+- **URL Pattern**: `REFERRAL_HOST_URL/:code`
+  - Example: `https://refer.refref.app/abc1234`
 - **Uniqueness**: Globally unique across the entire RefRef system
 - **Generation**: Auto-generated with profanity filtering
 - **Use Case**: Default referral codes for all participants
@@ -124,8 +124,8 @@ RefRef now supports two types of referral codes:
 #### 2. Local Codes
 - **Format**: User-specified vanity strings (3-50 characters, alphanumeric + hyphens)
 - **Example**: `john-doe`, `ceo`, `founder`
-- **URL Pattern**: `REFERRAL_HOST_URL/r/:product_slug/:code`
-  - Example: `https://refer.refref.app/r/acme/john-doe`
+- **URL Pattern**: `REFERRAL_HOST_URL/:product_slug/:code`
+  - Example: `https://refer.refref.app/acme/john-doe`
 - **Uniqueness**: Unique within a specific product
 - **Generation**: User-provided (validated for length, characters, and profanity)
 - **Use Case**: Custom vanity URLs for branding and memorability

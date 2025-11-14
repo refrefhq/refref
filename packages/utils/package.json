@@ -3,10 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./plugins/coredb": "./src/plugins/coredb.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./plugins/coredb": {
+      "types": "./dist/plugins/coredb.d.ts",
+      "import": "./dist/plugins/coredb.js"
+    }
   },
   "scripts": {
     "build": "tsc",

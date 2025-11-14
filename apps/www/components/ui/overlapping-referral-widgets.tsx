@@ -18,9 +18,9 @@ export default function OverlappingReferralWidgets() {
   const [copiedStates, setCopiedStates] = useState([false, false, false]);
 
   const referralLinks: string[] = [
-    "acme.refref.ai/r/th5tdf",
-    "acme.com/r/xyz789",
-    "acme.com/r/xyz789",
+    "acme.refref.ai/th5tdf",
+    "acme.com/xyz789",
+    "acme.com/xyz789",
   ];
 
   const copyToClipboard = (index: number) => {
