@@ -39,9 +39,10 @@ export const productSecretsRouter = createTRPCRouter({
       });
     }
 
-    // Return only the client ID
+    // Return client ID and client secret
     return {
       clientId: secrets.clientId,
+      clientSecret: secrets.clientSecret,
     };
   }),
 });
