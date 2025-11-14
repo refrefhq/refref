@@ -153,7 +153,6 @@ export const onboardingProcedure = t.procedure.use(async ({ ctx, next }) => {
 
 //! these require the presence of an active organization id and active product
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  console.error("ctx is ", ctx.session);
   // check both cause ts :)
   if (!ctx.session || !ctx.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });

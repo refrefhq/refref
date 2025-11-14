@@ -3,12 +3,12 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "infisical run --env=dev -- turbo run dev",
+    "dev": "infisical run --env=dev -- turbo run dev || turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "type:check": "turbo run type:check",
-    "test": "infisical run --env=dev -- turbo run test",
-    "test:run": "infisical run --env=dev -- turbo run test:run"
+    "test": "infisical run --env=dev -- turbo run test || turbo run test",
+    "test:run": "infisical run --env=dev -- turbo run test:run || turbo run test:run"
   },
   "devDependencies": {
     "@types/bad-words": "^3.0.3",
@@ -19,6 +19,11 @@
   "packageManager": "pnpm@10.15.0",
   "engines": {
     "node": ">=20"
+  },
+  "pnpm": {
+    "overrides": {
+      "@babel/core": "7.28.5"
+    }
   },
   "dependencies": {
     "bad-words": "^4.0.0"

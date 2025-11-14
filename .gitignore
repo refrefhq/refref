@@ -42,4 +42,5 @@ CLAUDE.md
 .claude
 .infisical.json
 .wrangler/tmp
+<<<<<<< HEAD
 fly.toml

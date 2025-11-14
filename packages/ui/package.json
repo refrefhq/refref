@@ -18,9 +18,18 @@
     "./types/*": "./src/types/*.ts"
   },
   "peerDependencies": {
+    "next": ">=14.2.0",
     "nuqs": ">=2.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    },
+    "nuqs": {
+      "optional": true
+    }
   },
   "overrides": {
     "react-is": "^19.0.0-rc-69d4b800-20241021"
