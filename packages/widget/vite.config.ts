@@ -7,6 +7,7 @@ import dts from "vite-plugin-dts";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   configLoader: "runner",
+  envDir: __dirname,
   plugins: [
     react(),
     tailwindcss(),

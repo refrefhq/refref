@@ -22,7 +22,6 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  console.log("[ROOT LAYOUT] Rendering with NuqsAdapter");
   return (
     <html
       lang="en"
@@ -32,9 +31,8 @@ export default function RootLayout({
       <head>
         <Script
           suppressHydrationWarning
-          type="module"
           src={`${env.NEXT_PUBLIC_ASSETS_URL}/attribution.v1.js`}
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
         <Script
           id="refref-init"
@@ -47,10 +45,8 @@ export default function RootLayout({
         />
         <Script
           suppressHydrationWarning
-          type="module"
           src={`${env.NEXT_PUBLIC_ASSETS_URL}/widget.v1.js`}
           strategy="afterInteractive"
-          defer
         />
       </head>
       <body suppressHydrationWarning>

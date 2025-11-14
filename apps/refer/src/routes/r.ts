@@ -78,7 +78,6 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         // Extra params, potentially enabled/disabled via config
         const paramsObj: Record<string, string | undefined> = {
           name: encode(participantRecord.name),
-          email: encode(participantRecord.email),
           participantId: encode(participantRecord.id),
         };
 

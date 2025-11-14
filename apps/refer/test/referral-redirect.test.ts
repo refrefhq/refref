@@ -121,7 +121,6 @@ describe("Referral Redirect Endpoint", () => {
       expect(location).toContain("https://example.com");
       expect(location).toContain("refcode=abc1234");
       expect(location).toContain("name="); // Base64 encoded name
-      expect(location).toContain("email="); // Base64 encoded email
       expect(location).toContain("participantId="); // Base64 encoded participant ID
     });
 
@@ -156,7 +155,6 @@ describe("Referral Redirect Endpoint", () => {
       expect(location).toContain("refcode=xyz5678");
       // Should not include empty encoded params
       expect(location).not.toContain("name=");
-      expect(location).not.toContain("email=");
     });
 
     it("should preserve existing query params in product URL", async () => {

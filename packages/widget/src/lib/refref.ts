@@ -99,10 +99,9 @@ class RefRefImpl implements RefRef {
       // Query string takes priority as it represents the most recent referral click
       const refcode = refcodeFromQuery || refcodeFromCookie || undefined;
 
-      // Use provided apiUrl or fall back to relative path for backward compatibility
-      const widgetInitUrl = apiUrl
-        ? `${apiUrl}/v1/widget/init`
-        : "/api/scripts/widget/init";
+      // Use provided apiUrl or fall back to build-time configured URL
+      const baseUrl = apiUrl ?? import.meta.env.VITE_REFREF_API_ENDPOINT!;
+      const widgetInitUrl = `${baseUrl}/v1/widget/init`;
 
       const response = await fetch(widgetInitUrl, {
         method: "POST",

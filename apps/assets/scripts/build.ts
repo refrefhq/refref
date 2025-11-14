@@ -24,14 +24,14 @@ const SCRIPTS = [
       "packages",
       "attribution-script",
       "dist",
-      "attribution-script.es.js"
+      "attribution-script.umd.js"
     ),
     outputName: "attribution.v1.js",
   },
   {
     name: "widget",
     version: "v1",
-    sourcePath: join(ROOT_DIR, "packages", "widget", "dist", "widget.es.js"),
+    sourcePath: join(ROOT_DIR, "packages", "widget", "dist", "widget.umd.js"),
     outputName: "widget.v1.js",
   },
 ];
