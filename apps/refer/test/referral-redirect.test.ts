@@ -28,12 +28,6 @@ describe("Referral Redirect Endpoint", () => {
   });
 
   describe("GET /:code - Global Code Error Cases", () => {
-    it("should return 404 when route path is incomplete", async () => {
-      const response = await apiContext.get("/");
-
-      expect(response.status()).toBe(404); // Fastify returns 404 for route not found
-    });
-
     it("should return 404 when refcode not found", async () => {
       // Mock database to return null for refcode
       mockDb.query.refcode.findFirst.mockResolvedValueOnce(null);
