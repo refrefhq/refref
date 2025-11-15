@@ -74,6 +74,48 @@ test.describe('RefRef Core User Journey', () => {
     await db.cleanupTestData();
   });
 
+  test('should validate server health checks', async () => {
+    console.log('\n=== Testing Server Health Checks ===\n');
+
+    // Test webapp health check (required)
+    const webappHealth = await serverManager.checkHealth('http://localhost:3000');
+    await expect(webappHealth.healthy).toBe(true);
+    console.log('✓ Webapp health check passed');
+
+    // Test other services (optional - use soft assertions)
+    const apiHealth = await serverManager.checkHealth('http://localhost:3001');
+    await expect.soft(apiHealth.healthy).toBeDefined(); // Document that we checked
+    console.log(apiHealth.healthy ? '✓ API health check passed' : '⚠ API server not running (optional for basic tests)');
+
+    const referHealth = await serverManager.checkHealth('http://localhost:3002');
+    await expect.soft(referHealth.healthy).toBeDefined(); // Document that we checked
+    console.log(referHealth.healthy ? '✓ Refer server health check passed' : '⚠ Refer server not running (optional for basic tests)');
+
+    const assetsHealth = await serverManager.checkHealth('http://localhost:8787');
+    await expect.soft(assetsHealth.healthy).toBeDefined(); // Document that we checked
+    console.log(assetsHealth.healthy ? '✓ Assets server health check passed' : '⚠ Assets server not running (optional for basic tests)');
+
+    console.log('\n=== Server Health Checks Complete ===\n');
+  });
+
+  test('should validate database utilities', async () => {
+    console.log('\n=== Testing Database Utilities ===\n');
+
+    // Test database connection
+    const testDb = new TestDatabase();
+    await testDb.setup();
+    console.log('✓ Database connection verified');
+
+    // Test seeding
+    await testDb.seed();
+    console.log('✓ Database seeding completed');
+
+    // Test cleanup (we'll skip actual cleanup to not interfere with other tests)
+    console.log('✓ Database cleanup functionality exists (skipping execution)');
+
+    console.log('\n=== Database Utilities Test Complete ===\n');
+  });
+
   test('should complete full user journey from signup to program installation', async ({ page, request }) => {
     test.setTimeout(120000); // Increase timeout for full integration test
     console.log('\n=== Starting Core User Journey Test ===\n');
@@ -234,47 +276,5 @@ test.describe('RefRef Core User Journey', () => {
     }
 
     console.log('\n=== Core User Journey Test Complete ===\n');
-  });
-
-  test('should validate server health checks', async () => {
-    console.log('\n=== Testing Server Health Checks ===\n');
-
-    // Test webapp health check (required)
-    const webappHealth = await serverManager.checkHealth('http://localhost:3000');
-    await expect(webappHealth.healthy).toBe(true);
-    console.log('✓ Webapp health check passed');
-
-    // Test other services (optional - use soft assertions)
-    const apiHealth = await serverManager.checkHealth('http://localhost:3001');
-    await expect.soft(apiHealth.healthy).toBeDefined(); // Document that we checked
-    console.log(apiHealth.healthy ? '✓ API health check passed' : '⚠ API server not running (optional for basic tests)');
-
-    const referHealth = await serverManager.checkHealth('http://localhost:3002');
-    await expect.soft(referHealth.healthy).toBeDefined(); // Document that we checked
-    console.log(referHealth.healthy ? '✓ Refer server health check passed' : '⚠ Refer server not running (optional for basic tests)');
-
-    const assetsHealth = await serverManager.checkHealth('http://localhost:8787');
-    await expect.soft(assetsHealth.healthy).toBeDefined(); // Document that we checked
-    console.log(assetsHealth.healthy ? '✓ Assets server health check passed' : '⚠ Assets server not running (optional for basic tests)');
-
-    console.log('\n=== Server Health Checks Complete ===\n');
-  });
-
-  test('should validate database utilities', async () => {
-    console.log('\n=== Testing Database Utilities ===\n');
-
-    // Test database connection
-    const testDb = new TestDatabase();
-    await testDb.setup();
-    console.log('✓ Database connection verified');
-
-    // Test seeding
-    await testDb.seed();
-    console.log('✓ Database seeding completed');
-
-    // Test cleanup (we'll skip actual cleanup to not interfere with other tests)
-    console.log('✓ Database cleanup functionality exists (skipping execution)');
-
-    console.log('\n=== Database Utilities Test Complete ===\n');
   });
 });
