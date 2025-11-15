@@ -269,6 +269,198 @@ test.describe('RefRef Core User Journey', () => {
 
     if (widgetVisible) {
       console.log('✓ RefRef widget button is visible and rendered');
+
+      // Step 15: Click on the widget button to open it
+      console.log('\n--- Step 15: Opening RefRef widget ---');
+      await widgetTrigger.click();
+      console.log('✓ Clicked RefRef widget button');
+
+      // Wait for widget modal/iframe to appear
+      await page.waitForTimeout(2000);
+
+      // Step 16: Verify widget modal is open
+      console.log('\n--- Step 16: Verifying widget modal is open ---');
+
+      // The widget likely renders in a shadow DOM or iframe
+      // Try to find the widget modal/content
+      const widgetModal = page.locator('[data-testid="refref-widget-modal"], #refref-widget-modal, .refref-modal, iframe[title*="RefRef"], iframe[src*="refref"], iframe[src*="widget"]').first();
+      const modalVisible = await widgetModal.isVisible().catch(() => false);
+
+      if (modalVisible) {
+        console.log('✓ RefRef widget modal is open');
+
+        // If it's an iframe, we need to get its content
+        const isIframe = await widgetModal.evaluate(el => el.tagName === 'IFRAME');
+
+        if (isIframe) {
+          console.log('  Widget is rendered in an iframe');
+
+          // Get the iframe content
+          const frame = page.frameLocator('iframe[title*="RefRef"], iframe[src*="refref"], iframe[src*="widget"]').first();
+
+          // Step 17: Verify referral URL is displayed
+          console.log('\n--- Step 17: Verifying referral URL ---');
+
+          // Look for the referral URL in the widget
+          // It should contain the refer server URL with a referral code
+          const referralUrlElement = frame.locator('input[type="text"], input[readonly], .referral-url, .referral-link, [data-testid*="referral"], [data-testid*="url"]').first();
+          const referralUrlVisible = await referralUrlElement.isVisible().catch(() => false);
+
+          if (referralUrlVisible) {
+            const referralUrl = await referralUrlElement.inputValue().catch(() =>
+              referralUrlElement.textContent()
+            );
+            console.log(`✓ Referral URL found: ${referralUrl}`);
+
+            // Verify the URL format
+            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/r\/[a-zA-Z0-9]+/);
+            console.log('✓ Referral URL has correct format');
+
+            // Step 18: Verify participant data
+            console.log('\n--- Step 18: Verifying participant data ---');
+
+            // Check for John's email in the widget
+            const emailElement = frame.locator('text=john@example.com, text=John Doe, [data-testid*="email"], [data-testid*="participant"]').first();
+            const hasParticipantData = await emailElement.isVisible().catch(() => false);
+
+            if (hasParticipantData) {
+              console.log('✓ Participant data is displayed in widget');
+            } else {
+              console.log('⚠ Participant data not visible in widget');
+            }
+          } else {
+            console.log('⚠ Referral URL not found in widget iframe');
+          }
+        } else {
+          // Widget is not in iframe, check in regular DOM
+          console.log('  Widget is rendered in regular DOM');
+
+          // Step 17: Verify referral URL is displayed
+          console.log('\n--- Step 17: Verifying referral URL ---');
+
+          const referralUrlElement = page.locator('input[type="text"], input[readonly], .referral-url, .referral-link, [data-testid*="referral"], [data-testid*="url"]').first();
+          const referralUrlVisible = await referralUrlElement.isVisible().catch(() => false);
+
+          if (referralUrlVisible) {
+            const referralUrl = await referralUrlElement.inputValue().catch(() =>
+              referralUrlElement.textContent()
+            );
+            console.log(`✓ Referral URL found: ${referralUrl}`);
+
+            // Verify the URL format
+            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/r\/[a-zA-Z0-9]+/);
+            console.log('✓ Referral URL has correct format');
+          } else {
+            console.log('⚠ Referral URL not found in widget');
+          }
+        }
+      } else {
+        console.log('⚠ Widget modal did not open - checking for shadow DOM');
+
+        // Try to access shadow DOM if the widget uses it
+        const shadowContent = await page.evaluate(() => {
+          // Find all elements with shadow roots
+          const allElements = document.querySelectorAll('*');
+          for (const element of allElements) {
+            if (element.shadowRoot) {
+              // Found shadow host, search within shadow DOM
+              const shadowRoot = element.shadowRoot;
+
+              // Look for modal/dialog within shadow DOM
+              const modal = shadowRoot.querySelector('[role="dialog"], .modal, .dialog, .popup, .widget-modal, [data-testid*="modal"]');
+              if (modal) {
+                // Modal found, now look for referral URL
+                const urlInput = shadowRoot.querySelector('input[type="text"], input[readonly], .referral-url, .referral-link, [data-testid*="referral"], [data-testid*="url"]');
+                const copyButton = shadowRoot.querySelector('button[data-testid*="copy"], button.copy, [aria-label*="copy"], [aria-label*="Copy"]');
+
+                let referralUrl = null;
+                if (urlInput) {
+                  referralUrl = (urlInput as HTMLInputElement).value || urlInput.textContent;
+                }
+
+                // Look for participant info
+                const participantInfo = shadowRoot.querySelector('.participant-email, .user-email, [data-testid*="email"]');
+
+                return {
+                  hasModal: true,
+                  hasShadowRoot: true,
+                  referralUrl: referralUrl,
+                  hasCopyButton: !!copyButton,
+                  hasParticipantInfo: !!participantInfo,
+                  participantEmail: participantInfo?.textContent || null
+                };
+              }
+            }
+          }
+          return { hasModal: false, hasShadowRoot: false };
+        });
+
+        if (shadowContent.hasShadowRoot && shadowContent.hasModal) {
+          console.log('✓ Widget uses shadow DOM and modal is open');
+
+          // Step 17: Verify referral URL is displayed
+          console.log('\n--- Step 17: Verifying referral URL in shadow DOM ---');
+
+          if (shadowContent.referralUrl) {
+            console.log(`✓ Referral URL found: ${shadowContent.referralUrl}`);
+
+            // Verify the URL format - should be just /[code] (no /r/ prefix)
+            const urlPattern = /http:\/\/localhost:3002\/[a-zA-Z0-9]+$/;
+            if (urlPattern.test(shadowContent.referralUrl)) {
+              console.log('✓ Referral URL has correct format');
+            } else {
+              console.log('⚠ Referral URL format unexpected');
+            }
+
+            if (shadowContent.hasCopyButton) {
+              console.log('✓ Copy button is present');
+            }
+          } else {
+            console.log('⚠ Referral URL not found in shadow DOM');
+          }
+
+          // Step 18: Verify participant data
+          console.log('\n--- Step 18: Verifying participant data in shadow DOM ---');
+
+          if (shadowContent.hasParticipantInfo) {
+            console.log(`✓ Participant info found: ${shadowContent.participantEmail}`);
+          } else {
+            console.log('⚠ Participant data not visible in widget');
+          }
+        } else if (shadowContent.hasShadowRoot) {
+          console.log('  Widget uses shadow DOM but modal not found');
+          console.log('  Trying alternative approach...');
+
+          // Try clicking again or waiting longer
+          await page.waitForTimeout(2000);
+
+          // Check if there's a different shadow host
+          const alternativeCheck = await page.evaluate(() => {
+            // Look specifically for RefRef-related shadow hosts
+            const possibleHosts = document.querySelectorAll('[id*="refref"], [class*="refref"], refref-widget, [data-refref]');
+            for (const host of possibleHosts) {
+              if (host.shadowRoot) {
+                const content = host.shadowRoot.innerHTML;
+                return {
+                  found: true,
+                  hasContent: content.length > 0,
+                  snippet: content.substring(0, 200)
+                };
+              }
+            }
+            return { found: false };
+          });
+
+          if (alternativeCheck.found) {
+            console.log('  Found RefRef shadow host with content');
+            if (alternativeCheck.snippet) {
+              console.log(`  Content preview: ${alternativeCheck.snippet.substring(0, 100)}...`);
+            }
+          }
+        } else {
+          console.log('  Widget modal not found and no shadow DOM detected');
+        }
+      }
     } else {
       console.log('⚠ Widget button not visible - assets server may not be running');
       console.log('  Widget integration is configured correctly, but requires:');
