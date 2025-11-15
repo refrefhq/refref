@@ -247,6 +247,7 @@ export default function ProgramSetupPage() {
               disabled={activeStep === 0 || isSubmitting}
               variant="outline"
               size="default"
+              data-testid="setup-previous-btn"
             >
               Previous
             </Button>
@@ -259,6 +260,7 @@ export default function ProgramSetupPage() {
               onClick={handleNextOrComplete}
               disabled={isSubmitting}
               size="default"
+              data-testid="setup-next-btn"
             >
               {isSubmitting ? (
                 <>

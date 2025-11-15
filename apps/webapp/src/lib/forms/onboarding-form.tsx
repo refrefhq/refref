@@ -24,10 +24,12 @@ function TextField({
   label,
   placeholder,
   type = "text",
+  "data-testid": dataTestId,
 }: {
   label: string;
   placeholder?: string;
   type?: string;
+  "data-testid"?: string;
 }) {
   const field = useFieldContext<string>();
 
@@ -41,6 +43,7 @@ function TextField({
         value={field.state.value}
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
+        data-testid={dataTestId}
       />
       {field.state.meta.errors && field.state.meta.errors.length > 0 && (
         <p className="text-sm text-destructive">
@@ -106,6 +109,7 @@ function RadioField<T extends string>({
             key={option}
             htmlFor={option}
             className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+            data-testid={`radio-option-${option}`}
           >
             <RadioGroupItem value={option} id={option} />
             <span className="flex-1">{labels[option]}</span>
