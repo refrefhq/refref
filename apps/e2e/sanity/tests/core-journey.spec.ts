@@ -116,7 +116,7 @@ test.describe('RefRef Core User Journey', () => {
     console.log('\n=== Database Utilities Test Complete ===\n');
   });
 
-  test('should complete full user journey from signup to program installation', async ({ page, request }) => {
+  test('should complete full user journey from signup to program installation', async ({ page, request, context, browser }) => {
     test.setTimeout(120000); // Increase timeout for full integration test
     console.log('\n=== Starting Core User Journey Test ===\n');
 
@@ -171,7 +171,8 @@ test.describe('RefRef Core User Journey', () => {
 
     // Step 7: Complete brand configuration step
     console.log('\n--- Step 7: Completing brand configuration ---');
-    await programSetupPage.completeBrandStep();
+    // Set redirect URL to ACME signup page for referrals
+    await programSetupPage.completeBrandStep(`${config.urls.acme}/signup`);
 
     // Step 8: Complete rewards configuration step
     console.log('\n--- Step 8: Completing rewards configuration ---');
@@ -267,6 +268,9 @@ test.describe('RefRef Core User Journey', () => {
     const widgetTrigger = page.getByTestId('refref-widget-trigger');
     const widgetVisible = await widgetTrigger.isVisible().catch(() => false);
 
+    // Variable to store the referral URL
+    let referralUrl: string | null = null;
+
     if (widgetVisible) {
       console.log('✓ RefRef widget button is visible and rendered');
 
@@ -307,13 +311,15 @@ test.describe('RefRef Core User Journey', () => {
           const referralUrlVisible = await referralUrlElement.isVisible().catch(() => false);
 
           if (referralUrlVisible) {
-            const referralUrl = await referralUrlElement.inputValue().catch(() =>
+            const url = await referralUrlElement.inputValue().catch(() =>
               referralUrlElement.textContent()
             );
-            console.log(`✓ Referral URL found: ${referralUrl}`);
+            referralUrl = url; // Store the URL for Jane's test
+            console.log(`✓ Referral URL found: ${url}`);
 
             // Verify the URL format
-            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/r\/[a-zA-Z0-9]+/);
+            // Verify the URL format - should be just /[code] (no /r/ prefix)
+            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/[a-zA-Z0-9]+$/);
             console.log('✓ Referral URL has correct format');
 
             // Step 18: Verify participant data
@@ -342,13 +348,15 @@ test.describe('RefRef Core User Journey', () => {
           const referralUrlVisible = await referralUrlElement.isVisible().catch(() => false);
 
           if (referralUrlVisible) {
-            const referralUrl = await referralUrlElement.inputValue().catch(() =>
+            const url = await referralUrlElement.inputValue().catch(() =>
               referralUrlElement.textContent()
             );
-            console.log(`✓ Referral URL found: ${referralUrl}`);
+            referralUrl = url; // Store the URL for Jane's test
+            console.log(`✓ Referral URL found: ${url}`);
 
             // Verify the URL format
-            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/r\/[a-zA-Z0-9]+/);
+            // Verify the URL format - should be just /[code] (no /r/ prefix)
+            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/[a-zA-Z0-9]+$/);
             console.log('✓ Referral URL has correct format');
           } else {
             console.log('⚠ Referral URL not found in widget');
@@ -402,6 +410,7 @@ test.describe('RefRef Core User Journey', () => {
           console.log('\n--- Step 17: Verifying referral URL in shadow DOM ---');
 
           if (shadowContent.referralUrl) {
+            referralUrl = shadowContent.referralUrl; // Store the URL for Jane's test
             console.log(`✓ Referral URL found: ${shadowContent.referralUrl}`);
 
             // Verify the URL format - should be just /[code] (no /r/ prefix)
@@ -465,6 +474,122 @@ test.describe('RefRef Core User Journey', () => {
       console.log('⚠ Widget button not visible - assets server may not be running');
       console.log('  Widget integration is configured correctly, but requires:');
       console.log('  pnpm -F @refref/assets dev');
+    }
+
+    // Step 19: Test referral flow with Jane
+    if (referralUrl) {
+      console.log('\n--- Step 19: Testing referral flow with Jane ---');
+      console.log(`Using referral URL: ${referralUrl}`);
+
+      // Create a new browser context for Jane (clean session, no John's cookies)
+      const janeContext = await browser.newContext();
+      const janePage = await janeContext.newPage();
+
+      // Listen to Jane's browser console for debugging
+      janePage.on('console', msg => {
+        const type = msg.type();
+        if (type === 'error' || type === 'warning' || msg.text().includes('RefRef') || msg.text().includes('referral')) {
+          console.log(`[Jane Browser ${type}]`, msg.text());
+        }
+      });
+
+      // Visit the referral URL as Jane with retry logic
+      console.log('  Jane is visiting the referral URL...');
+
+      // Try visiting the referral URL with retry logic (in case refer server is busy)
+      let retries = 3;
+      let visitSuccess = false;
+
+      while (retries > 0 && !visitSuccess) {
+        try {
+          await janePage.goto(referralUrl, { waitUntil: 'domcontentloaded', timeout: 10000 });
+          visitSuccess = true;
+        } catch (error) {
+          retries--;
+          if (retries > 0) {
+            console.log(`  ⚠ Connection refused, retry ${3 - retries}/3 - waiting 2 seconds...`);
+            await janePage.waitForTimeout(2000);
+          } else {
+            console.log('  ❌ Failed to connect to referral URL after 3 attempts');
+            throw error;
+          }
+        }
+      }
+
+      // Wait for redirect to complete
+      await janePage.waitForLoadState('networkidle');
+
+      // Step 20: Verify Jane is redirected to ACME signup
+      console.log('\n--- Step 20: Verifying Jane is redirected to ACME signup ---');
+      const currentUrl = janePage.url();
+      console.log(`  Jane landed at: ${currentUrl}`);
+
+      // Check if Jane was redirected to ACME signup
+      if (currentUrl.includes(`${config.urls.acme}/signup`)) {
+        console.log('✓ Jane was redirected to ACME signup page');
+
+        // Check if referral tracking parameters are present
+        if (currentUrl.includes('ref=') || currentUrl.includes('referral_code=') || currentUrl.includes('r=')) {
+          console.log('✓ Referral tracking parameters detected in URL');
+        }
+
+        // Step 21: Complete Jane's signup
+        console.log('\n--- Step 21: Jane is signing up at ACME ---');
+        const janeData = {
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          password: 'password456',
+        };
+
+        // Fill signup form
+        await janePage.getByTestId('acme-signup-name').fill(janeData.name);
+        await janePage.getByTestId('acme-signup-email').fill(janeData.email);
+        await janePage.getByTestId('acme-signup-password').fill(janeData.password);
+        await janePage.getByTestId('acme-signup-submit').click();
+        console.log('✓ Jane submitted signup form');
+
+        // Wait for redirect to dashboard
+        await janePage.waitForURL(`${config.urls.acme}/dashboard`, { timeout: 10000 });
+        console.log('✓ Jane successfully signed up and reached dashboard');
+
+        // Step 22: Verify referral was tracked
+        console.log('\n--- Step 22: Verifying referral tracking ---');
+
+        // Check localStorage for referral data
+        const referralData = await janePage.evaluate(() => {
+          return {
+            hasRefrefCookie: document.cookie.includes('refref_'),
+            localStorage: {
+              referralCode: localStorage.getItem('refref_referral_code'),
+              referrerId: localStorage.getItem('refref_referrer_id'),
+            }
+          };
+        });
+
+        if (referralData.hasRefrefCookie) {
+          console.log('✓ RefRef tracking cookie detected');
+        }
+        if (referralData.localStorage.referralCode || referralData.localStorage.referrerId) {
+          console.log(`✓ Referral data stored: ${JSON.stringify(referralData.localStorage)}`);
+        }
+
+        // Optional: Check if Jane's widget shows she was referred by John
+        const janeWidgetContainer = janePage.getByTestId('refref-widget-container');
+        const widgetVisible = await janeWidgetContainer.isVisible().catch(() => false);
+        if (widgetVisible) {
+          console.log('✓ Jane\'s RefRef widget is also visible');
+        }
+
+      } else {
+        console.log(`⚠ Jane was redirected to: ${currentUrl}`);
+        console.log('  Expected redirect to ACME signup page');
+      }
+
+      // Clean up Jane's context
+      await janeContext.close();
+      console.log('\n✓ Jane\'s referral flow test complete');
+    } else {
+      console.log('\n⚠ Skipping referral flow test - no referral URL was extracted from widget');
     }
 
     console.log('\n=== Core User Journey Test Complete ===\n');

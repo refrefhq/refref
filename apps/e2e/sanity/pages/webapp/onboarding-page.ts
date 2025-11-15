@@ -1,5 +1,6 @@
 import { Page, expect } from '@playwright/test';
 import { BasePage } from '../base-page';
+import { getTestConfig } from '../../../utils/config';
 
 /**
  * Page object for the RefRef webapp onboarding flow
@@ -30,9 +31,10 @@ export class OnboardingPage extends BasePage {
     await productNameInput.fill(productName);
 
     // Fill product URL - use data-testid (our component)
+    const config = getTestConfig();
     const productUrlInput = this.page.getByTestId('onboarding-product-url');
     await expect(productUrlInput).toBeVisible();
-    await productUrlInput.fill('https://example.com');
+    await productUrlInput.fill(`${config.urls.acme}/signup`);
 
     // Click Next button - use data-testid (our component)
     const step1NextButton = this.page.getByTestId('onboarding-next-btn');

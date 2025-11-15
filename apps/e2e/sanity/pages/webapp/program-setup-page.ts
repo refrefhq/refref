@@ -131,14 +131,35 @@ export class ProgramSetupPage extends BasePage {
 
   /**
    * Complete the brand configuration step
+   * Sets redirect URL to ACME signup page
    * Accepts default brand color and clicks Next
    */
-  async completeBrandStep() {
+  async completeBrandStep(redirectUrl: string = 'http://localhost:3003/signup') {
     console.log('Completing brand configuration step...');
 
     // Wait for brand color input to be visible
     const colorInput = this.page.getByTestId('brand-color-hex');
     await expect(colorInput).toBeVisible({ timeout: 10000 });
+
+    // Set the redirect URL for referral links
+    const redirectUrlInput = this.page.locator('input[name="redirectUrl"], input[placeholder*="redirect"], input[id*="redirect"]').first();
+    const inputVisible = await redirectUrlInput.isVisible().catch(() => false);
+
+    if (inputVisible) {
+      await redirectUrlInput.clear();
+      await redirectUrlInput.fill(redirectUrl);
+      console.log(`  Set redirect URL to: ${redirectUrl}`);
+    } else {
+      console.log('  Redirect URL input not found, checking for alternative selectors...');
+      // Try alternative selectors
+      const altInput = this.page.locator('input').filter({ hasText: /redirect/i });
+      const altVisible = await altInput.isVisible().catch(() => false);
+      if (altVisible) {
+        await altInput.clear();
+        await altInput.fill(redirectUrl);
+        console.log(`  Set redirect URL to: ${redirectUrl}`);
+      }
+    }
 
     // Brand color is already set to default (#3b82f6), just click Next
     const nextButton = this.page.getByTestId('setup-next-btn');
