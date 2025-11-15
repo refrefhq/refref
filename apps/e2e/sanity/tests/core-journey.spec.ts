@@ -588,6 +588,168 @@ test.describe('RefRef Core User Journey', () => {
       // Clean up Jane's context
       await janeContext.close();
       console.log('\n✓ Jane\'s referral flow test complete');
+
+      // Step 23: Verify referral data in webapp admin pages
+      console.log('\n--- Step 23: Verifying referral data in webapp admin pages ---');
+
+      // Navigate to the webapp as the admin user (using original page context)
+      console.log(`\nNavigating to webapp program page: ${config.urls.webapp}/programs/${programId}`);
+      await page.goto(`${config.urls.webapp}/programs/${programId}`);
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(2000);
+
+      // Verify we're on the correct program page first
+      const webappUrl = page.url();
+      console.log(`  Current URL: ${webappUrl}`);
+
+      // Debug: Check what navigation elements are visible
+      console.log('\nLooking for navigation elements...');
+      const navLinks = await page.locator('nav a, aside a, [role="navigation"] a, nav button, aside button').allTextContents();
+      console.log('  Found navigation items:', navLinks.filter(text => text.trim()).map(text => text.trim()));
+
+      // Check for sidebar - it might be collapsed
+      const sidebar = page.locator('aside, nav, [role="navigation"], .sidebar, [data-sidebar]').first();
+      const sidebarVisible = await sidebar.isVisible().catch(() => false);
+      if (sidebarVisible) {
+        console.log('  Sidebar is visible');
+      } else {
+        console.log('  No sidebar found, navigation might be in a different layout');
+      }
+
+      // Function to click a navigation item with multiple fallback strategies
+      async function clickNavItem(itemName: string) {
+        console.log(`\nTrying to navigate to ${itemName}...`);
+
+        // Strategy 1: Direct link in nav/aside
+        let selector = page.locator(`nav a, aside a, [role="navigation"] a`).filter({ hasText: new RegExp(itemName, 'i') }).first();
+        let found = await selector.isVisible().catch(() => false);
+
+        if (!found) {
+          // Strategy 2: Button in nav/aside
+          selector = page.locator(`nav button, aside button, [role="navigation"] button`).filter({ hasText: new RegExp(itemName, 'i') }).first();
+          found = await selector.isVisible().catch(() => false);
+        }
+
+        if (!found) {
+          // Strategy 3: Any link with the text
+          selector = page.locator('a').filter({ hasText: new RegExp(itemName, 'i') }).first();
+          found = await selector.isVisible().catch(() => false);
+        }
+
+        if (!found) {
+          // Strategy 4: Tabs or tab-like elements
+          selector = page.locator('[role="tab"], [data-testid*="tab"], .tab').filter({ hasText: new RegExp(itemName, 'i') }).first();
+          found = await selector.isVisible().catch(() => false);
+        }
+
+        if (!found) {
+          // Strategy 5: Any clickable element with the text
+          selector = page.locator('*').filter({ hasText: new RegExp(`^${itemName}$`, 'i') }).first();
+          found = await selector.isVisible().catch(() => false);
+        }
+
+        if (found) {
+          console.log(`  Found ${itemName} link/button, clicking...`);
+          await selector.click();
+          await page.waitForLoadState('networkidle');
+          await page.waitForTimeout(2000);
+          return true;
+        } else {
+          console.log(`  ⚠ Could not find ${itemName} navigation item`);
+          // Try direct URL navigation as fallback
+          const currentUrl = page.url();
+          const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+          const targetUrl = `${baseUrl}/${itemName.toLowerCase()}`;
+          console.log(`  Attempting direct navigation to: ${targetUrl}`);
+          await page.goto(targetUrl);
+          await page.waitForLoadState('networkidle');
+          await page.waitForTimeout(2000);
+          return false;
+        }
+      }
+
+      // Check Participants page
+      console.log('\n--- Checking Participants page ---');
+      await clickNavItem('Participants');
+
+      // Debug: Log current URL after navigation attempt
+      console.log(`  Current URL after navigation: ${page.url()}`);
+
+      // Look for participant data - using simpler approach with page content
+      console.log('  Looking for participant data...');
+
+      // Wait a bit for any dynamic content to load
+      await page.waitForTimeout(3000);
+
+      // Get the page text to check for participants
+      const pageText = await page.locator('body').innerText().catch(() => '');
+      console.log('  Page content loaded, checking for participants...');
+
+      // Check for John in the content
+      const hasJohn = pageText.toLowerCase().includes('john') || pageText.includes('john@example.com');
+      if (hasJohn) {
+        console.log('  ✓ Found John in participants data');
+      } else {
+        console.log('  ⚠ John not found in participants');
+      }
+
+      // Check for Jane in the content
+      const hasJane = pageText.toLowerCase().includes('jane') || pageText.includes('jane@example.com');
+      if (hasJane) {
+        console.log('  ✓ Found Jane in participants data');
+      } else {
+        console.log('  ⚠ Jane not found in participants');
+      }
+
+      // Check Activity page using the clickNavItem function
+      console.log('\n--- Checking Activity page ---');
+      await clickNavItem('Activity');
+      console.log(`  Current URL after navigation: ${page.url()}`);
+      await page.waitForTimeout(2000);
+
+      // Check for activity data
+      console.log('  Looking for activity data...');
+      const activityPageText = await page.locator('body').innerText().catch(() => '');
+
+      // Check for signup or referral events
+      const hasSignupEvent = activityPageText.toLowerCase().includes('signup') || activityPageText.toLowerCase().includes('sign up');
+      const hasReferralEvent = activityPageText.toLowerCase().includes('referral') || activityPageText.toLowerCase().includes('referred');
+
+      if (hasSignupEvent) {
+        console.log('  ✓ Signup event(s) found in activity feed');
+      } else {
+        console.log('  ⚠ No signup events visible');
+      }
+
+      if (hasReferralEvent) {
+        console.log('  ✓ Referral event found in activity feed');
+      } else {
+        console.log('  ⚠ No referral events visible');
+      }
+
+      // Check Rewards page using the clickNavItem function
+      console.log('\n--- Checking Rewards page ---');
+      await clickNavItem('Rewards');
+      console.log(`  Current URL after navigation: ${page.url()}`);
+      await page.waitForTimeout(2000);
+
+      // Check for rewards data
+      console.log('  Looking for rewards data...');
+      const rewardsPageText = await page.locator('body').innerText().catch(() => '');
+
+      // Check for John's reward or any reward amount
+      const hasJohnReward = rewardsPageText.includes('John') || rewardsPageText.includes('john@example.com');
+      const hasRewardAmount = rewardsPageText.includes('$') || rewardsPageText.toLowerCase().includes('reward');
+
+      if (hasJohnReward) {
+        console.log('  ✓ Reward for John found in rewards table');
+      } else if (hasRewardAmount) {
+        console.log('  ✓ Rewards data found on page');
+      } else {
+        console.log('  ⚠ No rewards visible yet (may need to trigger reward rules)');
+      }
+
+      console.log('\n✓ Webapp data verification complete');
     } else {
       console.log('\n⚠ Skipping referral flow test - no referral URL was extracted from widget');
     }

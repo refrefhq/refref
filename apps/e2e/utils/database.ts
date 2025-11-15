@@ -84,7 +84,31 @@ export class TestDatabase {
         .from(schema.orgUser)
         .where(eq(schema.orgUser.userId, userId));
 
-      // Delete each org (cascade deletes products, programs, participants, etc.)
+      // Delete rewards first to avoid foreign key constraints
+      for (const orgUser of userOrgs) {
+        // Get all products for this org
+        const products = await db
+          .select()
+          .from(schema.product)
+          .where(eq(schema.product.orgId, orgUser.orgId));
+
+        for (const product of products) {
+          // Get all programs for this product
+          const programs = await db
+            .select()
+            .from(schema.program)
+            .where(eq(schema.program.productId, product.id));
+
+          for (const program of programs) {
+            // Delete all rewards for this program
+            await db.delete(schema.reward)
+              .where(eq(schema.reward.programId, program.id));
+          }
+        }
+      }
+      console.log(`  - Deleted rewards for ${userOrgs.length} org(s)`);
+
+      // Now delete each org (cascade deletes products, programs, participants, etc.)
       for (const orgUser of userOrgs) {
         await db.delete(schema.org).where(eq(schema.org.id, orgUser.orgId));
       }
