@@ -67,6 +67,12 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
+      command: 'pnpm -F @refref/acme dev',
+      port: 3003,
+      timeout: 120 * 1000,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
       command: 'pnpm -F @refref/assets dev',
       port: 8787,
       timeout: 120 * 1000,

@@ -80,13 +80,14 @@ export class ServerManager {
 
   /**
    * Wait for all required services to be ready
-   * Checks webapp, api, refer, and assets services in parallel
+   * Checks webapp, api, refer, acme, and assets services in parallel
    */
   async waitForAllServices(): Promise<void> {
     const services = [
       { name: 'webapp', url: config.urls.webapp },
       { name: 'api', url: config.urls.api },
       { name: 'refer', url: config.urls.refer },
+      { name: 'acme', url: config.urls.acme },
       { name: 'assets', url: config.urls.assets },
     ];
 
@@ -166,6 +167,7 @@ export class ServerManager {
       webapp: config.urls.webapp,
       api: config.urls.api,
       refer: config.urls.refer,
+      acme: config.urls.acme,
       assets: config.urls.assets,
     };
 
