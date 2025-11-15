@@ -106,14 +106,22 @@ test.describe('RefRef Core User Journey', () => {
       testData.product.name
     );
 
-    // Step 6: Create referral program
+    // Step 6: Create referral program (redirects to setup page)
     console.log('\n--- Step 6: Creating referral program ---');
     const programId = await programSetupPage.createProgram(testData.program.name);
     await expect(programId).toBeTruthy();
     console.log(`✓ Program ID: ${programId}`);
 
-    // Step 7: Verify installation credentials are visible
-    console.log('\n--- Step 7: Verifying installation credentials ---');
+    // Step 7: Complete brand configuration step
+    console.log('\n--- Step 7: Completing brand configuration ---');
+    await programSetupPage.completeBrandStep();
+
+    // Step 8: Complete rewards configuration step
+    console.log('\n--- Step 8: Completing rewards configuration ---');
+    await programSetupPage.completeRewardStep();
+
+    // Step 9: Verify installation credentials are visible on program page
+    console.log('\n--- Step 9: Verifying installation credentials ---');
     const credentials = await programSetupPage.getIntegrationCredentials();
     await expect(credentials.productId).toBeTruthy();
     await expect(credentials.programId).toBeTruthy();

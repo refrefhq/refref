@@ -64,8 +64,8 @@ export class ProgramSetupPage extends BasePage {
   }
 
   /**
-   * Get integration credentials from the program setup page
-   * Must be on program setup/installation page (/programs/{id}/setup or /programs/{id})
+   * Get integration credentials from the program detail page
+   * Must be on program detail page (/programs/{id})
    * @returns Object containing productId, programId, clientId, and clientSecret
    */
   async getIntegrationCredentials(): Promise<{
@@ -76,21 +76,8 @@ export class ProgramSetupPage extends BasePage {
   }> {
     console.log('Retrieving integration credentials...');
 
-    // Ensure we're on a program page (setup or detail)
-    await expect(this.page).toHaveURL(/\/programs\//);
-
-    // Navigate to installation step if not already there
-    const currentUrl = this.page.url();
-    await expect(currentUrl).toBeTruthy();
-
-    // Extract program ID from current URL
-    const urlMatch = currentUrl.match(/\/programs\/([^\/\?]+)/);
-    const urlProgramId = urlMatch ? urlMatch[1] : null;
-    await expect(urlProgramId).toBeTruthy();
-
-    // Navigate to installation step explicitly
-    await this.page.goto(`/programs/${urlProgramId}?step=installation`);
-    await this.page.waitForLoadState('domcontentloaded');
+    // Ensure we're on a program detail page (not setup)
+    await expect(this.page).toHaveURL(/\/programs\/[^\/]+$/);
 
     // Wait for credentials card title to be visible
     const credentialsTitle = this.page.locator('text=Installation Credentials');
@@ -138,6 +125,50 @@ export class ProgramSetupPage extends BasePage {
       clientId,
       clientSecret,
     };
+  }
+
+  /**
+   * Complete the brand configuration step
+   * Accepts default brand color and clicks Next
+   */
+  async completeBrandStep() {
+    console.log('Completing brand configuration step...');
+
+    // Wait for brand color input to be visible
+    const colorInput = this.page.getByTestId('brand-color-hex');
+    await expect(colorInput).toBeVisible({ timeout: 10000 });
+
+    // Brand color is already set to default (#3b82f6), just click Next
+    const nextButton = this.page.getByTestId('setup-next-btn');
+    await expect(nextButton).toBeVisible();
+    await nextButton.click();
+
+    console.log('✓ Brand step completed');
+  }
+
+  /**
+   * Complete the rewards configuration step
+   * Accepts default reward settings and clicks Complete Setup
+   */
+  async completeRewardStep() {
+    console.log('Completing rewards configuration step...');
+
+    // Wait for reward step to be visible
+    const referrerToggle = this.page.getByTestId('referrer-reward-enabled');
+    await expect(referrerToggle).toBeVisible({ timeout: 10000 });
+
+    // Rewards are already enabled by default, just click Complete Setup
+    const completeButton = this.page.getByTestId('setup-next-btn');
+    await expect(completeButton).toBeVisible();
+    await completeButton.click();
+
+    // Wait for redirect to program page (not setup page)
+    await this.page.waitForURL(/\/programs\/[^\/]+$/, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
+    });
+
+    console.log('✓ Rewards step completed, redirected to program page');
   }
 
   /**
