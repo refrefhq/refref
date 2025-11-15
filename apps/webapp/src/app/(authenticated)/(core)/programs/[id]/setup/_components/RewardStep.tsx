@@ -131,6 +131,7 @@ export const RewardStep = forwardRef<RewardStepRef, RewardStepProps>(
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
+                    data-testid="referrer-reward-enabled"
                   />
                 )}
               </form.Field>
@@ -275,6 +276,7 @@ export const RewardStep = forwardRef<RewardStepRef, RewardStepProps>(
                   <Switch
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
+                    data-testid="referee-reward-enabled"
                   />
                 )}
               </form.Field>

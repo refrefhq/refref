@@ -87,6 +87,7 @@ export const AppTypeStep = withFieldGroup({
             variant="outline"
             onClick={onBefore}
             disabled={isFirstStep}
+            data-testid="onboarding-previous-btn"
           >
             <ChevronLeft className="h-4 w-4 mr-2" />
             Previous
@@ -97,6 +98,7 @@ export const AppTypeStep = withFieldGroup({
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
+            data-testid="onboarding-next-btn"
           >
             {isLastStep
               ? isSubmitting

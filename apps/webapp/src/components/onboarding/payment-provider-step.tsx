@@ -112,6 +112,7 @@ export const PaymentProviderStep = withFieldGroup({
             variant="outline"
             onClick={onBefore}
             disabled={isFirstStep}
+            data-testid="onboarding-previous-btn"
           >
             <ChevronLeft className="h-4 w-4 mr-2" />
             Previous
@@ -122,6 +123,7 @@ export const PaymentProviderStep = withFieldGroup({
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
+            data-testid="onboarding-complete-btn"
           >
             {isLastStep
               ? isSubmitting

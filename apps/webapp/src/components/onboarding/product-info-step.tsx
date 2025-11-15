@@ -71,6 +71,7 @@ export const ProductInfoStep = withFieldGroup({
               <field.TextField
                 label="Product name"
                 placeholder="Enter your product name"
+                data-testid="onboarding-product-name"
               />
             )}
           </group.AppField>
@@ -86,6 +87,7 @@ export const ProductInfoStep = withFieldGroup({
                 label="Website URL"
                 placeholder="example.com or https://example.com"
                 type="text"
+                data-testid="onboarding-product-url"
               />
             )}
           </group.AppField>
@@ -97,6 +99,7 @@ export const ProductInfoStep = withFieldGroup({
             variant="outline"
             onClick={onBefore}
             disabled={isFirstStep}
+            data-testid="onboarding-previous-btn"
           >
             <ChevronLeft className="h-4 w-4 mr-2" />
             Previous
@@ -107,6 +110,7 @@ export const ProductInfoStep = withFieldGroup({
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
+            data-testid="onboarding-next-btn"
           >
             {isLastStep
               ? isSubmitting

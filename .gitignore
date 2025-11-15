@@ -43,3 +43,9 @@ CLAUDE.md
 .infisical.json
 .wrangler
 fly.toml
+
+# Testing
+apps/e2e/playwright-report
+apps/e2e/test-results
+apps/e2e/.env.test
+

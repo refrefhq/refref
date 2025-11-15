@@ -1,0 +1,29 @@
+{
+  "name": "@refref/e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:dev": "TEST_ENV=dev playwright test",
+    "test:staging": "TEST_ENV=staging playwright test",
+    "test:prod": "TEST_ENV=prod playwright test --grep @safe",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^20.11.5",
+    "dotenv": "^16.4.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@refref/coredb": "workspace:*",
+    "@refref/id": "workspace:*",
+    "@refref/utils": "workspace:*",
+    "drizzle-orm": "^0.37.0",
+    "postgres": "^3.4.4"
+  }
+}

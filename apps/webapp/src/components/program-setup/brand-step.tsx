@@ -63,12 +63,14 @@ export const BrandStep = forwardRef<
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
                 className="w-20 h-12 p-1 border rounded cursor-pointer"
+                data-testid="brand-color-picker"
               />
               <Input
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
                 placeholder="#3b82f6"
                 className="w-32 font-mono"
+                data-testid="brand-color-hex"
               />
               <span className="text-sm text-muted-foreground">
                 This color will be used for buttons, links, and accents
