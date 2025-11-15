@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { clearAllData } from '@/lib/state';
+import { clearRefRefConfig } from '@/lib/refref-runtime-config';
+import { cookies } from 'next/headers';
 
 /**
  * Test-only endpoint to reset all in-memory data
@@ -16,6 +18,13 @@ export async function POST() {
 
   try {
     clearAllData();
+    clearRefRefConfig(); // Also clear RefRef configuration
+
+    // Clear configuration cookies
+    const cookieStore = await cookies();
+    cookieStore.delete('refref-config');
+    cookieStore.delete('refref-secret');
+
     return NextResponse.json({ success: true, message: 'All data cleared' });
   } catch (error) {
     console.error('Reset error:', error);

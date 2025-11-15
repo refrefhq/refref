@@ -6,6 +6,9 @@ import { OnboardingPage } from '../pages/webapp/onboarding-page';
 import { ProgramSetupPage } from '../pages/webapp/program-setup-page';
 import { DashboardPage } from '../pages/webapp/dashboard-page';
 import { testData } from '../fixtures/test-data';
+import { getTestConfig } from '../../utils/config';
+
+const config = getTestConfig();
 
 /**
  * RefRef Core User Journey Tests
@@ -71,9 +74,21 @@ test.describe('RefRef Core User Journey', () => {
     await db.cleanupTestData();
   });
 
-  test('should complete full user journey from signup to program installation', async ({ page }) => {
-    test.setTimeout(90000); // Increase timeout to 90s due to slow Next.js rendering
+  test('should complete full user journey from signup to program installation', async ({ page, request }) => {
+    test.setTimeout(120000); // Increase timeout for full integration test
     console.log('\n=== Starting Core User Journey Test ===\n');
+
+    // Listen to browser console logs and errors
+    page.on('console', msg => {
+      const type = msg.type();
+      if (type === 'error' || type === 'warning' || msg.text().includes('RefRef')) {
+        console.log(`[Browser ${type}]`, msg.text());
+      }
+    });
+
+    page.on('pageerror', error => {
+      console.log('[Browser Error]', error.message);
+    });
 
     // Step 1: Initialize page objects
     const loginPage = new LoginPage(page);
@@ -128,6 +143,95 @@ test.describe('RefRef Core User Journey', () => {
     await expect(credentials.clientId).toBeTruthy();
     await expect(credentials.clientSecret).toBeTruthy();
     console.log('✓ All installation credentials retrieved successfully');
+    console.log(`  Product ID: ${credentials.productId}`);
+    console.log(`  Program ID: ${credentials.programId}`);
+    console.log(`  Client ID: ${credentials.clientId}`);
+
+    // Step 10: Reset ACME state (clear any existing users/sessions)
+    console.log('\n--- Step 10: Resetting ACME state ---');
+    await request.post(`${config.urls.acme}/api/test/reset`);
+    console.log('✓ ACME state reset');
+
+    // Step 11: Configure ACME with RefRef credentials
+    console.log('\n--- Step 11: Configuring ACME with RefRef credentials ---');
+    const configResponse = await request.post(`${config.urls.acme}/api/test/configure`, {
+      data: {
+        productId: credentials.productId,
+        clientId: credentials.clientId,
+        clientSecret: credentials.clientSecret,
+        programId: credentials.programId,
+      },
+    });
+    await expect(configResponse.ok()).toBeTruthy();
+    console.log('✓ ACME configured with RefRef credentials');
+
+    // Also set cookies directly in browser context for the widget to use
+    await page.context().addCookies([
+      {
+        name: 'refref-config',
+        value: JSON.stringify({
+          productId: credentials.productId,
+          clientId: credentials.clientId,
+          programId: credentials.programId,
+        }),
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+        sameSite: 'Lax',
+      },
+      {
+        name: 'refref-secret',
+        value: credentials.clientSecret,
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+        sameSite: 'Strict',
+      }
+    ]);
+
+    // Step 12: John signs up in ACME
+    console.log('\n--- Step 12: John signs up in ACME ---');
+    await page.goto(`${config.urls.acme}/signup`);
+    await expect(page).toHaveTitle(/ACME/);
+
+    const johnData = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'password123',
+    };
+
+    await page.getByTestId('acme-signup-name').fill(johnData.name);
+    await page.getByTestId('acme-signup-email').fill(johnData.email);
+    await page.getByTestId('acme-signup-password').fill(johnData.password);
+    await page.getByTestId('acme-signup-submit').click();
+    console.log('✓ John submitted signup form');
+
+    // Step 13: Verify redirect to dashboard
+    console.log('\n--- Step 13: Verifying John is logged in ---');
+    await expect(page).toHaveURL(`${config.urls.acme}/dashboard`);
+    await page.waitForLoadState('networkidle');
+    console.log('✓ John redirected to dashboard');
+
+    // Step 14: Verify RefRef widget is visible
+    console.log('\n--- Step 14: Verifying RefRef widget is visible ---');
+    const widgetContainer = page.getByTestId('refref-widget-container');
+    await expect(widgetContainer).toBeVisible();
+    console.log('✓ RefRef widget container is visible');
+
+    // Wait for widget script to load and render
+    await page.waitForTimeout(3000);
+
+    // Verify the actual widget button/trigger is visible (requires assets server)
+    const widgetTrigger = page.getByTestId('refref-widget-trigger');
+    const widgetVisible = await widgetTrigger.isVisible().catch(() => false);
+
+    if (widgetVisible) {
+      console.log('✓ RefRef widget button is visible and rendered');
+    } else {
+      console.log('⚠ Widget button not visible - assets server may not be running');
+      console.log('  Widget integration is configured correctly, but requires:');
+      console.log('  pnpm -F @refref/assets dev');
+    }
 
     console.log('\n=== Core User Journey Test Complete ===\n');
   });

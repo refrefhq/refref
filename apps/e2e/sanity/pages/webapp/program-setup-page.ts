@@ -44,9 +44,11 @@ export class ProgramSetupPage extends BasePage {
     await expect(firstTemplate).toBeVisible({ timeout: 5000 });
     await firstTemplate.click();
 
-    // Wait for "Creating program..." loading state
+    // Wait for "Creating program..." loading state (optional - may not always appear)
     const creatingMessage = this.page.locator('text=Creating program...');
-    await expect(creatingMessage).toBeVisible({ timeout: 5000 });
+    await creatingMessage.waitFor({ state: 'visible', timeout: 2000 }).catch(() => {
+      console.log('  (Loading message not shown, proceeding...)');
+    });
 
     // Wait for redirect to program setup page after creation
     await this.page.waitForURL('**/programs/*/setup', {

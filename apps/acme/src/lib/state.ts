@@ -18,10 +18,23 @@ export interface Session {
   expiresAt: Date;
 }
 
-// In-memory stores
-const users = new Map<string, User>();
-const sessions = new Map<string, Session>();
-const emailToUserId = new Map<string, string>();
+// In-memory stores (persisted across HMR)
+// Use globalThis to survive Next.js hot module replacement
+const globalForState = globalThis as unknown as {
+  users: Map<string, User>;
+  sessions: Map<string, Session>;
+  emailToUserId: Map<string, string>;
+};
+
+const users = globalForState.users ?? new Map<string, User>();
+const sessions = globalForState.sessions ?? new Map<string, Session>();
+const emailToUserId = globalForState.emailToUserId ?? new Map<string, string>();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForState.users = users;
+  globalForState.sessions = sessions;
+  globalForState.emailToUserId = emailToUserId;
+}
 
 // Helper functions
 function generateId(): string {

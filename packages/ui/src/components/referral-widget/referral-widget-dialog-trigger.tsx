@@ -25,6 +25,7 @@ export function ReferralWidgetDialogTrigger({
 
   return (
     <Button
+      data-testid="refref-widget-trigger"
       className={cn(
         className,
         "shadow-lg hover:shadow-xl transition-all duration-200",

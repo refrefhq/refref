@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { trackSignup } from '@/lib/refref-events';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -35,6 +36,9 @@ export default function SignupPage() {
         setLoading(false);
         return;
       }
+
+      // Track signup event with RefRef
+      await trackSignup(data.email, data.name);
 
       // Redirect to dashboard after successful signup
       router.push('/dashboard');

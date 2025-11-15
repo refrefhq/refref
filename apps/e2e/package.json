@@ -10,7 +10,9 @@
     "test:prod": "TEST_ENV=prod playwright test --grep @safe",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
-    "test:headed": "playwright test --headed"
+    "test:headed": "playwright test --headed",
+    "cleanup-ports": "bash scripts/cleanup-ports.sh",
+    "test:clean": "bash scripts/cleanup-ports.sh && SKIP_WEBSERVER_START=false playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
