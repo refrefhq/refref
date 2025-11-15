@@ -266,224 +266,93 @@ test.describe('RefRef Core User Journey', () => {
 
     // Verify the actual widget button/trigger is visible (requires assets server)
     const widgetTrigger = page.getByTestId('refref-widget-trigger');
-    const widgetVisible = await widgetTrigger.isVisible().catch(() => false);
+    await expect(widgetTrigger).toBeVisible({ timeout: 10000 });
+    console.log('✓ RefRef widget button is visible and rendered');
 
     // Variable to store the referral URL
     let referralUrl: string | null = null;
 
-    if (widgetVisible) {
-      console.log('✓ RefRef widget button is visible and rendered');
+    // Step 15: Click on the widget button to open it
+    console.log('\n--- Step 15: Opening RefRef widget ---');
+    await widgetTrigger.click();
+    console.log('✓ Clicked RefRef widget button');
 
-      // Step 15: Click on the widget button to open it
-      console.log('\n--- Step 15: Opening RefRef widget ---');
-      await widgetTrigger.click();
-      console.log('✓ Clicked RefRef widget button');
+    // Wait for widget modal to appear
+    await page.waitForTimeout(2000);
 
-      // Wait for widget modal/iframe to appear
-      await page.waitForTimeout(2000);
+    // Step 16: Verify widget modal is open in shadow DOM
+    console.log('\n--- Step 16: Verifying widget modal is open ---');
 
-      // Step 16: Verify widget modal is open
-      console.log('\n--- Step 16: Verifying widget modal is open ---');
+    // Extract shadow DOM content
+    const shadowContent = await page.evaluate(() => {
+      // Find all elements with shadow roots
+      const allElements = Array.from(document.querySelectorAll('*'));
+      for (const element of allElements) {
+        if (element.shadowRoot) {
+          // Found shadow host, search within shadow DOM
+          const shadowRoot = element.shadowRoot;
 
-      // The widget likely renders in a shadow DOM or iframe
-      // Try to find the widget modal/content
-      const widgetModal = page.locator('[data-testid="refref-widget-modal"], #refref-widget-modal, .refref-modal, iframe[title*="RefRef"], iframe[src*="refref"], iframe[src*="widget"]').first();
-      const modalVisible = await widgetModal.isVisible().catch(() => false);
+          // Look for modal/dialog within shadow DOM
+          const modal = shadowRoot.querySelector('[role="dialog"], .modal, .dialog, .popup, .widget-modal, [data-testid*="modal"]');
+          if (modal) {
+            // Modal found, now look for referral URL
+            const urlInput = shadowRoot.querySelector('input[type="text"], input[readonly], .referral-url, .referral-link, [data-testid*="referral"], [data-testid*="url"]');
+            const copyButton = shadowRoot.querySelector('button[data-testid*="copy"], button.copy, [aria-label*="copy"], [aria-label*="Copy"]');
 
-      if (modalVisible) {
-        console.log('✓ RefRef widget modal is open');
-
-        // If it's an iframe, we need to get its content
-        const isIframe = await widgetModal.evaluate(el => el.tagName === 'IFRAME');
-
-        if (isIframe) {
-          console.log('  Widget is rendered in an iframe');
-
-          // Get the iframe content
-          const frame = page.frameLocator('iframe[title*="RefRef"], iframe[src*="refref"], iframe[src*="widget"]').first();
-
-          // Step 17: Verify referral URL is displayed
-          console.log('\n--- Step 17: Verifying referral URL ---');
-
-          // Look for the referral URL in the widget
-          // It should contain the refer server URL with a referral code
-          const referralUrlElement = frame.locator('input[type="text"], input[readonly], .referral-url, .referral-link, [data-testid*="referral"], [data-testid*="url"]').first();
-          const referralUrlVisible = await referralUrlElement.isVisible().catch(() => false);
-
-          if (referralUrlVisible) {
-            const url = await referralUrlElement.inputValue().catch(() =>
-              referralUrlElement.textContent()
-            );
-            referralUrl = url; // Store the URL for Jane's test
-            console.log(`✓ Referral URL found: ${url}`);
-
-            // Verify the URL format
-            // Verify the URL format - should be just /[code] (no /r/ prefix)
-            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/[a-zA-Z0-9]+$/);
-            console.log('✓ Referral URL has correct format');
-
-            // Step 18: Verify participant data
-            console.log('\n--- Step 18: Verifying participant data ---');
-
-            // Check for John's email in the widget
-            const emailElement = frame.locator('text=john@example.com, text=John Doe, [data-testid*="email"], [data-testid*="participant"]').first();
-            const hasParticipantData = await emailElement.isVisible().catch(() => false);
-
-            if (hasParticipantData) {
-              console.log('✓ Participant data is displayed in widget');
-            } else {
-              console.log('⚠ Participant data not visible in widget');
-            }
-          } else {
-            console.log('⚠ Referral URL not found in widget iframe');
-          }
-        } else {
-          // Widget is not in iframe, check in regular DOM
-          console.log('  Widget is rendered in regular DOM');
-
-          // Step 17: Verify referral URL is displayed
-          console.log('\n--- Step 17: Verifying referral URL ---');
-
-          const referralUrlElement = page.locator('input[type="text"], input[readonly], .referral-url, .referral-link, [data-testid*="referral"], [data-testid*="url"]').first();
-          const referralUrlVisible = await referralUrlElement.isVisible().catch(() => false);
-
-          if (referralUrlVisible) {
-            const url = await referralUrlElement.inputValue().catch(() =>
-              referralUrlElement.textContent()
-            );
-            referralUrl = url; // Store the URL for Jane's test
-            console.log(`✓ Referral URL found: ${url}`);
-
-            // Verify the URL format
-            // Verify the URL format - should be just /[code] (no /r/ prefix)
-            await expect(referralUrl).toMatch(/http:\/\/localhost:3002\/[a-zA-Z0-9]+$/);
-            console.log('✓ Referral URL has correct format');
-          } else {
-            console.log('⚠ Referral URL not found in widget');
-          }
-        }
-      } else {
-        console.log('⚠ Widget modal did not open - checking for shadow DOM');
-
-        // Try to access shadow DOM if the widget uses it
-        const shadowContent = await page.evaluate(() => {
-          // Find all elements with shadow roots
-          const allElements = document.querySelectorAll('*');
-          for (const element of allElements) {
-            if (element.shadowRoot) {
-              // Found shadow host, search within shadow DOM
-              const shadowRoot = element.shadowRoot;
-
-              // Look for modal/dialog within shadow DOM
-              const modal = shadowRoot.querySelector('[role="dialog"], .modal, .dialog, .popup, .widget-modal, [data-testid*="modal"]');
-              if (modal) {
-                // Modal found, now look for referral URL
-                const urlInput = shadowRoot.querySelector('input[type="text"], input[readonly], .referral-url, .referral-link, [data-testid*="referral"], [data-testid*="url"]');
-                const copyButton = shadowRoot.querySelector('button[data-testid*="copy"], button.copy, [aria-label*="copy"], [aria-label*="Copy"]');
-
-                let referralUrl = null;
-                if (urlInput) {
-                  referralUrl = (urlInput as HTMLInputElement).value || urlInput.textContent;
-                }
-
-                // Look for participant info
-                const participantInfo = shadowRoot.querySelector('.participant-email, .user-email, [data-testid*="email"]');
-
-                return {
-                  hasModal: true,
-                  hasShadowRoot: true,
-                  referralUrl: referralUrl,
-                  hasCopyButton: !!copyButton,
-                  hasParticipantInfo: !!participantInfo,
-                  participantEmail: participantInfo?.textContent || null
-                };
-              }
-            }
-          }
-          return { hasModal: false, hasShadowRoot: false };
-        });
-
-        if (shadowContent.hasShadowRoot && shadowContent.hasModal) {
-          console.log('✓ Widget uses shadow DOM and modal is open');
-
-          // Step 17: Verify referral URL is displayed
-          console.log('\n--- Step 17: Verifying referral URL in shadow DOM ---');
-
-          if (shadowContent.referralUrl) {
-            referralUrl = shadowContent.referralUrl; // Store the URL for Jane's test
-            console.log(`✓ Referral URL found: ${shadowContent.referralUrl}`);
-
-            // Verify the URL format - should be just /[code] (no /r/ prefix)
-            const urlPattern = /http:\/\/localhost:3002\/[a-zA-Z0-9]+$/;
-            if (urlPattern.test(shadowContent.referralUrl)) {
-              console.log('✓ Referral URL has correct format');
-            } else {
-              console.log('⚠ Referral URL format unexpected');
+            let referralUrl = null;
+            if (urlInput) {
+              referralUrl = (urlInput as HTMLInputElement).value || urlInput.textContent;
             }
 
-            if (shadowContent.hasCopyButton) {
-              console.log('✓ Copy button is present');
-            }
-          } else {
-            console.log('⚠ Referral URL not found in shadow DOM');
+            // Look for participant info
+            const participantInfo = shadowRoot.querySelector('.participant-email, .user-email, [data-testid*="email"]');
+
+            return {
+              hasModal: true,
+              hasShadowRoot: true,
+              referralUrl: referralUrl,
+              hasCopyButton: !!copyButton,
+              hasParticipantInfo: !!participantInfo,
+              participantEmail: participantInfo?.textContent || null
+            };
           }
-
-          // Step 18: Verify participant data
-          console.log('\n--- Step 18: Verifying participant data in shadow DOM ---');
-
-          if (shadowContent.hasParticipantInfo) {
-            console.log(`✓ Participant info found: ${shadowContent.participantEmail}`);
-          } else {
-            console.log('⚠ Participant data not visible in widget');
-          }
-        } else if (shadowContent.hasShadowRoot) {
-          console.log('  Widget uses shadow DOM but modal not found');
-          console.log('  Trying alternative approach...');
-
-          // Try clicking again or waiting longer
-          await page.waitForTimeout(2000);
-
-          // Check if there's a different shadow host
-          const alternativeCheck = await page.evaluate(() => {
-            // Look specifically for RefRef-related shadow hosts
-            const possibleHosts = document.querySelectorAll('[id*="refref"], [class*="refref"], refref-widget, [data-refref]');
-            for (const host of possibleHosts) {
-              if (host.shadowRoot) {
-                const content = host.shadowRoot.innerHTML;
-                return {
-                  found: true,
-                  hasContent: content.length > 0,
-                  snippet: content.substring(0, 200)
-                };
-              }
-            }
-            return { found: false };
-          });
-
-          if (alternativeCheck.found) {
-            console.log('  Found RefRef shadow host with content');
-            if (alternativeCheck.snippet) {
-              console.log(`  Content preview: ${alternativeCheck.snippet.substring(0, 100)}...`);
-            }
-          }
-        } else {
-          console.log('  Widget modal not found and no shadow DOM detected');
         }
       }
-    } else {
-      console.log('⚠ Widget button not visible - assets server may not be running');
-      console.log('  Widget integration is configured correctly, but requires:');
-      console.log('  pnpm -F @refref/assets dev');
-    }
+      return { hasModal: false, hasShadowRoot: false };
+    });
+
+    // Assert that shadow DOM and modal exist
+    expect(shadowContent.hasShadowRoot).toBe(true);
+    expect(shadowContent.hasModal).toBe(true);
+    console.log('✓ Widget uses shadow DOM and modal is open');
+
+    // Step 17: Verify referral URL is displayed
+    console.log('\n--- Step 17: Verifying referral URL in shadow DOM ---');
+
+    // Assert referral URL was found
+    expect(shadowContent.referralUrl).toBeTruthy();
+    referralUrl = shadowContent.referralUrl; // Store the URL for Jane's test
+    console.log(`✓ Referral URL found: ${shadowContent.referralUrl}`);
+
+    // Verify the URL format - should be just /[code] (no /r/ prefix)
+    const urlPattern = /http:\/\/localhost:3002\/[a-zA-Z0-9]+$/;
+    expect(shadowContent.referralUrl).toMatch(urlPattern);
+    console.log('✓ Referral URL has correct format');
+
+    // Step 18: Verify participant data (optional - may not be visible in all widget states)
+    console.log('\n--- Step 18: Verifying participant data in shadow DOM ---');
+    console.log('⚠ Participant data not visible in widget');
 
     // Step 19: Test referral flow with Jane
-    if (referralUrl) {
-      console.log('\n--- Step 19: Testing referral flow with Jane ---');
-      console.log(`Using referral URL: ${referralUrl}`);
+    console.log('\n--- Step 19: Testing referral flow with Jane ---');
 
-      // Create a new browser context for Jane (clean session, no John's cookies)
-      const janeContext = await browser.newContext();
-      const janePage = await janeContext.newPage();
+    // Assert that we successfully extracted a referral URL
+    expect(referralUrl).toBeTruthy();
+    console.log(`Using referral URL: ${referralUrl}`);
+
+    // Create a new browser context for Jane (clean session, no John's cookies)
+    const janeContext = await browser.newContext();
+    const janePage = await janeContext.newPage();
 
       // Listen to Jane's browser console for debugging
       janePage.on('console', msg => {
@@ -524,17 +393,16 @@ test.describe('RefRef Core User Journey', () => {
       const currentUrl = janePage.url();
       console.log(`  Jane landed at: ${currentUrl}`);
 
-      // Check if Jane was redirected to ACME signup
-      if (currentUrl.includes(`${config.urls.acme}/signup`)) {
-        console.log('✓ Jane was redirected to ACME signup page');
+      // Assert Jane was redirected to ACME signup
+      expect(currentUrl).toContain(`${config.urls.acme}/signup`);
+      console.log('✓ Jane was redirected to ACME signup page');
 
-        // Check if referral tracking parameters are present
-        if (currentUrl.includes('ref=') || currentUrl.includes('referral_code=') || currentUrl.includes('r=')) {
-          console.log('✓ Referral tracking parameters detected in URL');
-        }
+      // Assert referral tracking parameters are present in URL
+      expect(currentUrl).toMatch(/[?&](ref|referral_code|refcode|name|participantId)=/);
+      console.log('✓ Referral tracking parameters detected in URL');
 
-        // Step 21: Complete Jane's signup
-        console.log('\n--- Step 21: Jane is signing up at ACME ---');
+      // Step 21: Complete Jane's signup
+      console.log('\n--- Step 21: Jane is signing up at ACME ---');
         const janeData = {
           name: 'Jane Smith',
           email: 'jane@example.com',
@@ -552,42 +420,17 @@ test.describe('RefRef Core User Journey', () => {
         await janePage.waitForURL(`${config.urls.acme}/dashboard`, { timeout: 10000 });
         console.log('✓ Jane successfully signed up and reached dashboard');
 
-        // Step 22: Verify referral was tracked
+        // Step 22: Verify referral tracking
         console.log('\n--- Step 22: Verifying referral tracking ---');
 
-        // Check localStorage for referral data
-        const referralData = await janePage.evaluate(() => {
-          return {
-            hasRefrefCookie: document.cookie.includes('refref_'),
-            localStorage: {
-              referralCode: localStorage.getItem('refref_referral_code'),
-              referrerId: localStorage.getItem('refref_referrer_id'),
-            }
-          };
-        });
+      // Verify Jane's RefRef widget is visible (confirms widget initialization)
+      const janeWidgetContainer = janePage.getByTestId('refref-widget-container');
+      await expect(janeWidgetContainer).toBeVisible({ timeout: 10000 });
+      console.log('✓ Jane\'s RefRef widget is visible');
 
-        if (referralData.hasRefrefCookie) {
-          console.log('✓ RefRef tracking cookie detected');
-        }
-        if (referralData.localStorage.referralCode || referralData.localStorage.referrerId) {
-          console.log(`✓ Referral data stored: ${JSON.stringify(referralData.localStorage)}`);
-        }
-
-        // Optional: Check if Jane's widget shows she was referred by John
-        const janeWidgetContainer = janePage.getByTestId('refref-widget-container');
-        const widgetVisible = await janeWidgetContainer.isVisible().catch(() => false);
-        if (widgetVisible) {
-          console.log('✓ Jane\'s RefRef widget is also visible');
-        }
-
-      } else {
-        console.log(`⚠ Jane was redirected to: ${currentUrl}`);
-        console.log('  Expected redirect to ACME signup page');
-      }
-
-      // Clean up Jane's context
-      await janeContext.close();
-      console.log('\n✓ Jane\'s referral flow test complete');
+    // Clean up Jane's context
+    await janeContext.close();
+    console.log('\n✓ Jane\'s referral flow test complete');
 
       // Step 23: Verify referral data in webapp admin pages
       console.log('\n--- Step 23: Verifying referral data in webapp admin pages ---');
@@ -681,25 +524,16 @@ test.describe('RefRef Core User Journey', () => {
       // Wait a bit for any dynamic content to load
       await page.waitForTimeout(3000);
 
-      // Get the page text to check for participants
-      const pageText = await page.locator('body').innerText().catch(() => '');
-      console.log('  Page content loaded, checking for participants...');
+      // Verify participant data is visible
+      console.log('  Verifying participant data...');
 
-      // Check for John in the content
-      const hasJohn = pageText.toLowerCase().includes('john') || pageText.includes('john@example.com');
-      if (hasJohn) {
-        console.log('  ✓ Found John in participants data');
-      } else {
-        console.log('  ⚠ John not found in participants');
-      }
+      // Assert that John is found in the participants data
+      await expect(page.locator('body')).toContainText(/john|john@example\.com/i, { timeout: 10000 });
+      console.log('  ✓ Found John in participants data');
 
-      // Check for Jane in the content
-      const hasJane = pageText.toLowerCase().includes('jane') || pageText.includes('jane@example.com');
-      if (hasJane) {
-        console.log('  ✓ Found Jane in participants data');
-      } else {
-        console.log('  ⚠ Jane not found in participants');
-      }
+      // Assert that Jane is found in the participants data
+      await expect(page.locator('body')).toContainText(/jane|jane@example\.com/i, { timeout: 10000 });
+      console.log('  ✓ Found Jane in participants data');
 
       // Check Activity page using the clickNavItem function
       console.log('\n--- Checking Activity page ---');
@@ -707,25 +541,16 @@ test.describe('RefRef Core User Journey', () => {
       console.log(`  Current URL after navigation: ${page.url()}`);
       await page.waitForTimeout(2000);
 
-      // Check for activity data
-      console.log('  Looking for activity data...');
-      const activityPageText = await page.locator('body').innerText().catch(() => '');
+      // Verify activity data is visible
+      console.log('  Verifying activity data...');
 
-      // Check for signup or referral events
-      const hasSignupEvent = activityPageText.toLowerCase().includes('signup') || activityPageText.toLowerCase().includes('sign up');
-      const hasReferralEvent = activityPageText.toLowerCase().includes('referral') || activityPageText.toLowerCase().includes('referred');
+      // Assert that signup events are visible
+      await expect(page.locator('body')).toContainText(/signup|sign up/i, { timeout: 10000 });
+      console.log('  ✓ Signup event(s) found in activity feed');
 
-      if (hasSignupEvent) {
-        console.log('  ✓ Signup event(s) found in activity feed');
-      } else {
-        console.log('  ⚠ No signup events visible');
-      }
-
-      if (hasReferralEvent) {
-        console.log('  ✓ Referral event found in activity feed');
-      } else {
-        console.log('  ⚠ No referral events visible');
-      }
+      // Assert that referral events are visible
+      await expect(page.locator('body')).toContainText(/referral|referred/i, { timeout: 10000 });
+      console.log('  ✓ Referral event found in activity feed');
 
       // Check Rewards page using the clickNavItem function
       console.log('\n--- Checking Rewards page ---');
@@ -733,26 +558,14 @@ test.describe('RefRef Core User Journey', () => {
       console.log(`  Current URL after navigation: ${page.url()}`);
       await page.waitForTimeout(2000);
 
-      // Check for rewards data
-      console.log('  Looking for rewards data...');
-      const rewardsPageText = await page.locator('body').innerText().catch(() => '');
+      // Verify rewards data is visible
+      console.log('  Verifying rewards data...');
 
-      // Check for John's reward or any reward amount
-      const hasJohnReward = rewardsPageText.includes('John') || rewardsPageText.includes('john@example.com');
-      const hasRewardAmount = rewardsPageText.includes('$') || rewardsPageText.toLowerCase().includes('reward');
-
-      if (hasJohnReward) {
-        console.log('  ✓ Reward for John found in rewards table');
-      } else if (hasRewardAmount) {
-        console.log('  ✓ Rewards data found on page');
-      } else {
-        console.log('  ⚠ No rewards visible yet (may need to trigger reward rules)');
-      }
+      // Assert that rewards data is visible (either John's reward or reward keyword)
+      await expect(page.locator('body')).toContainText(/reward|\$/i, { timeout: 10000 });
+      console.log('  ✓ Rewards data found on page');
 
       console.log('\n✓ Webapp data verification complete');
-    } else {
-      console.log('\n⚠ Skipping referral flow test - no referral URL was extracted from widget');
-    }
 
     console.log('\n=== Core User Journey Test Complete ===\n');
   });
