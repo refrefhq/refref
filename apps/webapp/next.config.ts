@@ -10,7 +10,7 @@ const config: NextConfig = {
     return [
       {
         source: "/settings",
-        destination: "/settings/profile",
+        destination: "/settings/account/profile",
         permanent: true,
       },
     ];

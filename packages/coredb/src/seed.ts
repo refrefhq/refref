@@ -33,6 +33,8 @@ export const SEED_IDS = {
 
   // Program Templates (pgt_ prefix)
   TEMPLATE_STANDARD: "pgt_yic2ws4jnnoo4dbps3017lda",
+  TEMPLATE_SINGLE_SIDED: "pgt_k8m2vx9zp1rtn4wq7ejs6blh",
+  TEMPLATE_AFFILIATE: "pgt_n5q8rx3tp2ywl9km1vhd4ucg",
 
   // Programs (prg_ prefix)
   PROGRAM_1: "prg_yjuc7b0lplvfvtl1nmj3jqg1",
@@ -205,6 +207,54 @@ export const SEED_DATA = {
           },
         ],
         meta: {},
+      } satisfies ProgramTemplateConfigType,
+    },
+    {
+      id: SEED_IDS.TEMPLATE_SINGLE_SIDED,
+      templateName: "Single-Sided Referral Program",
+      description: "Reward only the referrer - perfect for affiliate-style programs where advocates earn for bringing new customers",
+      config: {
+        schemaVersion: 1,
+        steps: [
+          {
+            key: "brand",
+            title: "Brand",
+            description: "Set your brand color",
+          },
+          {
+            key: "reward",
+            title: "Rewards",
+            description: "Configure referrer rewards",
+          },
+        ],
+        meta: {
+          rewardModel: "single-sided",
+          recommendedFor: ["affiliate", "advocate", "influencer"],
+        },
+      } satisfies ProgramTemplateConfigType,
+    },
+    {
+      id: SEED_IDS.TEMPLATE_AFFILIATE,
+      templateName: "Affiliate Program",
+      description: "Commission-based program with ongoing revenue sharing - ideal for partners and content creators",
+      config: {
+        schemaVersion: 1,
+        steps: [
+          {
+            key: "brand",
+            title: "Brand",
+            description: "Set your brand color",
+          },
+          {
+            key: "reward",
+            title: "Commission",
+            description: "Configure commission structure",
+          },
+        ],
+        meta: {
+          rewardModel: "commission",
+          recommendedFor: ["partners", "creators", "resellers"],
+        },
       } satisfies ProgramTemplateConfigType,
     },
   ],

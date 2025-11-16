@@ -157,9 +157,6 @@ export const invitation = pgTable("invitation", {
 
 export const apikey = pgTable("apikey", {
   ...baseFields("apikey"),
-  organizationId: text("organization_id").references(() => org.id, {
-    onDelete: "cascade",
-  }),
   name: text("name"),
   start: text("start"),
   prefix: text("prefix"),

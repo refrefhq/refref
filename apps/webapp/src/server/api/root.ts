@@ -13,6 +13,7 @@ import { productMembersRouter } from "@/server/api/routers/product-members";
 import { searchRouter } from "@/server/api/routers/search";
 import { analyticsRouter } from "@/server/api/routers/analytics";
 import { organizationRouter } from "@/server/api/routers/organization";
+import { apiKeysRouter } from "@/server/api/routers/api-keys";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -36,6 +37,7 @@ export const appRouter = createTRPCRouter({
   organization: organizationRouter,
   search: searchRouter,
   analytics: analyticsRouter,
+  apiKeys: apiKeysRouter,
 });
 
 // export type definition of API

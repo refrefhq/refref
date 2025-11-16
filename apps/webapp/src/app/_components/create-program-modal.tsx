@@ -29,6 +29,11 @@ import { CheckCircle2 } from "lucide-react";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "@/server/api/root";
 import { cn } from "@refref/ui/lib/utils";
+import {
+  SingleSidedVisual,
+  DoubleSidedVisual,
+  AffiliateVisual,
+} from "@/components/template-visuals";
 
 type Template = {
   id: string;
@@ -36,6 +41,23 @@ type Template = {
   description: string;
   // Add more fields as needed
 };
+
+// Helper function to get the appropriate visual component for a template
+function getTemplateVisual(templateName: string) {
+  const lowerName = templateName.toLowerCase();
+
+  // Match template names to visual components
+  if (lowerName.includes("single") || lowerName.includes("affiliate")) {
+    return SingleSidedVisual;
+  } else if (lowerName.includes("double") || lowerName.includes("two-sided") || lowerName.includes("standard") || lowerName.includes("referral")) {
+    return DoubleSidedVisual;
+  } else if (lowerName.includes("partner") || lowerName.includes("commission")) {
+    return AffiliateVisual;
+  }
+
+  // Default to double-sided for standard referral programs
+  return DoubleSidedVisual;
+}
 
 export function CreateProgramModalV2() {
   const [open, setOpen] = useState(false);
@@ -88,6 +110,8 @@ export function CreateProgramModalV2() {
                   (p) => p.programTemplateId === template.id,
                 );
 
+                const TemplateVisual = getTemplateVisual(template.templateName);
+
                 const cardContent = (
                   <Card
                     key={template.id}
@@ -100,7 +124,15 @@ export function CreateProgramModalV2() {
                     onClick={() => !isUsed && handleTemplateSelect(template)}
                   >
                     <CardHeader>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
+                        {/* Visual Component */}
+                        <div className={cn(
+                          "w-full h-24 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 flex items-center justify-center",
+                          isUsed && "opacity-50"
+                        )}>
+                          <TemplateVisual className="w-full h-full" />
+                        </div>
+
                         <div className="flex items-start justify-between">
                           <CardTitle
                             className={cn(isUsed && "text-muted-foreground")}

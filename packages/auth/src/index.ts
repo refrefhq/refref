@@ -212,7 +212,10 @@ export function getAuth(config: AuthConfig) {
           });
         },
       }),
-      apiKey(),
+      apiKey({
+        defaultPrefix: "prod_refref_key_",
+        enableMetadata: true,
+      }),
     ],
     databaseHooks: {
       user: {

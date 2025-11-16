@@ -12,6 +12,23 @@ declare module "fastify" {
       permissions: string | null;
       enabled: boolean | null;
     };
+    product?: {
+      id: string;
+      orgId: string | null;
+      name: string;
+      slug: string | null;
+      url: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+    organization?: {
+      id: string;
+      name: string;
+      slug: string | null;
+      logo: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    } | null;
   }
 
   interface FastifyInstance {
@@ -56,21 +73,32 @@ const betterAuthPlugin = fp(
           });
         }
 
+        // Extract productId from request body for product-scoped validation
+        const productId = (request.body as any)?.productId;
+
+        if (!productId) {
+          return reply.code(400).send({
+            error: "Bad Request",
+            message: "productId is required in request body",
+          });
+        }
+
         try {
-          // Use Better Auth's verifyApiKey which handles:
-          // - Hashed key comparison
-          // - Rate limiting
-          // - Expiration checks
+          // Use Better Auth's verifyApiKey with product-scoped permissions
+          // This validates the API key has the required permissions for this specific product
           const result = await auth.api.verifyApiKey({
             body: {
               key: apiKeyHeader,
+              permissions: {
+                [productId]: ["track", "read"], // Validate API key has these permissions for this product
+              },
             },
           });
 
           if (!result || !(result as any).apiKey) {
-            return reply.code(401).send({
-              error: "Unauthorized",
-              message: "Invalid or expired API key",
+            return reply.code(403).send({
+              error: "Forbidden",
+              message: "Invalid API key or insufficient permissions for this product",
             });
           }
 
@@ -84,7 +112,28 @@ const betterAuthPlugin = fp(
             });
           }
 
-          // Attach API key info to request
+          // Fetch product with organization relation for authorization context
+          const { product: productTable } = schema;
+          const productData = await opts.db.query.product.findFirst({
+            where: (product, { eq }) => eq(product.id, productId),
+          });
+
+          if (!productData) {
+            return reply.code(404).send({
+              error: "Not Found",
+              message: "Product not found",
+            });
+          }
+
+          // Fetch organization relation
+          const { org: orgTable } = schema;
+          const orgData = productData.orgId
+            ? await opts.db.query.org.findFirst({
+                where: (org, { eq }) => eq(org.id, productData.orgId!),
+              })
+            : null;
+
+          // Attach API key info and context to request
           request.apiKey = {
             id: apiKeyData.id,
             userId: apiKeyData.userId,
@@ -92,6 +141,10 @@ const betterAuthPlugin = fp(
             permissions: apiKeyData.permissions,
             enabled: apiKeyData.enabled,
           };
+
+          // Attach product and organization to request for route handlers
+          (request as any).product = productData;
+          (request as any).organization = orgData;
         } catch (error) {
           request.log.error({ error }, "API key verification error");
           return reply.code(401).send({

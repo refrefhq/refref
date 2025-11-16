@@ -9,6 +9,7 @@ import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { Separator } from "@refref/ui/components/separator";
 import { Eye, EyeOff, Copy } from "lucide-react";
+import { ProductApiKeysCard } from "@/components/settings/product/product-api-keys-card";
 
 export default function ProductAPIPage() {
   const { data: product } = api.product.getCurrent.useQuery();
@@ -53,7 +54,7 @@ export default function ProductAPIPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-[var(--content-max-width)] mx-auto">
+    <div className="flex flex-col gap-6 p-6 w-full max-w-[var(--content-max-width)] mx-auto">
       {/* Header Section */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">API & Secrets</h1>
@@ -141,17 +142,8 @@ export default function ProductAPIPage() {
           </CardContent>
         </Card>
 
-        {/* Coming Soon Card */}
-        <Card>
-          <CardContent className="space-y-4">
-            <div>
-              <h3 className="text-lg font-medium">Webhooks</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Configure webhooks to receive real-time updates (coming soon)
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* API Keys Card */}
+        <ProductApiKeysCard />
       </div>
     </div>
   );

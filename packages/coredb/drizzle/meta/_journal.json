@@ -43,6 +43,13 @@
       "when": 1763011506956,
       "tag": "0005_lowly_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1763324278744,
+      "tag": "0006_clever_mister_fear",
+      "breakpoints": true
     }
   ]
 }
