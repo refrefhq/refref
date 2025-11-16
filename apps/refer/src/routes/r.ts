@@ -41,7 +41,10 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         // Single optimized query using relations (1 query instead of 3)
         // This does a JOIN under the hood: refcode → participant → product
         const result = await request.db.query.refcode.findFirst({
-          where: and(eq(refcode.code, normalizedCode), eq(refcode.global, true)),
+          where: and(
+            eq(refcode.code, normalizedCode),
+            eq(refcode.global, true),
+          ),
           with: {
             participant: {
               with: {

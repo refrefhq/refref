@@ -244,7 +244,8 @@ export const SEED_DATA = {
           borderRadius: 25,
           modalBgColor: "#ffffff",
           referralLink: "",
-          shareMessage: "Join refref-local! Get 20% off your first purchase and I'll earn $10",
+          shareMessage:
+            "Join refref-local! Get 20% off your first purchase and I'll earn $10",
           buttonBgColor: "#3b82f6",
           buttonTextColor: "#ffffff",
           enabledPlatforms: {
@@ -261,8 +262,16 @@ export const SEED_DATA = {
         templateConfig: {
           schemaVersion: 1,
           steps: [
-            { key: "brand" as const, title: "Brand", description: "Set your brand color" },
-            { key: "reward" as const, title: "Rewards", description: "Configure reward structure" },
+            {
+              key: "brand" as const,
+              title: "Brand",
+              description: "Set your brand color",
+            },
+            {
+              key: "reward" as const,
+              title: "Rewards",
+              description: "Configure reward structure",
+            },
           ],
           meta: {},
         },
@@ -332,7 +341,8 @@ export const SEED_DATA = {
       id: SEED_IDS.REWARD_RULE_1,
       programId: SEED_IDS.PROGRAM_2,
       name: "Referrer Cash Reward",
-      description: "Cash reward for referrers when their referrals make a purchase",
+      description:
+        "Cash reward for referrers when their referrals make a purchase",
       type: "referrer_purchase_reward",
       priority: 100,
       isActive: true,
@@ -355,7 +365,11 @@ export const SEED_DATA = {
         schemaVersion: 1 as const,
         participantType: "referee" as const,
         trigger: { event: "signup" },
-        reward: { type: "discount" as const, unit: "percent" as const, amount: 20 },
+        reward: {
+          type: "discount" as const,
+          unit: "percent" as const,
+          amount: 20,
+        },
       },
     },
   ],
@@ -366,13 +380,15 @@ export const SEED_DATA = {
       id: SEED_IDS.SECRET_1,
       productId: SEED_IDS.PRODUCT_1,
       clientId: "ms3ln7fktdjqgu03uw46y91h",
-      clientSecret: "a219bbc40001d76249a1ce8165d5032248f689e9c7fc2eb82553ff2be0374a98",
+      clientSecret:
+        "a219bbc40001d76249a1ce8165d5032248f689e9c7fc2eb82553ff2be0374a98",
     },
     {
       id: SEED_IDS.SECRET_2,
       productId: SEED_IDS.PRODUCT_2,
       clientId: "ch1lv23z8h9qwsmjd3mu30a3",
-      clientSecret: "7f5d0bac13c73d63f7c9ff70250972200323461895ac1c8cae506fc07fc103ff",
+      clientSecret:
+        "7f5d0bac13c73d63f7c9ff70250972200323461895ac1c8cae506fc07fc103ff",
     },
   ],
 
@@ -449,7 +465,9 @@ const seedData = async () => {
         .insert(schema.org)
         .values([...SEED_DATA.ORGANIZATIONS])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.ORGANIZATIONS.length} organization(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.ORGANIZATIONS.length} organization(s)`,
+      );
 
       // 3. Organization Users
       console.log("👤 Creating organization memberships...");
@@ -457,7 +475,9 @@ const seedData = async () => {
         .insert(schema.orgUser)
         .values([...SEED_DATA.ORG_USERS])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.ORG_USERS.length} organization membership(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.ORG_USERS.length} organization membership(s)`,
+      );
 
       // 4. Products
       console.log("📦 Creating products...");
@@ -473,7 +493,9 @@ const seedData = async () => {
         .insert(schema.programTemplate)
         .values([...SEED_DATA.PROGRAM_TEMPLATES])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.PROGRAM_TEMPLATES.length} program template(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.PROGRAM_TEMPLATES.length} program template(s)`,
+      );
 
       // 6. Programs
       console.log("🎯 Creating programs...");
@@ -489,7 +511,9 @@ const seedData = async () => {
         .insert(schema.eventDefinition)
         .values([...SEED_DATA.EVENT_DEFINITIONS])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.EVENT_DEFINITIONS.length} event definition(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.EVENT_DEFINITIONS.length} event definition(s)`,
+      );
 
       // 8. Participants
       console.log("🙋 Creating participants...");
@@ -497,7 +521,9 @@ const seedData = async () => {
         .insert(schema.participant)
         .values([...SEED_DATA.PARTICIPANTS])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.PARTICIPANTS.length} participant(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.PARTICIPANTS.length} participant(s)`,
+      );
 
       // 9. Refcodes
       console.log("🔗 Creating referral codes...");
@@ -505,7 +531,9 @@ const seedData = async () => {
         .insert(schema.refcode)
         .values([...SEED_DATA.REFCODES])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.REFCODES.length} referral code(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.REFCODES.length} referral code(s)`,
+      );
 
       // 10. Reward Rules
       console.log("💰 Creating reward rules...");
@@ -513,7 +541,9 @@ const seedData = async () => {
         .insert(schema.rewardRule)
         .values([...SEED_DATA.REWARD_RULES])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.REWARD_RULES.length} reward rule(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.REWARD_RULES.length} reward rule(s)`,
+      );
 
       // 11. Product Secrets
       console.log("🔐 Creating product secrets...");
@@ -521,7 +551,9 @@ const seedData = async () => {
         .insert(schema.productSecrets)
         .values([...SEED_DATA.PRODUCT_SECRETS])
         .onConflictDoNothing();
-      console.log(`   ✓ Inserted ${SEED_DATA.PRODUCT_SECRETS.length} product secret(s)`);
+      console.log(
+        `   ✓ Inserted ${SEED_DATA.PRODUCT_SECRETS.length} product secret(s)`,
+      );
 
       // 12. Referrals
       console.log("👫 Creating referrals...");

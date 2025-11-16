@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { deleteSession } from '@/lib/state';
+import { NextRequest, NextResponse } from "next/server";
+import { deleteSession } from "@/lib/state";
 
 export async function POST(request: NextRequest) {
   try {
     // Get session cookie
-    const sessionId = request.cookies.get('session')?.value;
+    const sessionId = request.cookies.get("session")?.value;
 
     if (sessionId) {
       // Delete session from store
@@ -15,17 +15,20 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true });
 
     // Clear session cookie
-    response.cookies.set('session', '', {
+    response.cookies.set("session", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 0,
-      path: '/',
+      path: "/",
     });
 
     return response;
   } catch (error) {
-    console.error('Logout error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Logout error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

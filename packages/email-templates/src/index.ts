@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { MagicLinkEmail } from './templates/MagicLinkEmail.js';
-import { InvitationEmail } from './templates/InvitationEmail.js';
-import { renderEmail } from './utils/render.js';
+import * as React from "react";
+import { MagicLinkEmail } from "./templates/MagicLinkEmail.js";
+import { InvitationEmail } from "./templates/InvitationEmail.js";
+import { renderEmail } from "./utils/render.js";
 
 /**
  * Generates HTML for a magic link email
@@ -27,5 +27,5 @@ export async function renderInvitationEmail(params: {
 }
 
 // Export the template components for advanced use cases
-export { MagicLinkEmail } from './templates/MagicLinkEmail.js';
-export { InvitationEmail } from './templates/InvitationEmail.js';
+export { MagicLinkEmail } from "./templates/MagicLinkEmail.js";
+export { InvitationEmail } from "./templates/InvitationEmail.js";

@@ -1,8 +1,8 @@
-import { getTestConfig } from './config';
-import { createDb } from '@refref/coredb';
-import { schema } from '@refref/coredb';
-import { eq, like, or } from 'drizzle-orm';
-import type { DBType } from '@refref/coredb';
+import { getTestConfig } from "./config";
+import { createDb } from "@refref/coredb";
+import { schema } from "@refref/coredb";
+import { eq, like, or } from "drizzle-orm";
+import type { DBType } from "@refref/coredb";
 
 export class TestDatabase {
   private config = getTestConfig();
@@ -23,16 +23,16 @@ export class TestDatabase {
    * Database is already set up locally, this just verifies connection
    */
   async setup() {
-    console.log('Setting up test database...');
+    console.log("Setting up test database...");
     const db = this.getDb();
 
     // Verify database connection by running a simple query
     try {
       await db.select().from(schema.user).limit(1);
-      console.log('✓ Database connection verified');
+      console.log("✓ Database connection verified");
     } catch (error) {
-      console.error('✗ Database connection failed:', error);
-      throw new Error('Database setup failed: Unable to connect to database');
+      console.error("✗ Database connection failed:", error);
+      throw new Error("Database setup failed: Unable to connect to database");
     }
   }
 
@@ -41,13 +41,15 @@ export class TestDatabase {
    * Note: Program templates should already be seeded via pnpm -F @refref/coredb db:seed
    */
   async seed() {
-    console.log('Seeding test database...');
+    console.log("Seeding test database...");
     const db = this.getDb();
 
     // Check if program templates exist
     const templates = await db.select().from(schema.programTemplate);
     if (templates.length === 0) {
-      console.warn('⚠ No program templates found. Run: pnpm -F @refref/coredb db:seed');
+      console.warn(
+        "⚠ No program templates found. Run: pnpm -F @refref/coredb db:seed",
+      );
     } else {
       console.log(`✓ Found ${templates.length} program template(s)`);
     }
@@ -58,7 +60,7 @@ export class TestDatabase {
    * Uses fixed test user email - deleting the user and their orgs cascades to all related data
    */
   async cleanup() {
-    console.log('Cleaning up test database...');
+    console.log("Cleaning up test database...");
     const db = this.getDb();
     const testUserEmail = this.config.testUser.email;
 
@@ -71,8 +73,8 @@ export class TestDatabase {
         .limit(1);
 
       if (testUser.length === 0) {
-        console.log('  - No test user found, nothing to clean up');
-        console.log('✓ Database cleanup completed');
+        console.log("  - No test user found, nothing to clean up");
+        console.log("✓ Database cleanup completed");
         return;
       }
 
@@ -101,7 +103,8 @@ export class TestDatabase {
 
           for (const program of programs) {
             // Delete all rewards for this program
-            await db.delete(schema.reward)
+            await db
+              .delete(schema.reward)
               .where(eq(schema.reward.programId, program.id));
           }
         }
@@ -118,13 +121,17 @@ export class TestDatabase {
       const deletedSessions = await db
         .delete(schema.session)
         .where(eq(schema.session.userId, userId));
-      console.log(`  - Deleted user sessions: ${deletedSessions.rowCount ?? 0}`);
+      console.log(
+        `  - Deleted user sessions: ${deletedSessions.rowCount ?? 0}`,
+      );
 
       // Delete test user's accounts (OAuth, password, etc.)
       const deletedAccounts = await db
         .delete(schema.account)
         .where(eq(schema.account.userId, userId));
-      console.log(`  - Deleted user accounts: ${deletedAccounts.rowCount ?? 0}`);
+      console.log(
+        `  - Deleted user accounts: ${deletedAccounts.rowCount ?? 0}`,
+      );
 
       // Delete test user
       const deletedUsers = await db
@@ -132,9 +139,9 @@ export class TestDatabase {
         .where(eq(schema.user.id, userId));
       console.log(`  - Deleted user: ${deletedUsers.rowCount ?? 0}`);
 
-      console.log('✓ Database cleanup completed');
+      console.log("✓ Database cleanup completed");
     } catch (error) {
-      console.error('✗ Database cleanup failed:', error);
+      console.error("✗ Database cleanup failed:", error);
       throw error;
     }
   }
@@ -148,7 +155,7 @@ export class TestDatabase {
     if (shouldCleanup) {
       await this.cleanup();
     } else {
-      console.log('Skipping cleanup (CLEANUP_ON_FAILURE=false)');
+      console.log("Skipping cleanup (CLEANUP_ON_FAILURE=false)");
     }
   }
 
@@ -173,11 +180,13 @@ export class TestDatabase {
   async ensureTestUserExists(): Promise<boolean> {
     const user = await this.getTestUser();
     if (user) {
-      console.log('✓ Test user already exists');
+      console.log("✓ Test user already exists");
       return true;
     }
 
-    console.log('⚠ Test user does not exist. It should be created via Better Auth signup flow.');
+    console.log(
+      "⚠ Test user does not exist. It should be created via Better Auth signup flow.",
+    );
     return false;
   }
 }

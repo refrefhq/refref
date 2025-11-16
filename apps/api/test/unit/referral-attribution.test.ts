@@ -50,10 +50,12 @@ describe("Referral Attribution Logic", () => {
       };
 
       // This should be an INSERT operation, not a SELECT
-      const referralInsertMock = vi.fn().mockResolvedValue([{
-        id: "referral_new",
-        ...newReferral
-      }]);
+      const referralInsertMock = vi.fn().mockResolvedValue([
+        {
+          id: "referral_new",
+          ...newReferral,
+        },
+      ]);
 
       expect(referralInsertMock).toBeDefined();
     });
@@ -74,12 +76,11 @@ describe("Referral Attribution Logic", () => {
       // This is important for duplicate signup event processing
       // If the same signup is processed twice, it shouldn't create duplicate referrals
 
-      const insertWithConflict = vi.fn()
-        .mockReturnValue({
-          onConflictDoNothing: vi.fn().mockReturnValue({
-            returning: vi.fn().mockResolvedValue([]),
-          }),
-        });
+      const insertWithConflict = vi.fn().mockReturnValue({
+        onConflictDoNothing: vi.fn().mockReturnValue({
+          returning: vi.fn().mockResolvedValue([]),
+        }),
+      });
 
       expect(insertWithConflict).toBeDefined();
     });
@@ -158,7 +159,8 @@ describe("Referral Attribution Logic", () => {
         step1: "Receive signup with refcode: 'abc123'",
         step2: "Query refcode WHERE code = 'abc123'",
         step3: "Found refcode.participantId = 'participant_789'",
-        step4: "INSERT INTO referral (referrerId: 'participant_789', externalId: 'user_new')",
+        step4:
+          "INSERT INTO referral (referrerId: 'participant_789', externalId: 'user_new')",
         step5: "Get newReferral.id = 'referral_1'",
         step6: "Create event with referralId = 'referral_1'",
       };
@@ -206,7 +208,10 @@ describe("Referral Attribution Logic", () => {
       expect(result).toBeNull();
 
       // Product A can look up its own code
-      const resultForProductA = await mockQueryWithProductBoundary(globalCode, productA);
+      const resultForProductA = await mockQueryWithProductBoundary(
+        globalCode,
+        productA,
+      );
       expect(resultForProductA).toBeDefined();
       expect(resultForProductA?.productId).toBe(productA);
     });

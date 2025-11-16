@@ -19,6 +19,7 @@ This is Cloudflare's new unified approach that replaces the separate Pages and W
 ✅ **This service now works for BOTH development and production.**
 
 ### Development (Local - Port 8787)
+
 - Run `pnpm -F @refref/assets dev` to start local development server
 - Scripts served at `http://localhost:8787/*`
 - Automatic watch mode - rebuilds when packages change
@@ -26,6 +27,7 @@ This is Cloudflare's new unified approach that replaces the separate Pages and W
 - Same routing and caching logic as production
 
 ### Production (Cloudflare Workers/Pages)
+
 - Deploy to Cloudflare Workers/Pages for CDN delivery
 - Scripts served from edge locations worldwide
 - Immutable caching for maximum performance
@@ -33,6 +35,7 @@ This is Cloudflare's new unified approach that replaces the separate Pages and W
 - Lower bandwidth costs and server overhead
 
 **Key Benefit:** By separating static assets from your application server, you get:
+
 - Faster load times (CDN edge caching)
 - Reduced server load (no dynamic script serving)
 - Better scalability (Cloudflare's global network)
@@ -60,12 +63,14 @@ pnpm -F @refref/assets dev
 ```
 
 This will:
+
 1. Watch attribution-script and widget dist files for changes
 2. Auto-copy updated bundles to `public/` directory
 3. Start Wrangler dev server on port 8787
 4. Provide production-like Worker environment locally
 
 Access scripts at:
+
 - `http://localhost:8787/attribution.v1.js`
 - `http://localhost:8787/widget.v1.js`
 - `http://localhost:8787/attribution.js` (convenience alias)
@@ -84,6 +89,7 @@ pnpm -F @refref/assets clean
 ### Build Output
 
 The build script will:
+
 1. Copy compiled bundles from packages to `public/`
 2. Name them with version suffix (e.g., `attribution.v1.js`)
 3. Generate checksums for verification
@@ -107,6 +113,7 @@ pnpm -F @refref/assets preview
 ```
 
 **First-time setup:**
+
 ```bash
 # Login to Cloudflare (one-time)
 pnpm -F @refref/assets exec wrangler login
@@ -117,6 +124,7 @@ pnpm -F @refref/assets deploy:cloudflare
 ```
 
 **If you get auth errors:**
+
 ```bash
 # Re-authenticate if token expires
 pnpm -F @refref/assets exec wrangler logout
@@ -126,6 +134,7 @@ pnpm -F @refref/assets exec wrangler login
 **Deployment Process:**
 
 The deploy commands automatically:
+
 1. Build the assets (runs `tsx scripts/build.ts`)
 2. Copy bundles from packages to `public/` with versioning
 3. Deploy `public/` directory to Cloudflare Workers
@@ -135,16 +144,19 @@ The deploy commands automatically:
 **After Deployment:**
 
 Your scripts will be available at your workers.dev URL:
+
 - Production: `https://refref-assets.<account-name>.workers.dev/attribution.v1.js`
 - Dev: `https://refref-assets-dev.<account-name>.workers.dev/attribution.v1.js`
 
 Example (replace with your account subdomain):
+
 ```
 https://refref-assets.exa-fc4.workers.dev/attribution.v1.js
 https://refref-assets.exa-fc4.workers.dev/widget.v1.js
 ```
 
 Test your deployment:
+
 ```bash
 # Check if scripts are accessible
 curl -I https://refref-assets.<your-account>.workers.dev/attribution.v1.js
@@ -153,6 +165,7 @@ curl -I https://refref-assets.<your-account>.workers.dev/attribution.v1.js
 **Custom Domain Setup:**
 
 After your first deployment:
+
 1. Go to Cloudflare Dashboard → Workers & Pages
 2. Select your worker (`refref-assets`)
 3. Go to Settings → Domains & Routes
@@ -160,6 +173,7 @@ After your first deployment:
 5. Cloudflare will automatically provision SSL certificate
 
 Then update your webapp environment:
+
 ```bash
 # In apps/webapp/.env (or production environment)
 NEXT_PUBLIC_ASSETS_URL="https://assets.refref.ai"
@@ -175,6 +189,7 @@ If you prefer using Cloudflare Pages dashboard instead of Wrangler:
    - Select `refref` repository
 
 2. **Build Configuration**
+
    ```
    Build command:    pnpm -F @refref/assets build
    Build output dir: apps/assets/public
@@ -200,9 +215,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/assets/**'
-      - 'packages/attribution-script/**'
-      - 'packages/widget/**'
+      - "apps/assets/**"
+      - "packages/attribution-script/**"
+      - "packages/widget/**"
 
 jobs:
   deploy:
@@ -213,7 +228,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -235,6 +250,7 @@ jobs:
 ```
 
 **Setup:**
+
 1. Create a Cloudflare API Token with Workers Deploy permissions
 2. Add as `CLOUDFLARE_API_TOKEN` in GitHub Secrets
 3. Push changes to trigger deployment
@@ -242,6 +258,7 @@ jobs:
 ### Configuration Files
 
 **wrangler.toml** - Wrangler configuration for Workers Assets:
+
 ```toml
 name = "refref-assets"
 main = "src/index.ts"              # Worker script
@@ -256,6 +273,7 @@ name = "refref-assets-dev"         # Dev environment
 ```
 
 **src/index.ts** - Worker script that handles:
+
 - **Routing**: Redirects aliases (`/attribution.latest.js` → `/attribution.v1.js`)
 - **Backward compatibility**: Maps `/scripts/*` to root files
 - **Cache headers**: Immutable caching for versioned files
@@ -331,16 +349,16 @@ The assets dev server watches package dist files and auto-rebuilds when they cha
 
 ### Supported Routes
 
-| Request URL | Serves | Cache |
-|-------------|--------|-------|
-| `/attribution.v1.js` | Direct file | 1 year immutable |
-| `/widget.v1.js` | Direct file | 1 year immutable |
-| `/attribution.latest.js` | Redirects to v1 | 1 hour |
-| `/widget.latest.js` | Redirects to v1 | 1 hour |
-| `/attribution.js` | Redirects to v1 | 1 hour |
-| `/widget.js` | Redirects to v1 | 1 hour |
-| `/scripts/attribution.js` | Redirects to v1 | 1 hour |
-| `/scripts/widget.js` | Redirects to v1 | 1 hour |
+| Request URL               | Serves          | Cache            |
+| ------------------------- | --------------- | ---------------- |
+| `/attribution.v1.js`      | Direct file     | 1 year immutable |
+| `/widget.v1.js`           | Direct file     | 1 year immutable |
+| `/attribution.latest.js`  | Redirects to v1 | 1 hour           |
+| `/widget.latest.js`       | Redirects to v1 | 1 hour           |
+| `/attribution.js`         | Redirects to v1 | 1 hour           |
+| `/widget.js`              | Redirects to v1 | 1 hour           |
+| `/scripts/attribution.js` | Redirects to v1 | 1 hour           |
+| `/scripts/widget.js`      | Redirects to v1 | 1 hour           |
 
 ## File Structure
 
@@ -364,6 +382,7 @@ apps/assets/
 ### Build fails with "Source file not found"
 
 Make sure to build the packages first:
+
 ```bash
 pnpm -F @refref/attribution-script build
 pnpm -F @refref/widget build
@@ -387,6 +406,7 @@ pnpm -F @refref/assets deploy:cloudflare
 The login will open your browser for OAuth authentication. Select your account when prompted.
 
 **Build Errors:**
+
 ```bash
 # Clean and rebuild
 pnpm -F @refref/assets clean
@@ -397,9 +417,10 @@ pnpm -F @refref/assets build
 
 **Worker Already Exists:**
 If deploying for the first time and the worker name is taken, update `wrangler.jsonc`:
+
 ```jsonc
 {
-  "name": "your-org-refref-assets"
+  "name": "your-org-refref-assets",
 }
 ```
 
@@ -441,6 +462,7 @@ pnpm exec wrangler dev
 ### Adding a New Script
 
 1. Add configuration to `scripts/build.ts`:
+
    ```typescript
    {
      name: "new-script",
@@ -491,10 +513,10 @@ pnpm -F @refref/assets exec wrangler tail refref-assets
 
 ### Environment Variables
 
-| Variable | Purpose | Example |
-|----------|---------|---------|
+| Variable                 | Purpose           | Example                    |
+| ------------------------ | ----------------- | -------------------------- |
 | `NEXT_PUBLIC_ASSETS_URL` | CDN URL in webapp | `https://assets.refref.ai` |
-| `CLOUDFLARE_API_TOKEN` | CI/CD deployment | Set in GitHub Secrets |
+| `CLOUDFLARE_API_TOKEN`   | CI/CD deployment  | Set in GitHub Secrets      |
 
 ### Deployment Checklist
 

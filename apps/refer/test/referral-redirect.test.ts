@@ -337,7 +337,9 @@ describe("Referral Redirect Endpoint", () => {
       }
 
       if (emailParam) {
-        const decodedEmail = Buffer.from(emailParam, "base64").toString("utf-8");
+        const decodedEmail = Buffer.from(emailParam, "base64").toString(
+          "utf-8",
+        );
         expect(decodedEmail).toBe("test@example.com");
       }
 

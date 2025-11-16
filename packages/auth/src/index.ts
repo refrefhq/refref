@@ -1,7 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { apiKey, magicLink, organization } from "better-auth/plugins";
-import { renderMagicLinkEmail, renderInvitationEmail } from "@refref/email-templates";
+import {
+  renderMagicLinkEmail,
+  renderInvitationEmail,
+} from "@refref/email-templates";
 import type { DBType } from "@refref/coredb";
 import { Resend } from "resend";
 
@@ -61,7 +64,11 @@ export interface AuthConfig {
    * PostHog instance for analytics
    */
   posthog?: {
-    capture: (event: { distinctId: string; event: string; properties?: any }) => void;
+    capture: (event: {
+      distinctId: string;
+      event: string;
+      properties?: any;
+    }) => void;
   };
 
   /**

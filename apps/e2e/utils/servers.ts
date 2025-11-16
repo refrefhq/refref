@@ -1,4 +1,4 @@
-import { getTestConfig } from './config';
+import { getTestConfig } from "./config";
 
 const config = getTestConfig();
 
@@ -15,7 +15,7 @@ export class ServerManager {
     try {
       // Try /health endpoint first
       const response = await fetch(`http://localhost:${port}/health`, {
-        method: 'GET',
+        method: "GET",
         signal: AbortSignal.timeout(2000), // 2 second timeout
       });
       return response.ok;
@@ -23,7 +23,7 @@ export class ServerManager {
       // Fall back to checking root path
       try {
         const response = await fetch(`http://localhost:${port}/`, {
-          method: 'GET',
+          method: "GET",
           signal: AbortSignal.timeout(2000),
         });
         // Any response (even 404) means server is running
@@ -48,7 +48,7 @@ export class ServerManager {
       try {
         // Try /health endpoint first
         const response = await fetch(`${url}/health`, {
-          method: 'GET',
+          method: "GET",
           signal: AbortSignal.timeout(2000),
         });
 
@@ -60,7 +60,7 @@ export class ServerManager {
         // Try root path as fallback
         try {
           const response = await fetch(`${url}/`, {
-            method: 'GET',
+            method: "GET",
             signal: AbortSignal.timeout(2000),
           });
           // Any response means server is running
@@ -75,7 +75,9 @@ export class ServerManager {
       await new Promise((resolve) => setTimeout(resolve, pollInterval));
     }
 
-    throw new Error(`Server at ${url} did not become ready within ${timeout}ms`);
+    throw new Error(
+      `Server at ${url} did not become ready within ${timeout}ms`,
+    );
   }
 
   /**
@@ -84,26 +86,26 @@ export class ServerManager {
    */
   async waitForAllServices(): Promise<void> {
     const services = [
-      { name: 'webapp', url: config.urls.webapp },
-      { name: 'api', url: config.urls.api },
-      { name: 'refer', url: config.urls.refer },
-      { name: 'acme', url: config.urls.acme },
-      { name: 'assets', url: config.urls.assets },
+      { name: "webapp", url: config.urls.webapp },
+      { name: "api", url: config.urls.api },
+      { name: "refer", url: config.urls.refer },
+      { name: "acme", url: config.urls.acme },
+      { name: "assets", url: config.urls.assets },
     ];
 
-    console.log('Waiting for all services to be ready...');
+    console.log("Waiting for all services to be ready...");
 
     try {
       await Promise.all(
         services.map(async (service) => {
           console.log(`  Checking ${service.name} at ${service.url}...`);
           await this.waitForServer(service.url);
-        })
+        }),
       );
 
-      console.log('✓ All services are ready');
+      console.log("✓ All services are ready");
     } catch (error) {
-      console.error('✗ One or more services failed to start');
+      console.error("✗ One or more services failed to start");
       throw error;
     }
   }
@@ -114,26 +116,28 @@ export class ServerManager {
    * @param serviceUrl - The base URL of the service
    * @returns Health status with optional message
    */
-  async checkHealth(serviceUrl: string): Promise<{ healthy: boolean; message?: string }> {
+  async checkHealth(
+    serviceUrl: string,
+  ): Promise<{ healthy: boolean; message?: string }> {
     try {
       // Try /health endpoint first with shorter timeout
       const response = await fetch(`${serviceUrl}/health`, {
-        method: 'GET',
+        method: "GET",
         signal: AbortSignal.timeout(3000),
       });
 
       if (response.ok) {
         // Try to parse JSON response if available
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
           return {
             healthy: true,
-            message: data.message || data.status || 'OK',
+            message: data.message || data.status || "OK",
           };
         }
 
-        return { healthy: true, message: 'OK' };
+        return { healthy: true, message: "OK" };
       }
     } catch (healthError) {
       // /health endpoint failed or doesn't exist, try root path
@@ -142,19 +146,19 @@ export class ServerManager {
     // Fall back to checking root path (separate try/catch to avoid timeout accumulation)
     try {
       const rootResponse = await fetch(`${serviceUrl}/`, {
-        method: 'GET',
+        method: "GET",
         signal: AbortSignal.timeout(3000),
       });
 
       // Any response from root means server is running
       return {
         healthy: true,
-        message: 'OK (no /health endpoint)',
+        message: "OK (no /health endpoint)",
       };
     } catch (error) {
       return {
         healthy: false,
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -162,7 +166,9 @@ export class ServerManager {
   /**
    * Get the health status of all services
    */
-  async getAllServicesHealth(): Promise<Record<string, { healthy: boolean; message?: string }>> {
+  async getAllServicesHealth(): Promise<
+    Record<string, { healthy: boolean; message?: string }>
+  > {
     const services = {
       webapp: config.urls.webapp,
       api: config.urls.api,
@@ -175,7 +181,7 @@ export class ServerManager {
       Object.entries(services).map(async ([name, url]) => {
         const health = await this.checkHealth(url);
         return [name, health] as const;
-      })
+      }),
     );
 
     return Object.fromEntries(healthChecks);

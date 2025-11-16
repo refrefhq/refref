@@ -6,10 +6,7 @@ export default async function healthRoutes(fastify: FastifyInstance) {
   fastify.get("/health", healthHandler);
 }
 
-async function healthHandler(
-  request: FastifyRequest,
-  reply: FastifyReply
-) {
+async function healthHandler(request: FastifyRequest, reply: FastifyReply) {
   const checks: Record<string, { ok: boolean; error?: string }> = {
     api: { ok: true },
   };

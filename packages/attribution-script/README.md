@@ -121,9 +121,9 @@ The script automatically captures the following URL parameter:
 
 ### Form Options
 
-| Option    | Type   | Default    | Description                                |
-| --------- | ------ | ---------- | ------------------------------------------ |
-| codeField | string | "refcode"  | Name of the hidden field for referral code |
+| Option    | Type   | Default   | Description                                |
+| --------- | ------ | --------- | ------------------------------------------ |
+| codeField | string | "refcode" | Name of the hidden field for referral code |
 
 ## Automatic Initialization
 

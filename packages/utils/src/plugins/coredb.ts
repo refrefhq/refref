@@ -11,7 +11,10 @@ declare module "fastify" {
   }
 }
 
-const coredbPlugin: FastifyPluginAsync<{ db: DBType }> = async (fastify: FastifyInstance, opts) => {
+const coredbPlugin: FastifyPluginAsync<{ db: DBType }> = async (
+  fastify: FastifyInstance,
+  opts,
+) => {
   const { db } = opts;
 
   fastify.decorate("db", db);

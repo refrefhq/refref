@@ -105,7 +105,7 @@ export default function ProgramSetupPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col">
+    <>
       <SiteHeader
         breadcrumbs={<SiteBreadcrumbs items={breadcrumbs} />}
         meta={
@@ -147,8 +147,8 @@ export default function ProgramSetupPage() {
           </div>
         }
       />
-      <div className="flex flex-1 relative">
-        <div className="fixed top-(--header-height) w-64 border-r bg-muted/40 h-[calc(100%-var(--header-height))]">
+      <div className="flex flex-1 relative overflow-hidden">
+        <div className="absolute top-0 left-0 bottom-0 w-40 border-r bg-muted/40">
           <div className="px-2 py-4 space-y-1">
             {program.setup.steps.map((s) => (
               <SetupCard
@@ -187,6 +187,6 @@ export default function ProgramSetupPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

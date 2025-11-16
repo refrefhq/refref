@@ -15,7 +15,10 @@ declare module "fastify" {
   }
 
   interface FastifyInstance {
-    authenticateApiKey: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    authenticateApiKey: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<void>;
   }
 }
 
@@ -23,80 +26,86 @@ declare module "fastify" {
  * Better Auth API Key verification plugin for Fastify
  * Uses Better Auth's built-in verifyApiKey function with rate limiting and hashing
  */
-const betterAuthPlugin = fp(async (fastify: FastifyInstance, opts: { db: DBType }) => {
-  // Create Better Auth instance using shared @refref/auth package
-  const auth = getAuth({
-    baseURL: process.env.APP_URL || "http://localhost:4000",
-    resendApiKey: process.env.RESEND_API_KEY || "debug_key",
-    db: opts.db,
-    schema,
-    enabledSocialAuth: [],
-    enablePasswordAuth: false,
-    enableMagicLinkAuth: false,
-  });
+const betterAuthPlugin = fp(
+  async (fastify: FastifyInstance, opts: { db: DBType }) => {
+    // Create Better Auth instance using shared @refref/auth package
+    const auth = getAuth({
+      baseURL: process.env.APP_URL || "http://localhost:4000",
+      resendApiKey: process.env.RESEND_API_KEY || "debug_key",
+      db: opts.db,
+      schema,
+      enabledSocialAuth: [],
+      enablePasswordAuth: false,
+      enableMagicLinkAuth: false,
+    });
 
-  if (!fastify.hasRequestDecorator("apiKey")) {
-    fastify.decorateRequest("apiKey", undefined);
-  }
-
-  // Create a reusable authentication hook
-  fastify.decorate("authenticateApiKey", async (request: FastifyRequest, reply: FastifyReply) => {
-    const apiKeyHeader = request.headers["x-api-key"] as string | undefined;
-
-    if (!apiKeyHeader) {
-      return reply.code(401).send({
-        error: "Unauthorized",
-        message: "API key required. Provide X-Api-Key header."
-      });
+    if (!fastify.hasRequestDecorator("apiKey")) {
+      fastify.decorateRequest("apiKey", undefined);
     }
 
-    try {
-      // Use Better Auth's verifyApiKey which handles:
-      // - Hashed key comparison
-      // - Rate limiting
-      // - Expiration checks
-      const result = await auth.api.verifyApiKey({
-        body: {
-          key: apiKeyHeader,
-        },
-      });
+    // Create a reusable authentication hook
+    fastify.decorate(
+      "authenticateApiKey",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        const apiKeyHeader = request.headers["x-api-key"] as string | undefined;
 
-      if (!result || !(result as any).apiKey) {
-        return reply.code(401).send({
-          error: "Unauthorized",
-          message: "Invalid or expired API key"
-        });
-      }
+        if (!apiKeyHeader) {
+          return reply.code(401).send({
+            error: "Unauthorized",
+            message: "API key required. Provide X-Api-Key header.",
+          });
+        }
 
-      const apiKeyData = (result as any).apiKey;
+        try {
+          // Use Better Auth's verifyApiKey which handles:
+          // - Hashed key comparison
+          // - Rate limiting
+          // - Expiration checks
+          const result = await auth.api.verifyApiKey({
+            body: {
+              key: apiKeyHeader,
+            },
+          });
 
-      // Check if the API key is enabled
-      if (!apiKeyData.enabled) {
-        return reply.code(401).send({
-          error: "Unauthorized",
-          message: "API key is disabled"
-        });
-      }
+          if (!result || !(result as any).apiKey) {
+            return reply.code(401).send({
+              error: "Unauthorized",
+              message: "Invalid or expired API key",
+            });
+          }
 
-      // Attach API key info to request
-      request.apiKey = {
-        id: apiKeyData.id,
-        userId: apiKeyData.userId,
-        organizationId: apiKeyData.organizationId,
-        permissions: apiKeyData.permissions,
-        enabled: apiKeyData.enabled,
-      };
-    } catch (error) {
-      request.log.error({ error }, "API key verification error");
-      return reply.code(401).send({
-        error: "Unauthorized",
-        message: "Invalid API key"
-      });
-    }
-  });
-}, {
-  name: "better-auth-plugin",
-  dependencies: ["coredb-plugin"], // Ensure coredb is loaded first
-});
+          const apiKeyData = (result as any).apiKey;
+
+          // Check if the API key is enabled
+          if (!apiKeyData.enabled) {
+            return reply.code(401).send({
+              error: "Unauthorized",
+              message: "API key is disabled",
+            });
+          }
+
+          // Attach API key info to request
+          request.apiKey = {
+            id: apiKeyData.id,
+            userId: apiKeyData.userId,
+            organizationId: apiKeyData.organizationId,
+            permissions: apiKeyData.permissions,
+            enabled: apiKeyData.enabled,
+          };
+        } catch (error) {
+          request.log.error({ error }, "API key verification error");
+          return reply.code(401).send({
+            error: "Unauthorized",
+            message: "Invalid API key",
+          });
+        }
+      },
+    );
+  },
+  {
+    name: "better-auth-plugin",
+    dependencies: ["coredb-plugin"], // Ensure coredb is loaded first
+  },
+);
 
 export default betterAuthPlugin;

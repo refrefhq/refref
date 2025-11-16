@@ -1,5 +1,5 @@
-import { Page } from '@playwright/test';
-import { AcmeBasePage } from './acme-base-page';
+import { Page } from "@playwright/test";
+import { AcmeBasePage } from "./acme-base-page";
 
 /**
  * Page object for Acme app signup page
@@ -16,7 +16,7 @@ export class AcmeSignupPage extends AcmeBasePage {
    */
   async gotoWithReferralLink(referralUrl: string) {
     // TODO: Implement in Task 3
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 
   /**
@@ -25,6 +25,6 @@ export class AcmeSignupPage extends AcmeBasePage {
    */
   async signup(name: string, email: string) {
     // TODO: Implement in Task 3
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 }

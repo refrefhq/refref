@@ -56,16 +56,19 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(openapiRoutes);
 
   // Register v1 API routes
-  await app.register(async (fastify) => {
-    // Widget routes
-    await fastify.register(widgetInitRoutes, { prefix: "/widget" });
+  await app.register(
+    async (fastify) => {
+      // Widget routes
+      await fastify.register(widgetInitRoutes, { prefix: "/widget" });
 
-    // Track routes (signup, purchase)
-    await fastify.register(trackRoutes, { prefix: "/track" });
+      // Track routes (signup, purchase)
+      await fastify.register(trackRoutes, { prefix: "/track" });
 
-    // Programs routes
-    await fastify.register(programsRoutes, { prefix: "/programs" });
-  }, { prefix: "/v1" });
+      // Programs routes
+      await fastify.register(programsRoutes, { prefix: "/programs" });
+    },
+    { prefix: "/v1" },
+  );
 
   return app;
 }

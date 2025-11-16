@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Script from 'next/script';
-import { refrefConfig } from '@/lib/refref-config';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Script from "next/script";
+import { refrefConfig } from "@/lib/refref-config";
 
 interface User {
   id: string;
@@ -18,13 +18,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     // Check if user is authenticated
-    fetch('/api/me', {
-      credentials: 'include',
+    fetch("/api/me", {
+      credentials: "include",
     })
       .then((res) => {
         if (!res.ok) {
           // Not authenticated, redirect to login
-          router.push('/login');
+          router.push("/login");
           return null;
         }
         return res.json();
@@ -36,21 +36,21 @@ export default function DashboardPage() {
         setLoading(false);
       })
       .catch(() => {
-        router.push('/login');
+        router.push("/login");
       });
   }, [router]);
 
   const handleLogout = async () => {
-    await fetch('/api/logout', {
-      method: 'POST',
-      credentials: 'include',
+    await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include",
     });
-    router.push('/login');
+    router.push("/login");
   };
 
   if (loading) {
     return (
-      <div style={{ maxWidth: '800px', margin: '100px auto', padding: '20px' }}>
+      <div style={{ maxWidth: "800px", margin: "100px auto", padding: "20px" }}>
         <p>Loading...</p>
       </div>
     );
@@ -61,13 +61,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '100px auto', padding: '20px' }}>
+    <div style={{ maxWidth: "800px", margin: "100px auto", padding: "20px" }}>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '40px',
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "40px",
         }}
       >
         <h1>ACME Dashboard</h1>
@@ -75,12 +75,12 @@ export default function DashboardPage() {
           onClick={handleLogout}
           data-testid="acme-logout-button"
           style={{
-            padding: '8px 16px',
-            background: '#666',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
+            padding: "8px 16px",
+            background: "#666",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
           }}
         >
           Logout
@@ -90,9 +90,9 @@ export default function DashboardPage() {
       <div
         data-testid="acme-dashboard-content"
         style={{
-          padding: '20px',
-          background: '#f5f5f5',
-          borderRadius: '8px',
+          padding: "20px",
+          background: "#f5f5f5",
+          borderRadius: "8px",
         }}
       >
         <h2>Welcome, {user.name}!</h2>
@@ -103,17 +103,17 @@ export default function DashboardPage() {
           <strong>User ID:</strong> {user.id}
         </p>
 
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: "20px" }}>
           <a
             href="/purchase"
             data-testid="purchase-link"
             style={{
-              display: 'inline-block',
-              padding: '10px 20px',
-              background: '#0070f3',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '4px',
+              display: "inline-block",
+              padding: "10px 20px",
+              background: "#0070f3",
+              color: "white",
+              textDecoration: "none",
+              borderRadius: "4px",
             }}
           >
             View Plans & Purchase
@@ -121,17 +121,17 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div style={{ marginTop: '40px' }}>
+      <div style={{ marginTop: "40px" }}>
         <h3>Refer & Earn</h3>
         <div
           id="refref-widget"
           data-testid="refref-widget-container"
           style={{
-            marginTop: '20px',
-            padding: '20px',
-            background: 'white',
-            borderRadius: '8px',
-            border: '1px solid #ddd',
+            marginTop: "20px",
+            padding: "20px",
+            background: "white",
+            borderRadius: "8px",
+            border: "1px solid #ddd",
           }}
         >
           {/* RefRef widget will be rendered here */}
@@ -144,22 +144,29 @@ export default function DashboardPage() {
         strategy="afterInteractive"
         onLoad={async () => {
           // Initialize widget when script loads
-          if (typeof window !== 'undefined') {
+          if (typeof window !== "undefined") {
             try {
               // Fetch JWT token and config from backend
-              const response = await fetch('/api/refref/token', {
-                credentials: 'include',
+              const response = await fetch("/api/refref/token", {
+                credentials: "include",
               });
 
               if (!response.ok) {
-                console.error('Failed to get RefRef token:', response.statusText);
+                console.error(
+                  "Failed to get RefRef token:",
+                  response.statusText,
+                );
                 return;
               }
 
               const responseData = await response.json();
-              console.log('[Dashboard] Token API response:', responseData);
+              console.log("[Dashboard] Token API response:", responseData);
               const { token, productId, programId } = responseData;
-              console.log('[Dashboard] Extracted values:', { token: token ? 'present' : 'missing', productId, programId });
+              console.log("[Dashboard] Extracted values:", {
+                token: token ? "present" : "missing",
+                productId,
+                programId,
+              });
 
               // Initialize window.RefRef array if it doesn't exist
               (window as any).RefRef = (window as any).RefRef || [];
@@ -167,7 +174,7 @@ export default function DashboardPage() {
               // Initialize widget using push pattern (queue-based)
               // Note: participantId is not sent to backend - the JWT 'sub' field contains the external user ID
               (window as any).RefRef.push([
-                'init',
+                "init",
                 {
                   productId,
                   programId,
@@ -176,9 +183,14 @@ export default function DashboardPage() {
                 },
               ]);
 
-              console.log('RefRef widget initialized with productId:', productId, 'programId:', programId);
+              console.log(
+                "RefRef widget initialized with productId:",
+                productId,
+                "programId:",
+                programId,
+              );
             } catch (error) {
-              console.error('Error initializing RefRef widget:', error);
+              console.error("Error initializing RefRef widget:", error);
             }
           }
         }}

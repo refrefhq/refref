@@ -1,5 +1,5 @@
-import { Page, expect } from '@playwright/test';
-import { BasePage } from '../base-page';
+import { Page, expect } from "@playwright/test";
+import { BasePage } from "../base-page";
 
 /**
  * Page object for setting up a referral program
@@ -18,11 +18,11 @@ export class ProgramSetupPage extends BasePage {
    * @returns The program ID if creation is successful
    */
   async createProgram(programName: string): Promise<string | null> {
-    console.log('Creating new program...');
+    console.log("Creating new program...");
 
     // Navigate to programs page
-    await this.page.goto('/programs');
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.goto("/programs");
+    await this.page.waitForLoadState("domcontentloaded");
 
     // Wait a moment for page to settle
     await this.page.waitForTimeout(1000);
@@ -32,7 +32,10 @@ export class ProgramSetupPage extends BasePage {
     await expect(existingCard).not.toBeVisible({ timeout: 3000 });
 
     // Click "Create Program" button
-    const createButton = this.page.locator('button').filter({ hasText: /create program/i }).first();
+    const createButton = this.page
+      .locator("button")
+      .filter({ hasText: /create program/i })
+      .first();
     await expect(createButton).toBeVisible({ timeout: 10000 });
     await createButton.click();
 
@@ -45,15 +48,17 @@ export class ProgramSetupPage extends BasePage {
     await firstTemplate.click();
 
     // Wait for "Creating program..." loading state (optional - may not always appear)
-    const creatingMessage = this.page.locator('text=Creating program...');
-    await creatingMessage.waitFor({ state: 'visible', timeout: 2000 }).catch(() => {
-      console.log('  (Loading message not shown, proceeding...)');
-    });
+    const creatingMessage = this.page.locator("text=Creating program...");
+    await creatingMessage
+      .waitFor({ state: "visible", timeout: 2000 })
+      .catch(() => {
+        console.log("  (Loading message not shown, proceeding...)");
+      });
 
     // Wait for redirect to program setup page after creation
-    await this.page.waitForURL('**/programs/*/setup', {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000
+    await this.page.waitForURL("**/programs/*/setup", {
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     // Extract program ID from URL (/programs/{id}/setup)
@@ -76,36 +81,39 @@ export class ProgramSetupPage extends BasePage {
     clientId: string;
     clientSecret: string;
   }> {
-    console.log('Retrieving integration credentials...');
+    console.log("Retrieving integration credentials...");
 
     // Ensure we're on a program detail page (not setup)
     await expect(this.page).toHaveURL(/\/programs\/[^\/]+$/);
 
     // Wait for credentials card title to be visible
-    const credentialsTitle = this.page.locator('text=Installation Credentials');
+    const credentialsTitle = this.page.locator("text=Installation Credentials");
     await expect(credentialsTitle).toBeVisible({ timeout: 10000 });
 
     // Extract Product ID
-    const productIdInput = this.page.locator('input#productId').first();
+    const productIdInput = this.page.locator("input#productId").first();
     await expect(productIdInput).toBeVisible();
     const productId = await productIdInput.inputValue();
 
     // Extract Program ID
-    const programIdInput = this.page.locator('input#programId').first();
+    const programIdInput = this.page.locator("input#programId").first();
     await expect(programIdInput).toBeVisible();
     const programId = await programIdInput.inputValue();
 
     // Extract Client ID
-    const clientIdInput = this.page.locator('input#clientId').first();
+    const clientIdInput = this.page.locator("input#clientId").first();
     await expect(clientIdInput).toBeVisible();
     const clientId = await clientIdInput.inputValue();
 
     // Extract Client Secret (need to reveal it first)
-    const clientSecretInput = this.page.locator('input#clientSecret').first();
+    const clientSecretInput = this.page.locator("input#clientSecret").first();
     await expect(clientSecretInput).toBeVisible();
 
     // Click the eye icon to reveal the secret
-    const eyeButton = this.page.locator('button').filter({ has: this.page.locator('svg.lucide-eye') }).first();
+    const eyeButton = this.page
+      .locator("button")
+      .filter({ has: this.page.locator("svg.lucide-eye") })
+      .first();
     await expect(eyeButton).toBeVisible({ timeout: 5000 });
     await eyeButton.click();
 
@@ -115,7 +123,7 @@ export class ProgramSetupPage extends BasePage {
     // Get the revealed secret value
     const clientSecret = await clientSecretInput.inputValue();
 
-    console.log('✓ Retrieved integration credentials');
+    console.log("✓ Retrieved integration credentials");
     console.log(`  Product ID: ${productId}`);
     console.log(`  Program ID: ${programId}`);
     console.log(`  Client ID: ${clientId}`);
@@ -134,15 +142,21 @@ export class ProgramSetupPage extends BasePage {
    * Sets redirect URL to ACME signup page
    * Accepts default brand color and clicks Next
    */
-  async completeBrandStep(redirectUrl: string = 'http://localhost:3003/signup') {
-    console.log('Completing brand configuration step...');
+  async completeBrandStep(
+    redirectUrl: string = "http://localhost:3003/signup",
+  ) {
+    console.log("Completing brand configuration step...");
 
     // Wait for brand color input to be visible
-    const colorInput = this.page.getByTestId('brand-color-hex');
+    const colorInput = this.page.getByTestId("brand-color-hex");
     await expect(colorInput).toBeVisible({ timeout: 10000 });
 
     // Set the redirect URL for referral links
-    const redirectUrlInput = this.page.locator('input[name="redirectUrl"], input[placeholder*="redirect"], input[id*="redirect"]').first();
+    const redirectUrlInput = this.page
+      .locator(
+        'input[name="redirectUrl"], input[placeholder*="redirect"], input[id*="redirect"]',
+      )
+      .first();
     const inputVisible = await redirectUrlInput.isVisible().catch(() => false);
 
     if (inputVisible) {
@@ -150,9 +164,13 @@ export class ProgramSetupPage extends BasePage {
       await redirectUrlInput.fill(redirectUrl);
       console.log(`  Set redirect URL to: ${redirectUrl}`);
     } else {
-      console.log('  Redirect URL input not found, checking for alternative selectors...');
+      console.log(
+        "  Redirect URL input not found, checking for alternative selectors...",
+      );
       // Try alternative selectors
-      const altInput = this.page.locator('input').filter({ hasText: /redirect/i });
+      const altInput = this.page
+        .locator("input")
+        .filter({ hasText: /redirect/i });
       const altVisible = await altInput.isVisible().catch(() => false);
       if (altVisible) {
         await altInput.clear();
@@ -162,11 +180,11 @@ export class ProgramSetupPage extends BasePage {
     }
 
     // Brand color is already set to default (#3b82f6), just click Next
-    const nextButton = this.page.getByTestId('setup-next-btn');
+    const nextButton = this.page.getByTestId("setup-next-btn");
     await expect(nextButton).toBeVisible();
     await nextButton.click();
 
-    console.log('✓ Brand step completed');
+    console.log("✓ Brand step completed");
   }
 
   /**
@@ -174,24 +192,24 @@ export class ProgramSetupPage extends BasePage {
    * Accepts default reward settings and clicks Complete Setup
    */
   async completeRewardStep() {
-    console.log('Completing rewards configuration step...');
+    console.log("Completing rewards configuration step...");
 
     // Wait for reward step to be visible
-    const referrerToggle = this.page.getByTestId('referrer-reward-enabled');
+    const referrerToggle = this.page.getByTestId("referrer-reward-enabled");
     await expect(referrerToggle).toBeVisible({ timeout: 10000 });
 
     // Rewards are already enabled by default, just click Complete Setup
-    const completeButton = this.page.getByTestId('setup-next-btn');
+    const completeButton = this.page.getByTestId("setup-next-btn");
     await expect(completeButton).toBeVisible();
     await completeButton.click();
 
     // Wait for redirect to program page (not setup page)
     await this.page.waitForURL(/\/programs\/[^\/]+$/, {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
-    console.log('✓ Rewards step completed, redirected to program page');
+    console.log("✓ Rewards step completed, redirected to program page");
   }
 
   /**

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createUser, createSession } from '@/lib/state';
+import { NextRequest, NextResponse } from "next/server";
+import { createUser, createSession } from "@/lib/state";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,8 +9,8 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Name, email, and password are required' },
-        { status: 400 }
+        { error: "Name, email, and password are required" },
+        { status: 400 },
       );
     }
 
@@ -20,8 +20,11 @@ export async function POST(request: NextRequest) {
       user = createUser(email, password, name);
     } catch (error) {
       return NextResponse.json(
-        { error: error instanceof Error ? error.message : 'Failed to create user' },
-        { status: 400 }
+        {
+          error:
+            error instanceof Error ? error.message : "Failed to create user",
+        },
+        { status: 400 },
       );
     }
 
@@ -38,24 +41,24 @@ export async function POST(request: NextRequest) {
           name: user.name,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
 
     // Set session cookie
-    response.cookies.set('session', session.id, {
+    response.cookies.set("session", session.id, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24, // 24 hours
-      path: '/',
+      path: "/",
     });
 
     return response;
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error("Signup error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }

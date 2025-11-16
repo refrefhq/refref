@@ -1,6 +1,7 @@
 import "@refref/ui/globals.css";
 import Script from "next/script";
 import { GeistSans } from "geist/font/sans";
+import { Stack_Sans_Notch } from "next/font/google";
 import { type Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -9,6 +10,13 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { AuthUIProvider } from "@/components/providers/auth-ui-provider";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { env } from "@/env";
+
+const stackSansNotch = Stack_Sans_Notch({
+  weight: "300",
+  subsets: ["latin"],
+  variable: "--font-stack-sans-notch",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "RefRef - Referral Management Platform",
@@ -25,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable}`}
+      className={`${GeistSans.variable} ${stackSansNotch.variable}`}
       suppressHydrationWarning
     >
       <head>

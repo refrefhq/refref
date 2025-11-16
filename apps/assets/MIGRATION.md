@@ -7,6 +7,7 @@ Cloudflare has unified Workers and Pages into a single **Workers Static Assets**
 ## Old vs New Architecture
 
 ### Before (Incorrect)
+
 ```
 ❌ Used wrangler.jsonc (wrong format)
 ❌ Had main = "." (invalid)
@@ -16,6 +17,7 @@ Cloudflare has unified Workers and Pages into a single **Workers Static Assets**
 ```
 
 ### After (Correct)
+
 ```
 ✅ Uses wrangler.toml (correct format)
 ✅ Has main = "src/index.ts" (Worker script)
@@ -29,6 +31,7 @@ Cloudflare has unified Workers and Pages into a single **Workers Static Assets**
 ### 1. Added Worker Script (`src/index.ts`)
 
 The Worker script handles:
+
 - **Route mappings**: `/scripts/widget.js` → `/widget.v1.js`
 - **Aliases**: `/attribution.latest.js` → `/attribution.v1.js`
 - **Cache headers**: Immutable for versioned, short cache for aliases

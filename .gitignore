@@ -43,6 +43,7 @@ CLAUDE.md
 .infisical.json
 .wrangler
 fly.toml
+.playwright-mcp
 
 # Testing
 apps/e2e/playwright-report

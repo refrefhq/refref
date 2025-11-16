@@ -1,5 +1,5 @@
-import { Page } from '@playwright/test';
-import { AcmeBasePage } from './acme-base-page';
+import { Page } from "@playwright/test";
+import { AcmeBasePage } from "./acme-base-page";
 
 /**
  * Page object for Acme app purchase flow
@@ -14,7 +14,7 @@ export class AcmePurchasePage extends AcmeBasePage {
    * Navigate to the purchase page
    */
   async goto() {
-    await super.goto('/purchase');
+    await super.goto("/purchase");
   }
 
   /**
@@ -23,7 +23,7 @@ export class AcmePurchasePage extends AcmeBasePage {
    */
   async completePurchase(amount: number) {
     // TODO: Implement in Task 3
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 
   /**
@@ -32,6 +32,6 @@ export class AcmePurchasePage extends AcmeBasePage {
    */
   async verifyPurchaseTracked() {
     // TODO: Implement in Task 3
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 }

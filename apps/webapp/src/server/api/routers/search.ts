@@ -57,10 +57,7 @@ export const searchRouter = createTRPCRouter({
             name: participant.name,
           })
           .from(participant)
-          .leftJoin(
-            refcode,
-            eq(participant.id, refcode.participantId),
-          )
+          .leftJoin(refcode, eq(participant.id, refcode.participantId))
           .where(
             and(
               eq(participant.productId, productId),

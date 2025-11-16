@@ -30,7 +30,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         if (!request.user) {
           return reply.code(401).send({
             error: "Unauthorized",
-            message: "Authentication required"
+            message: "Authentication required",
           });
         }
 
@@ -38,35 +38,33 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         if (request.user.productId !== productId) {
           return reply.code(403).send({
             error: "Forbidden",
-            message: "Product ID mismatch"
+            message: "Product ID mismatch",
           });
         }
 
         // Ensure there is an active program for this product
         const activeProgram = await request.db.query.program.findFirst({
           where: (program, { eq, and }) =>
-            and(
-              eq(program.productId, productId),
-              eq(program.status, "active")
-            ),
+            and(eq(program.productId, productId), eq(program.status, "active")),
           orderBy: (program, { asc }) => [asc(program.createdAt)],
         });
 
         if (!activeProgram) {
           return reply.code(400).send({
             error: "Bad Request",
-            message: "No active program found for this product"
+            message: "No active program found for this product",
           });
         }
 
         // Check if participant already exists
-        const existingParticipant = await request.db.query.participant.findFirst({
-          where: (participant, { eq, and }) =>
-            and(
-              eq(participant.productId, productId),
-              eq(participant.externalId, request.user!.sub)
-            ),
-        });
+        const existingParticipant =
+          await request.db.query.participant.findFirst({
+            where: (participant, { eq, and }) =>
+              and(
+                eq(participant.productId, productId),
+                eq(participant.externalId, request.user!.sub),
+              ),
+          });
 
         // Upsert participant
         const [participantRecord] = await request.db
@@ -89,7 +87,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         if (!participantRecord) {
           return reply.code(500).send({
             error: "Internal Server Error",
-            message: "Failed to create or find participant"
+            message: "Failed to create or find participant",
           });
         }
 
@@ -105,7 +103,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
               where: (refcode, { eq, and }) =>
                 and(
                   eq(refcode.code, normalizedRefcode),
-                  eq(refcode.productId, productId)
+                  eq(refcode.productId, productId),
                 ),
             });
 
@@ -126,12 +124,15 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
 
               if (newReferral) {
                 referralRecordId = newReferral.id;
-                request.log.info({
-                  refcode: normalizedRefcode,
-                  referrerId: referrerCode.participantId,
-                  refereeId: request.user.sub,
-                  referralId: referralRecordId,
-                }, "Auto-attribution successful");
+                request.log.info(
+                  {
+                    refcode: normalizedRefcode,
+                    referrerId: referrerCode.participantId,
+                    refereeId: request.user.sub,
+                    referralId: referralRecordId,
+                  },
+                  "Auto-attribution successful",
+                );
 
                 // Create signup event for reward processing
                 try {
@@ -147,14 +148,22 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
                       reason: "Widget initialization with referral code",
                     },
                   });
-                  request.log.info("Created signup event for referral attribution");
+                  request.log.info(
+                    "Created signup event for referral attribution",
+                  );
                 } catch (eventError) {
-                  request.log.error({ error: eventError }, "Failed to create signup event");
+                  request.log.error(
+                    { error: eventError },
+                    "Failed to create signup event",
+                  );
                   // Don't fail widget init if event creation fails
                 }
               }
             } else {
-              request.log.warn({ refcode: normalizedRefcode }, "Referral code not found");
+              request.log.warn(
+                { refcode: normalizedRefcode },
+                "Referral code not found",
+              );
             }
           } catch (error) {
             // Log but don't fail widget init on attribution errors
@@ -168,7 +177,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           where: (refcode, { eq, and }) =>
             and(
               eq(refcode.participantId, participantRecord.id),
-              eq(refcode.programId, activeProgram.id)
+              eq(refcode.programId, activeProgram.id),
             ),
           orderBy: (refcode, { desc }) => [desc(refcode.createdAt)],
         });
@@ -180,7 +189,8 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           if (!currentCode) {
             return reply.code(500).send({
               error: "Internal Server Error",
-              message: "Failed to generate unique refcode after multiple attempts"
+              message:
+                "Failed to generate unique refcode after multiple attempts",
             });
           }
 
@@ -205,10 +215,13 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
 
               if (!refcodeRecord) {
                 insertRetries--;
-                request.log.warn({
-                  participantId: participantRecord.id,
-                  code: currentCode
-                }, "Refcode collision on insert, retrying with new code...");
+                request.log.warn(
+                  {
+                    participantId: participantRecord.id,
+                    code: currentCode,
+                  },
+                  "Refcode collision on insert, retrying with new code...",
+                );
 
                 // Generate a new code for next retry
                 const newCode = generateGlobalCode(5);
@@ -231,7 +244,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         if (!refcodeRecord) {
           return reply.code(500).send({
             error: "Internal Server Error",
-            message: "Failed to create or find refcode"
+            message: "Failed to create or find refcode",
           });
         }
 
@@ -243,12 +256,13 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         const widgetData = programData?.config?.widgetConfig;
 
         // Get REFERRAL_HOST_URL from environment
-        const referralHostUrl = process.env.REFERRAL_HOST_URL || "http://localhost:3002";
+        const referralHostUrl =
+          process.env.REFERRAL_HOST_URL || "http://localhost:3002";
 
         if (!widgetData) {
           return reply.code(404).send({
             error: "Not Found",
-            message: "Widget configuration not found for this program."
+            message: "Widget configuration not found for this program.",
           });
         }
 
@@ -266,7 +280,7 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           if (!productData?.slug) {
             return reply.code(500).send({
               error: "Internal Server Error",
-              message: "Product slug not configured for local refcode"
+              message: "Product slug not configured for local refcode",
             });
           }
 
@@ -287,15 +301,15 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           return reply.code(400).send({
             error: "Bad Request",
             message: "Invalid request body",
-            details: error.issues
+            details: error.issues,
           });
         }
 
         return reply.code(500).send({
           error: "Internal Server Error",
-          message: "An unexpected error occurred"
+          message: "An unexpected error occurred",
         });
       }
-    }
+    },
   );
 }

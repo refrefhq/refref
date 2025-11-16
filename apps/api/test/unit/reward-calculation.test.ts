@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createDb, schema } from "@refref/coredb";
-import type { RewardRuleConfigV1Type, EventMetadataV1Type } from "@refref/types";
+import type {
+  RewardRuleConfigV1Type,
+  EventMetadataV1Type,
+} from "@refref/types";
 
 describe("Reward Calculation Logic", () => {
   describe("Fixed reward calculation", () => {

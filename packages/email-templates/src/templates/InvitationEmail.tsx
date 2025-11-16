@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   Body,
   Button,
@@ -11,7 +11,7 @@ import {
   Preview,
   Section,
   Text,
-} from '@react-email/components';
+} from "@react-email/components";
 
 interface InvitationEmailProps {
   role?: string;
@@ -21,12 +21,12 @@ interface InvitationEmailProps {
 }
 
 export function InvitationEmail({
-  role = 'member',
+  role = "member",
   inviterName,
   inviterEmail,
-  inviteLink = 'https://app.refref.com/accept-invitation/example',
+  inviteLink = "https://app.refref.com/accept-invitation/example",
 }: InvitationEmailProps) {
-  const inviterDisplay = inviterName || inviterEmail || 'Someone';
+  const inviterDisplay = inviterName || inviterEmail || "Someone";
 
   return (
     <Html>
@@ -56,30 +56,31 @@ export function InvitationEmail({
       <Preview>You've been invited to join RefRef</Preview>
       <Body
         style={{
-          backgroundColor: '#fafafa',
+          backgroundColor: "#fafafa",
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-          padding: '40px 20px',
+          padding: "40px 20px",
         }}
         className="dark-bg"
       >
         <Container
           style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '12px',
-            maxWidth: '600px',
-            margin: '0 auto',
-            padding: '0',
-            overflow: 'hidden',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            backgroundColor: "#ffffff",
+            borderRadius: "12px",
+            maxWidth: "600px",
+            margin: "0 auto",
+            padding: "0",
+            overflow: "hidden",
+            boxShadow:
+              "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
           }}
           className="dark-container-bg dark-border"
         >
           {/* Header with Logo */}
           <Section
             style={{
-              padding: '40px 40px 32px',
-              textAlign: 'center',
+              padding: "40px 40px 32px",
+              textAlign: "center",
             }}
           >
             <Img
@@ -88,22 +89,22 @@ export function InvitationEmail({
               width="48"
               height="48"
               style={{
-                margin: '0 auto',
-                display: 'block',
+                margin: "0 auto",
+                display: "block",
               }}
             />
           </Section>
 
           {/* Main Content */}
-          <Section style={{ padding: '0 40px 40px' }}>
+          <Section style={{ padding: "0 40px 40px" }}>
             <Heading
               style={{
-                color: '#252525',
-                fontSize: '24px',
-                fontWeight: '600',
-                lineHeight: '32px',
-                margin: '0 0 16px',
-                textAlign: 'center',
+                color: "#252525",
+                fontSize: "24px",
+                fontWeight: "600",
+                lineHeight: "32px",
+                margin: "0 0 16px",
+                textAlign: "center",
               }}
               className="dark-text"
             >
@@ -112,11 +113,11 @@ export function InvitationEmail({
 
             <Text
               style={{
-                color: '#1f2937',
-                fontSize: '16px',
-                lineHeight: '24px',
-                margin: '0 0 8px',
-                textAlign: 'center',
+                color: "#1f2937",
+                fontSize: "16px",
+                lineHeight: "24px",
+                margin: "0 0 8px",
+                textAlign: "center",
               }}
               className="dark-text-muted"
             >
@@ -125,35 +126,35 @@ export function InvitationEmail({
 
             <Text
               style={{
-                color: '#1f2937',
-                fontSize: '16px',
-                lineHeight: '24px',
-                margin: '0 0 32px',
-                textAlign: 'center',
+                color: "#1f2937",
+                fontSize: "16px",
+                lineHeight: "24px",
+                margin: "0 0 32px",
+                textAlign: "center",
               }}
               className="dark-text-muted"
             >
-              <strong style={{ color: '#252525' }} className="dark-text">
+              <strong style={{ color: "#252525" }} className="dark-text">
                 {inviterDisplay}
-              </strong>{' '}
+              </strong>{" "}
               has invited you to join their project as a <em>{role}</em>.
             </Text>
 
             {/* CTA Button */}
-            <Section style={{ textAlign: 'center', margin: '0 0 32px' }}>
+            <Section style={{ textAlign: "center", margin: "0 0 32px" }}>
               <Button
                 href={inviteLink}
                 style={{
-                  backgroundColor: '#3b82f6',
-                  borderRadius: '8px',
-                  color: '#ffffff',
-                  display: 'inline-block',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  lineHeight: '24px',
-                  padding: '14px 32px',
-                  textDecoration: 'none',
-                  textAlign: 'center',
+                  backgroundColor: "#3b82f6",
+                  borderRadius: "8px",
+                  color: "#ffffff",
+                  display: "inline-block",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  lineHeight: "24px",
+                  padding: "14px 32px",
+                  textDecoration: "none",
+                  textAlign: "center",
                 }}
               >
                 Accept Invitation
@@ -163,11 +164,11 @@ export function InvitationEmail({
             {/* Alternative Link */}
             <Text
               style={{
-                color: '#8E8E8E',
-                fontSize: '14px',
-                lineHeight: '20px',
-                margin: '0 0 8px',
-                textAlign: 'center',
+                color: "#8E8E8E",
+                fontSize: "14px",
+                lineHeight: "20px",
+                margin: "0 0 8px",
+                textAlign: "center",
               }}
               className="dark-text-muted"
             >
@@ -175,20 +176,20 @@ export function InvitationEmail({
             </Text>
             <Text
               style={{
-                color: '#1f2937',
-                fontSize: '13px',
-                lineHeight: '20px',
-                margin: '0',
-                textAlign: 'center',
-                wordBreak: 'break-all',
+                color: "#1f2937",
+                fontSize: "13px",
+                lineHeight: "20px",
+                margin: "0",
+                textAlign: "center",
+                wordBreak: "break-all",
               }}
               className="dark-text-muted"
             >
               <Link
                 href={inviteLink}
                 style={{
-                  color: '#1f2937',
-                  textDecoration: 'underline',
+                  color: "#1f2937",
+                  textDecoration: "underline",
                 }}
                 className="dark-text-muted"
               >
@@ -200,19 +201,19 @@ export function InvitationEmail({
           {/* Footer */}
           <Section
             style={{
-              borderTop: '1px solid #EBEBEB',
-              padding: '32px 40px',
-              backgroundColor: '#F8F8F8',
+              borderTop: "1px solid #EBEBEB",
+              padding: "32px 40px",
+              backgroundColor: "#F8F8F8",
             }}
             className="dark-border dark-bg"
           >
             <Text
               style={{
-                color: '#8E8E8E',
-                fontSize: '13px',
-                lineHeight: '20px',
-                margin: '0 0 8px',
-                textAlign: 'center',
+                color: "#8E8E8E",
+                fontSize: "13px",
+                lineHeight: "20px",
+                margin: "0 0 8px",
+                textAlign: "center",
               }}
               className="dark-text-muted"
             >
@@ -220,11 +221,11 @@ export function InvitationEmail({
             </Text>
             <Text
               style={{
-                color: '#8E8E8E',
-                fontSize: '13px',
-                lineHeight: '20px',
-                margin: '0 0 8px',
-                textAlign: 'center',
+                color: "#8E8E8E",
+                fontSize: "13px",
+                lineHeight: "20px",
+                margin: "0 0 8px",
+                textAlign: "center",
               }}
               className="dark-text-muted"
             >
@@ -232,11 +233,11 @@ export function InvitationEmail({
             </Text>
             <Text
               style={{
-                color: '#8E8E8E',
-                fontSize: '12px',
-                lineHeight: '16px',
-                margin: '0',
-                textAlign: 'center',
+                color: "#8E8E8E",
+                fontSize: "12px",
+                lineHeight: "16px",
+                margin: "0",
+                textAlign: "center",
               }}
               className="dark-text-muted"
             >
@@ -246,19 +247,19 @@ export function InvitationEmail({
         </Container>
 
         {/* Security Notice */}
-        <Section style={{ padding: '24px 0 0' }}>
+        <Section style={{ padding: "24px 0 0" }}>
           <Text
             style={{
-              color: '#8E8E8E',
-              fontSize: '12px',
-              lineHeight: '16px',
-              margin: '0',
-              textAlign: 'center',
+              color: "#8E8E8E",
+              fontSize: "12px",
+              lineHeight: "16px",
+              margin: "0",
+              textAlign: "center",
             }}
             className="dark-text-muted"
           >
-            This is an automated email from RefRef. For security reasons, please do not share this
-            link with anyone.
+            This is an automated email from RefRef. For security reasons, please
+            do not share this link with anyone.
           </Text>
         </Section>
       </Body>

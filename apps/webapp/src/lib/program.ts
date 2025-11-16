@@ -29,7 +29,7 @@ export interface SetupProgress {
 export const SETUP_STEPS = [
   {
     id: "design",
-    title: "Design Configuration",
+    title: "Design",
     description:
       "Configure the appearance and behavior of your referral widget.",
     isRequired: true,
@@ -37,7 +37,7 @@ export const SETUP_STEPS = [
   },
   {
     id: "rewards",
-    title: "Reward Configuration",
+    title: "Rewards",
     description:
       "Configure how referrers and new users will be rewarded in your program.",
     isRequired: true,
@@ -45,7 +45,7 @@ export const SETUP_STEPS = [
   },
   {
     id: "notifications",
-    title: "Notifications Setup",
+    title: "Notifications",
     description:
       "Set up email and in-app notifications for your referral program.",
     isRequired: false,

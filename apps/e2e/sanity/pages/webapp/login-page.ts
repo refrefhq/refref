@@ -1,5 +1,5 @@
-import { Page, expect } from '@playwright/test';
-import { BasePage } from '../base-page';
+import { Page, expect } from "@playwright/test";
+import { BasePage } from "../base-page";
 
 /**
  * Page object for webapp login page using Better Auth UI
@@ -13,7 +13,7 @@ export class LoginPage extends BasePage {
    * Navigate to the login page
    */
   async goto() {
-    await this.page.goto('/auth/sign-in');
+    await this.page.goto("/auth/sign-in");
     await this.waitForPageLoad();
   }
 
@@ -27,26 +27,33 @@ export class LoginPage extends BasePage {
     await this.verifyPasswordAuthEnabled();
 
     // Fill in email field
-    const emailInput = this.page.locator('input[name="email"], input[type="email"]').first();
+    const emailInput = this.page
+      .locator('input[name="email"], input[type="email"]')
+      .first();
     await expect(emailInput).toBeVisible({ timeout: 10000 });
     await emailInput.fill(email);
 
     // Fill in password field
-    const passwordInput = this.page.locator('input[name="password"], input[type="password"]').first();
+    const passwordInput = this.page
+      .locator('input[name="password"], input[type="password"]')
+      .first();
     await expect(passwordInput).toBeVisible();
     await passwordInput.fill(password);
 
     // Click login button - locate by text "Login"
-    const loginButton = this.page.getByRole('button', { name: /login/i });
+    const loginButton = this.page.getByRole("button", { name: /login/i });
     await expect(loginButton).toBeVisible();
     await loginButton.click();
 
     // Wait for navigation to complete (user should be redirected after successful login)
-    await this.page.waitForURL((url) => !url.pathname.includes('/auth/sign-in'), {
-      timeout: 15000,
-    });
+    await this.page.waitForURL(
+      (url) => !url.pathname.includes("/auth/sign-in"),
+      {
+        timeout: 15000,
+      },
+    );
 
-    console.log('✓ Successfully logged in');
+    console.log("✓ Successfully logged in");
   }
 
   /**
@@ -55,50 +62,66 @@ export class LoginPage extends BasePage {
    */
   async verifyPasswordAuthEnabled() {
     // Check for email input field
-    const emailInput = this.page.locator('input[name="email"], input[type="email"]').first();
+    const emailInput = this.page
+      .locator('input[name="email"], input[type="email"]')
+      .first();
     await expect(emailInput).toBeVisible({ timeout: 10000 });
 
     // Check for password input field
-    const passwordInput = this.page.locator('input[name="password"], input[type="password"]').first();
+    const passwordInput = this.page
+      .locator('input[name="password"], input[type="password"]')
+      .first();
     await expect(passwordInput).toBeVisible();
 
-    console.log('✓ Password authentication is enabled');
+    console.log("✓ Password authentication is enabled");
   }
 
   /**
    * Sign up with email and password (creates new account)
    */
   async signup(email: string, password: string, name: string) {
-    await this.page.goto('/auth/sign-up');
+    await this.page.goto("/auth/sign-up");
     await this.waitForPageLoad();
 
     // Fill in name field (if present) - use count() to check without waiting
     const nameInput = this.page.locator('input[name="name"]').first();
     const nameFieldCount = await nameInput.count();
     await expect(nameFieldCount).toBeGreaterThanOrEqual(0); // Always passes, documenting optional field
-    await nameInput.fill(name).catch(() => {/* Name field is optional */});
+    await nameInput.fill(name).catch(() => {
+      /* Name field is optional */
+    });
 
     // Fill in email field
-    const emailInput = this.page.locator('input[name="email"], input[type="email"]').first();
+    const emailInput = this.page
+      .locator('input[name="email"], input[type="email"]')
+      .first();
     await expect(emailInput).toBeVisible({ timeout: 10000 });
     await emailInput.fill(email);
 
     // Fill in password field
-    const passwordInput = this.page.locator('input[name="password"], input[type="password"]').first();
+    const passwordInput = this.page
+      .locator('input[name="password"], input[type="password"]')
+      .first();
     await expect(passwordInput).toBeVisible();
     await passwordInput.fill(password);
 
     // Click sign up button
-    const signUpButton = this.page.locator('button[type="submit"]').filter({ hasText: /sign up|create|continue/i }).first();
+    const signUpButton = this.page
+      .locator('button[type="submit"]')
+      .filter({ hasText: /sign up|create|continue/i })
+      .first();
     await expect(signUpButton).toBeVisible();
     await signUpButton.click();
 
     // Wait for navigation to complete
-    await this.page.waitForURL((url) => !url.pathname.includes('/auth/sign-up'), {
-      timeout: 15000,
-    });
+    await this.page.waitForURL(
+      (url) => !url.pathname.includes("/auth/sign-up"),
+      {
+        timeout: 15000,
+      },
+    );
 
-    console.log('✓ Successfully signed up');
+    console.log("✓ Successfully signed up");
   }
 
   /**
@@ -106,10 +129,10 @@ export class LoginPage extends BasePage {
    * If redirected away from login page, user is already logged in
    */
   async isLoggedIn(): Promise<boolean> {
-    await this.page.goto('/auth/sign-in');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.goto("/auth/sign-in");
+    await this.page.waitForLoadState("networkidle");
 
     // If we're not on the sign-in page, we're logged in
-    return !this.page.url().includes('/auth/sign-in');
+    return !this.page.url().includes("/auth/sign-in");
   }
 }

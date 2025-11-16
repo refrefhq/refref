@@ -15,7 +15,7 @@ export default async function healthRoutes(fastify: FastifyInstance) {
         timestamp: new Date().toISOString(),
         service: "refer",
       });
-    }
+    },
   );
 
   // Root health check - no rate limiting for monitoring systems
@@ -32,6 +32,6 @@ export default async function healthRoutes(fastify: FastifyInstance) {
         service: "refer",
         message: "RefRef Refer Server",
       });
-    }
+    },
   );
 }

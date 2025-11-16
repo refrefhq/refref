@@ -32,10 +32,7 @@ export const env = createEnv({
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
     NEXT_PUBLIC_REFER_URL: z.url().default("http://localhost:3002"),
-    NEXT_PUBLIC_ASSETS_URL: z
-      .url()
-      .optional()
-      .default("http://localhost:8787"),
+    NEXT_PUBLIC_ASSETS_URL: z.url().optional().default("http://localhost:8787"),
     NEXT_PUBLIC_REFREF_PRODUCT_ID: z.string().optional(),
     NEXT_PUBLIC_REFREF_PROGRAM_ID: z.string().optional(),
     NEXT_PUBLIC_ENABLE_PASSWORD_AUTH: z
