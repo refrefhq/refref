@@ -19,6 +19,8 @@ import {
   IconPalette,
   IconUsers,
   IconBuilding,
+  IconSettings,
+  IconKey,
 } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 
@@ -26,15 +28,38 @@ const SidebarItems = [
   {
     group: "Account",
     items: [
-      { label: "Profile", href: "/settings/profile", icon: IconUser },
-      { label: "Appearance", href: "/settings/appearance", icon: IconPalette },
+      { label: "Profile", href: "/settings/account/profile", icon: IconUser },
+      {
+        label: "Appearance",
+        href: "/settings/account/appearance",
+        icon: IconPalette,
+      },
     ],
   },
   {
-    group: "Team",
+    group: "Organization",
     items: [
-      { label: "Product", href: "/settings/product", icon: IconBuilding },
-      { label: "Members", href: "/settings/members", icon: IconUsers },
+      {
+        label: "General",
+        href: "/settings/organization/general",
+        icon: IconSettings,
+      },
+      {
+        label: "Members",
+        href: "/settings/organization/members",
+        icon: IconUsers,
+      },
+    ],
+  },
+  {
+    group: "Product",
+    items: [
+      {
+        label: "General",
+        href: "/settings/product/general",
+        icon: IconBuilding,
+      },
+      { label: "API & Secrets", href: "/settings/product/api", icon: IconKey },
     ],
   },
 ];

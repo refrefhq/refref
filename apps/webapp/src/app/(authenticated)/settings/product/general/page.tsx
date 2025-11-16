@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@refref/ui/components/button";
 import { Card, CardContent } from "@refref/ui/components/card";
 import { Input } from "@refref/ui/components/input";
@@ -11,7 +11,7 @@ import { Separator } from "@refref/ui/components/separator";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
-export default function ProductSettings() {
+export default function ProductGeneralSettings() {
   const {
     data: product,
     isLoading,
@@ -57,14 +57,15 @@ export default function ProductSettings() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-xl font-bold">Product</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+      <div className="flex flex-col gap-6 p-6 w-full max-w-[var(--content-max-width)] mx-auto">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Product</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Manage your product information and settings
           </p>
         </div>
-        <div className="space-y-6">
+        <Separator />
+        <div>
           <Card>
             <CardContent className="space-y-4 p-6">
               <div className="animate-pulse">
@@ -81,16 +82,18 @@ export default function ProductSettings() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="flex flex-col gap-6 p-6 w-full max-w-[var(--content-max-width)] mx-auto">
       {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="text-xl font-bold">Product</h1>
-        <p className="text-muted-foreground mt-1 text-sm">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Product</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Manage your product information and settings
         </p>
       </div>
 
-      <div className="space-y-6">
+      <Separator />
+
+      <div>
         <Card>
           <form
             onSubmit={(e) => {

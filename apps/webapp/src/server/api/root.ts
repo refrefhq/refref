@@ -12,6 +12,7 @@ import { userRouter } from "@/server/api/routers/user";
 import { productMembersRouter } from "@/server/api/routers/product-members";
 import { searchRouter } from "@/server/api/routers/search";
 import { analyticsRouter } from "@/server/api/routers/analytics";
+import { organizationRouter } from "@/server/api/routers/organization";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -32,6 +33,7 @@ export const appRouter = createTRPCRouter({
   rewardRules: rewardRulesRouter,
   user: userRouter,
   productMembers: productMembersRouter,
+  organization: organizationRouter,
   search: searchRouter,
   analytics: analyticsRouter,
 });

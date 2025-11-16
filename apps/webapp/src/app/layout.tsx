@@ -1,4 +1,4 @@
-import "@refref/ui/globals.css";
+import "@/styles/app.css";
 import Script from "next/script";
 import { GeistSans } from "geist/font/sans";
 import { Stack_Sans_Notch } from "next/font/google";

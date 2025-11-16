@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { Card, CardContent } from "@refref/ui/components/card";
 import { Label } from "@refref/ui/components/label";
+import { Separator } from "@refref/ui/components/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +16,6 @@ import { Button } from "@refref/ui/components/button";
 import { Sun, Moon, Monitor, ChevronDown } from "lucide-react";
 
 import { ThemeSwitcher } from "@/components/theme-switcher";
-
-// Removed ThemeOption – replaced by dropdown implementation
 
 export default function AppearanceSettings() {
   const { theme = "system", setTheme } = useTheme();
@@ -33,16 +32,17 @@ export default function AppearanceSettings() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl p-6">
-      {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="text-xl font-bold">Appearance</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+    <div className="flex flex-col gap-6 p-6 w-full max-w-[var(--content-max-width)] mx-auto">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Appearance</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Personalise how RefRef looks on this device
         </p>
       </div>
 
-      <div className="space-y-6">
+      <Separator />
+
+      <div>
         {/* Theme selector */}
         <Card>
           <CardContent className="space-y-4 flex justify-between items-center">

@@ -67,7 +67,7 @@ export function GlobalSearch() {
   };
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+    <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput
         placeholder="Search participants, programs, and settings..."
         value={search}
