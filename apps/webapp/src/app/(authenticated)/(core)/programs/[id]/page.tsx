@@ -1,30 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/trpc/react";
 import { SiteBreadcrumbs } from "@/components/site-breadcrumbs";
+import { EditableBreadcrumb } from "@/components/editable-breadcrumb";
 import { SiteHeader } from "@/components/site-header";
 import { SetupCard } from "@/components/program-setup-card";
 import { useSidebar } from "@refref/ui/components/sidebar";
 import { useWindowSize } from "@uidotdev/usehooks";
 import { DesignConfig } from "./_components/design-config";
-import { RewardStep } from "./setup/_components/RewardStep";
+import { RewardStepConfig } from "./_components/reward-step-config";
 import { NotificationSetup } from "./_components/notification-setup";
 import { Installation } from "./_components/installation";
 import { canProceedToStep } from "@/lib/program";
 import { toast } from "sonner";
-import { Users, Rocket, Loader2, Trash2 } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@refref/ui/components/alert-dialog";
-import { Button } from "@refref/ui/components/button";
+import { Loader2 } from "lucide-react";
 
 export default function ProgramSetupPage() {
   const params = useParams<{ id: string }>();
@@ -45,12 +35,14 @@ export default function ProgramSetupPage() {
   });
   const utils = api.useUtils();
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const deleteProgram = api.program.delete.useMutation({
+  const updateName = api.program.updateName.useMutation({
     onSuccess: () => {
-      setDeleteDialogOpen(false);
-      router.push("/programs");
+      toast.success("Program name updated");
+      utils.program.getById.invalidate(params?.id ?? "");
       utils.program.getAll.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update program name");
     },
   });
 
@@ -95,9 +87,21 @@ export default function ProgramSetupPage() {
 
   const handleGoLive = () => {};
 
+  const handleNameUpdate = async (newName: string) => {
+    await updateName.mutateAsync({
+      id: params?.id ?? "",
+      name: newName,
+    });
+  };
+
   const breadcrumbs = [
     { label: "Programs", href: "/programs" },
-    { label: program.name, href: `/programs/${params?.id}` },
+    {
+      label: program.name,
+      href: `/programs/${params?.id}`,
+      editable: true,
+      onEdit: handleNameUpdate,
+    },
   ];
 
   const handleStepChange = (stepId: string) => {
@@ -115,48 +119,7 @@ export default function ProgramSetupPage() {
 
   return (
     <>
-      <SiteHeader
-        breadcrumbs={<SiteBreadcrumbs items={breadcrumbs} />}
-        meta={
-          <div className="flex items-center gap-3">
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setDeleteDialogOpen(true)}
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete Program
-            </Button>
-            <AlertDialog
-              open={deleteDialogOpen}
-              onOpenChange={setDeleteDialogOpen}
-            >
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Program</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete this program? This action
-                    cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() =>
-                      deleteProgram.mutate({ id: params?.id ?? "" })
-                    }
-                    disabled={deleteProgram.isPending}
-                  >
-                    {deleteProgram.isPending ? "Deleting..." : "Delete"}
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        }
-      />
+      <SiteHeader breadcrumbs={<SiteBreadcrumbs items={breadcrumbs} />} />
       <div className="flex flex-1 relative overflow-hidden">
         <div className="absolute top-0 left-0 bottom-0 w-40 border-r bg-muted/40">
           <div className="px-2 py-4 space-y-1">
@@ -170,7 +133,7 @@ export default function ProgramSetupPage() {
             ))}
           </div>
         </div>
-        <div className="flex-1 flex flex-col overflow-y-auto ml-64">
+        <div className="flex-1 flex flex-col overflow-y-auto ml-40">
           {step === "design" && (
             <DesignConfig
               programId={params?.id ?? ""}
@@ -178,7 +141,7 @@ export default function ProgramSetupPage() {
             />
           )}
           {step === "rewards" && (
-            <RewardStep
+            <RewardStepConfig
               programId={params?.id ?? ""}
               onStepComplete={handleStepComplete}
             />

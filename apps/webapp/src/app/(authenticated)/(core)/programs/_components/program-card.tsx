@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
@@ -13,6 +14,7 @@ import {
   TrendingUp,
   MoreVertical,
   BarChart,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -29,9 +31,20 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@refref/ui/components/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+} from "@refref/ui/components/alert-dialog";
 import { DateDisplay } from "@/components/date-display";
+import { api } from "@/trpc/react";
 
 // Define the types for our referral program
 export type ProgramStatus = "pending_setup" | "active" | "inactive";
@@ -52,6 +65,15 @@ interface ProgramCardProps {
 // Individual card component
 export function ProgramCard({ program }: ProgramCardProps) {
   const router = useRouter();
+  const utils = api.useUtils();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const deleteProgram = api.program.delete.useMutation({
+    onSuccess: () => {
+      setDeleteDialogOpen(false);
+      utils.program.getAll.invalidate();
+    },
+  });
 
   // Status badge styling and content based on status
   const getStatusBadge = (status: ProgramStatus) => {
@@ -157,6 +179,17 @@ export function ProgramCard({ program }: ProgramCardProps) {
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteDialogOpen(true);
+                    }}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -222,6 +255,29 @@ export function ProgramCard({ program }: ProgramCardProps) {
           </Button>
         </CardFooter>
       )}
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Program</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{program.name}"? This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => deleteProgram.mutate({ id: program.id })}
+              disabled={deleteProgram.isPending}
+            >
+              {deleteProgram.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

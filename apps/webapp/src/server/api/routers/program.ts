@@ -135,6 +135,9 @@ export const programRouter = createTRPCRouter({
             primaryColor: z
               .string()
               .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color"),
+            landingPageUrl: z.string().url({
+              message: "Please enter a valid URL",
+            }),
           })
           .optional(),
       }),
@@ -221,6 +224,7 @@ export const programRouter = createTRPCRouter({
                   type: "cash" as const,
                   amount: rewardConfig.referrer.value,
                   unit: rewardConfig.referrer.valueType as "fixed" | "percent",
+                  currency: rewardConfig.referrer.currency,
                 },
               },
               priority: 100,
@@ -245,6 +249,9 @@ export const programRouter = createTRPCRouter({
                   type: "discount" as const,
                   amount: rewardConfig.referee.value,
                   unit: rewardConfig.referee.valueType as "fixed" | "percent",
+                  currency: rewardConfig.referee.currency,
+                  minPurchaseAmount: rewardConfig.referee.minPurchaseAmount,
+                  validityDays: rewardConfig.referee.validityDays,
                 },
               },
               priority: 90,
@@ -290,6 +297,7 @@ export const programRouter = createTRPCRouter({
         const finalProgramConfig: ProgramConfigV1Type = {
           schemaVersion: 1,
           widgetConfig,
+          brandConfig: brandConfig || undefined,
           actions: undefined,
           notification: undefined,
           templateConfig: programTemplate.config,
@@ -434,6 +442,66 @@ export const programRouter = createTRPCRouter({
         .update(programTable)
         .set({
           config: input.config,
+        })
+        .where(eq(programTable.id, input.id))
+        .returning();
+
+      assert(updatedProgram, "Program not updated");
+      return {
+        ...updatedProgram,
+        setup: getSetupProgress(updatedProgram.config),
+      };
+    }),
+
+  updateName: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z
+          .string()
+          .min(1, "Name is required")
+          .max(100, "Name is too long"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Find the program
+      const [program] = await ctx.db
+        .select()
+        .from(programTable)
+        .where(eq(programTable.id, input.id))
+        .limit(1);
+
+      if (!program) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Program not found",
+        });
+      }
+
+      // Verify program belongs to active organization through product
+      const [productRecord] = await ctx.db
+        .select()
+        .from(product)
+        .where(
+          and(
+            eq(product.id, program.productId),
+            eq(product.id, ctx.activeProductId),
+          ),
+        )
+        .limit(1);
+
+      if (!productRecord) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Program does not belong to your organization",
+        });
+      }
+
+      // Update the program name
+      const [updatedProgram] = await ctx.db
+        .update(programTable)
+        .set({
+          name: input.name,
         })
         .where(eq(programTable.id, input.id))
         .returning();

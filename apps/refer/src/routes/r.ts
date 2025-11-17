@@ -3,6 +3,7 @@ import { schema } from "@refref/coredb";
 const { refcode, product } = schema;
 import { eq, and } from "drizzle-orm";
 import { normalizeCode } from "@refref/utils";
+import type { ProgramConfigV1Type } from "@refref/types";
 
 interface GlobalCodeParams {
   code: string;
@@ -38,19 +39,16 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         const { code } = request.params;
         const normalizedCode = normalizeCode(code);
 
-        // Single optimized query using relations (1 query instead of 3)
-        // This does a JOIN under the hood: refcode → participant → product
+        // Single optimized query using relations
+        // This does a JOIN under the hood: refcode → participant → program
         const result = await request.db.query.refcode.findFirst({
           where: and(
             eq(refcode.code, normalizedCode),
             eq(refcode.global, true),
           ),
           with: {
-            participant: {
-              with: {
-                product: true,
-              },
-            },
+            participant: true,
+            program: true,
           },
         });
 
@@ -61,17 +59,19 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         // Type assertion needed due to Drizzle's type inference limitations with nested relations
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const participantRecord = result.participant as any;
-        const productRecord = participantRecord.product;
-        const redirectUrl = productRecord?.url;
+
+        // Get the landing page URL from program config (assuming it's always present)
+        const programConfig = result.program!.config as ProgramConfigV1Type;
+        const redirectUrl = programConfig.brandConfig!.landingPageUrl;
 
         if (!redirectUrl) {
           request.log.error({
-            productId: participantRecord.productId,
-            message: "No redirect URL configured",
+            programId: result.programId,
+            message: "No landing page URL configured in brand config",
           });
           return reply
             .code(500)
-            .send({ error: "Redirect URL not configured for this product" });
+            .send({ error: "Landing page URL not configured for this program" });
         }
 
         // Helper to encode and only add non-empty values
@@ -137,7 +137,7 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         }
 
         // Single optimized query using relations
-        // This does a JOIN under the hood: refcode → participant → product
+        // This does a JOIN under the hood: refcode → participant → program
         const result = await request.db.query.refcode.findFirst({
           where: and(
             eq(refcode.code, normalizedCode),
@@ -145,11 +145,8 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
             eq(refcode.global, false),
           ),
           with: {
-            participant: {
-              with: {
-                product: true,
-              },
-            },
+            participant: true,
+            program: true,
           },
         });
 
@@ -160,16 +157,19 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         // Type assertion needed due to Drizzle's type inference limitations with nested relations
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const participantRecord = result.participant as any;
-        const redirectUrl = productRecord.url;
+
+        // Get the landing page URL from program config (assuming it's always present)
+        const programConfig = result.program!.config as ProgramConfigV1Type;
+        const redirectUrl = programConfig.brandConfig!.landingPageUrl;
 
         if (!redirectUrl) {
           request.log.error({
-            productId: productRecord.id,
-            message: "No redirect URL configured",
+            programId: result.programId,
+            message: "No landing page URL configured in brand config",
           });
           return reply
             .code(500)
-            .send({ error: "Redirect URL not configured for this product" });
+            .send({ error: "Landing page URL not configured for this program" });
         }
 
         // Helper to encode and only add non-empty values

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,11 +8,13 @@ import {
 } from "@refref/ui/components/card";
 import { Label } from "@refref/ui/components/label";
 import { Input } from "@refref/ui/components/input";
-import { Button } from "@refref/ui/components/button";
 import { Switch } from "@refref/ui/components/switch";
 import { Textarea } from "@refref/ui/components/textarea";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
+import { useForm } from "@tanstack/react-form";
+import { StickySaveBarRelative } from "@/components/sticky-save-bar";
+import { defaultNotificationConfig } from "@/lib/forms/notification-config-schema";
 
 interface NotificationSetupProps {
   programId: string;
@@ -23,29 +25,13 @@ export function NotificationSetup({
   programId,
   onStepComplete,
 }: NotificationSetupProps) {
-  const [notificationConfig, setNotificationConfig] = useState({
-    welcomeEmail: {
-      enabled: false,
-      subject: "",
-      template: "",
-    },
-    successEmail: {
-      enabled: false,
-      subject: "",
-      template: "",
-    },
-    inApp: {
-      progressUpdates: false,
-      rewardNotifications: false,
-    },
-  });
-
   // Fetch current program to get the existing config
   const { data: program } = api.program.getById.useQuery(programId);
 
   const updateConfig = api.program.updateConfig.useMutation({
     onSuccess: () => {
       toast.success("Notification settings saved successfully");
+      form.reset();
       onStepComplete?.();
     },
     onError: (error) => {
@@ -53,30 +39,65 @@ export function NotificationSetup({
     },
   });
 
-  const handleSave = () => {
-    if (!program?.config) {
-      toast.error("Program configuration not found");
-      return;
+  // Form setup with @tanstack/react-form
+  const form = useForm({
+    defaultValues: {
+      notificationConfig: defaultNotificationConfig,
+    },
+    onSubmit: async ({ value }) => {
+      if (!program?.config) {
+        toast.error("Program configuration not found");
+        return;
+      }
+
+      // Update the notification config while preserving the rest of the config
+      await updateConfig.mutateAsync({
+        id: programId,
+        config: {
+          ...program.config,
+          notification: value.notificationConfig as any,
+        },
+      });
+    },
+  });
+
+  // Update form when program data changes
+  useEffect(() => {
+    if (program?.config?.notification) {
+      form.setFieldValue("notificationConfig", {
+        ...defaultNotificationConfig,
+        ...program.config.notification,
+      });
+    }
+  }, [program?.config?.notification, form]);
+
+  // Helper function to update nested notification config
+  const updateNotificationConfig = (path: string[], value: any) => {
+    const currentConfig = form.getFieldValue("notificationConfig");
+    let updated = { ...currentConfig };
+    let current: any = updated;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      const key = path[i];
+      if (key) {
+        current[key] = { ...current[key] };
+        current = current[key];
+      }
+    }
+    const lastKey = path[path.length - 1];
+    if (lastKey) {
+      current[lastKey] = value;
     }
 
-    // Update the notification config while preserving the rest of the config
-    updateConfig.mutate({
-      id: programId,
-      config: {
-        ...program.config,
-      },
-    });
+    form.setFieldValue("notificationConfig", updated);
   };
 
+  // Get current notification config from form
+  const notificationConfig = form.state.values.notificationConfig;
+
   return (
-    <>
-      <div className="py-4 border-b px-4 lg:px-6 flex items-center justify-between sticky top-0">
-        <h2 className="text-lg font-bold">Notification Setup</h2>
-        <Button onClick={handleSave} disabled={updateConfig.isPending}>
-          {updateConfig.isPending ? "Saving..." : "Save Changes"}
-        </Button>
-      </div>
-      <div className="flex-1 p-4 lg:p-6">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 p-4 lg:p-6 overflow-y-auto">
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -97,13 +118,7 @@ export function NotificationSetup({
                   <Switch
                     checked={notificationConfig.welcomeEmail.enabled}
                     onCheckedChange={(checked) =>
-                      setNotificationConfig((prev) => ({
-                        ...prev,
-                        welcomeEmail: {
-                          ...prev.welcomeEmail,
-                          enabled: checked,
-                        },
-                      }))
+                      updateNotificationConfig(["welcomeEmail", "enabled"], checked)
                     }
                   />
                 </div>
@@ -113,13 +128,7 @@ export function NotificationSetup({
                     placeholder="Welcome to our referral program!"
                     value={notificationConfig.welcomeEmail.subject}
                     onChange={(e) =>
-                      setNotificationConfig((prev) => ({
-                        ...prev,
-                        welcomeEmail: {
-                          ...prev.welcomeEmail,
-                          subject: e.target.value,
-                        },
-                      }))
+                      updateNotificationConfig(["welcomeEmail", "subject"], e.target.value)
                     }
                   />
                 </div>
@@ -130,13 +139,7 @@ export function NotificationSetup({
                     className="min-h-[100px]"
                     value={notificationConfig.welcomeEmail.template}
                     onChange={(e) =>
-                      setNotificationConfig((prev) => ({
-                        ...prev,
-                        welcomeEmail: {
-                          ...prev.welcomeEmail,
-                          template: e.target.value,
-                        },
-                      }))
+                      updateNotificationConfig(["welcomeEmail", "template"], e.target.value)
                     }
                   />
                 </div>
@@ -153,13 +156,7 @@ export function NotificationSetup({
                   <Switch
                     checked={notificationConfig.successEmail.enabled}
                     onCheckedChange={(checked) =>
-                      setNotificationConfig((prev) => ({
-                        ...prev,
-                        successEmail: {
-                          ...prev.successEmail,
-                          enabled: checked,
-                        },
-                      }))
+                      updateNotificationConfig(["successEmail", "enabled"], checked)
                     }
                   />
                 </div>
@@ -169,13 +166,7 @@ export function NotificationSetup({
                     placeholder="Congratulations on your successful referral!"
                     value={notificationConfig.successEmail.subject}
                     onChange={(e) =>
-                      setNotificationConfig((prev) => ({
-                        ...prev,
-                        successEmail: {
-                          ...prev.successEmail,
-                          subject: e.target.value,
-                        },
-                      }))
+                      updateNotificationConfig(["successEmail", "subject"], e.target.value)
                     }
                   />
                 </div>
@@ -186,13 +177,7 @@ export function NotificationSetup({
                     className="min-h-[100px]"
                     value={notificationConfig.successEmail.template}
                     onChange={(e) =>
-                      setNotificationConfig((prev) => ({
-                        ...prev,
-                        successEmail: {
-                          ...prev.successEmail,
-                          template: e.target.value,
-                        },
-                      }))
+                      updateNotificationConfig(["successEmail", "template"], e.target.value)
                     }
                   />
                 </div>
@@ -218,13 +203,7 @@ export function NotificationSetup({
                 <Switch
                   checked={notificationConfig.inApp.progressUpdates}
                   onCheckedChange={(checked) =>
-                    setNotificationConfig((prev) => ({
-                      ...prev,
-                      inApp: {
-                        ...prev.inApp,
-                        progressUpdates: checked,
-                      },
-                    }))
+                    updateNotificationConfig(["inApp", "progressUpdates"], checked)
                   }
                 />
               </div>
@@ -238,13 +217,7 @@ export function NotificationSetup({
                 <Switch
                   checked={notificationConfig.inApp.rewardNotifications}
                   onCheckedChange={(checked) =>
-                    setNotificationConfig((prev) => ({
-                      ...prev,
-                      inApp: {
-                        ...prev.inApp,
-                        rewardNotifications: checked,
-                      },
-                    }))
+                    updateNotificationConfig(["inApp", "rewardNotifications"], checked)
                   }
                 />
               </div>
@@ -252,6 +225,20 @@ export function NotificationSetup({
           </Card>
         </div>
       </div>
-    </>
+
+      {/* Sticky Save Bar */}
+      <form.Subscribe selector={(state) => state.isDirty}>
+        {(isDirty) => (
+          <StickySaveBarRelative
+            isDirty={isDirty}
+            onSave={() => form.handleSubmit()}
+            onDiscard={() => form.reset()}
+            isSaving={updateConfig.isPending}
+            saveText="Save notification settings"
+            message="You have unsaved notification settings"
+          />
+        )}
+      </form.Subscribe>
+    </div>
   );
 }

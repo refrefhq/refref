@@ -8,10 +8,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@refref/ui/components/breadcrumb";
+import { EditableBreadcrumb } from "./editable-breadcrumb";
 
 interface BreadcrumbItem {
   href?: string;
   label: string;
+  editable?: boolean;
+  onEdit?: (newValue: string) => Promise<void>;
 }
 
 interface SiteBreadcrumbsProps {
@@ -28,9 +31,18 @@ export function SiteBreadcrumbs({ items }: SiteBreadcrumbsProps) {
             <React.Fragment key={item.label}>
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage className="h1 font-medium">
-                    {item.label}
-                  </BreadcrumbPage>
+                  item.editable && item.onEdit ? (
+                    <BreadcrumbPage className="h1">
+                      <EditableBreadcrumb
+                        value={item.label}
+                        onSave={item.onEdit}
+                      />
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbPage className="h1 font-medium">
+                      {item.label}
+                    </BreadcrumbPage>
+                  )
                 ) : (
                   <BreadcrumbLink href={item.href} className="h1 font-medium">
                     {item.label}

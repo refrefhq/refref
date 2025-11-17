@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -19,14 +19,14 @@ import {
 import { Switch } from "@refref/ui/components/switch";
 import { Slider } from "@refref/ui/components/slider";
 import { Separator } from "@refref/ui/components/separator";
-import { Button } from "@refref/ui/components/button";
 import { PreviewPane } from "@/components/preview-pane";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import type { WidgetConfigType } from "@refref/types";
+import type { WidgetConfigType, ProgramConfigV1Type } from "@refref/types";
 import React from "react";
 import { ReferralWidgetContent } from "@refref/ui/components/referral-widget/referral-widget-dialog-content";
 import { ReferralWidgetDialogTrigger } from "@refref/ui/components/referral-widget/referral-widget-dialog-trigger";
+import { StickySaveBarRelative } from "@/components/sticky-save-bar";
 
 interface DesignConfigProps {
   programId: string;
@@ -65,14 +65,22 @@ const defaultWidgetConfig: WidgetConfigType = {
 export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
   // State for preview pane
   const [showPreview, setShowPreview] = useState(true);
-  const [widgetConfig, setWidgetConfig] =
-    useState<WidgetConfigType>(defaultWidgetConfig);
+
+  // Local state for widget config
+  const [widgetConfig, setWidgetConfig] = useState<WidgetConfigType>(defaultWidgetConfig);
+  const [initialConfig, setInitialConfig] = useState<WidgetConfigType>(defaultWidgetConfig);
+
+  // State for landing page URL (from brandConfig)
+  const [landingPageUrl, setLandingPageUrl] = useState("");
+  const [initialLandingPageUrl, setInitialLandingPageUrl] = useState("");
 
   const { data: program } = api.program.getById.useQuery(programId);
 
   const updateConfig = api.program.updateConfig.useMutation({
     onSuccess: () => {
       toast.success("Design configuration saved successfully");
+      setInitialConfig(widgetConfig); // Update initial config after save
+      setInitialLandingPageUrl(landingPageUrl); // Update initial landing page URL
       onStepComplete?.();
     },
     onError: (error) => {
@@ -80,52 +88,78 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
     },
   });
 
-  // Update widget config when program data changes
-  React.useEffect(() => {
-    if (program?.config?.widgetConfig) {
-      setWidgetConfig({
-        ...defaultWidgetConfig,
-        ...program.config.widgetConfig,
-      });
+  // Update widget config and landing page URL when program data changes
+  useEffect(() => {
+    if (program?.config) {
+      // Update widget config
+      if (program.config.widgetConfig) {
+        const newConfig = {
+          ...defaultWidgetConfig,
+          ...program.config.widgetConfig,
+        };
+        setWidgetConfig(newConfig);
+        setInitialConfig(newConfig);
+      }
+
+      // Update landing page URL from brandConfig
+      const config = program.config as ProgramConfigV1Type;
+      if (config.brandConfig?.landingPageUrl) {
+        setLandingPageUrl(config.brandConfig.landingPageUrl);
+        setInitialLandingPageUrl(config.brandConfig.landingPageUrl);
+      }
     }
-  }, [program?.config?.widgetConfig]);
+  }, [program?.config]);
 
   const updateWidgetConfig = (updates: Partial<WidgetConfigType>) => {
-    setWidgetConfig({ ...widgetConfig, ...updates });
+    setWidgetConfig(current => ({ ...current, ...updates }));
   };
 
   const updatePlatform = (
     platform: keyof WidgetConfigType["enabledPlatforms"],
     enabled: boolean,
   ) => {
-    setWidgetConfig({
-      ...widgetConfig,
+    setWidgetConfig(current => ({
+      ...current,
       enabledPlatforms: {
-        ...widgetConfig.enabledPlatforms,
+        ...current.enabledPlatforms,
         [platform]: enabled,
+      },
+    }));
+  };
+
+  // Check if form is dirty
+  const isDirty = JSON.stringify(widgetConfig) !== JSON.stringify(initialConfig) ||
+                  landingPageUrl !== initialLandingPageUrl;
+
+  const handleSave = async () => {
+    if (!program?.config) {
+      toast.error("Program configuration not found");
+      return;
+    }
+
+    const currentConfig = program.config as ProgramConfigV1Type;
+
+    await updateConfig.mutateAsync({
+      id: programId,
+      config: {
+        ...currentConfig,
+        widgetConfig: widgetConfig,
+        brandConfig: {
+          primaryColor: currentConfig.brandConfig?.primaryColor || "#3b82f6",
+          landingPageUrl: landingPageUrl,
+        },
       },
     });
   };
 
-  const handleSave = () => {
-    updateConfig.mutate({
-      id: programId,
-      config: {
-        ...program!.config!,
-        widgetConfig: widgetConfig,
-      },
-    });
+  const handleDiscard = () => {
+    setWidgetConfig(initialConfig);
+    setLandingPageUrl(initialLandingPageUrl);
   };
 
   return (
-    <>
-      <div className="py-4 border-b px-4 lg:px-6 flex items-center justify-between">
-        <h2 className="text-lg font-bold">Style & Widget Configuration</h2>
-        <Button onClick={handleSave} disabled={updateConfig.isPending}>
-          {updateConfig.isPending ? "Saving..." : "Save Changes"}
-        </Button>
-      </div>
-      <div className="flex-1 grid grid-cols-2 gap-6 pl-4 lg:pl-6">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 lg:px-6 overflow-hidden">
         <div className="py-6 space-y-6 overflow-y-auto">
           {/* Widget Button Settings */}
           <Card>
@@ -399,6 +433,22 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
+                <Label htmlFor="landingPageUrl">Landing Page URL</Label>
+                <Input
+                  id="landingPageUrl"
+                  type="url"
+                  value={landingPageUrl}
+                  onChange={(e) => setLandingPageUrl(e.target.value)}
+                  placeholder="https://example.com/landing"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Users who click referral links will be redirected to this URL
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
                 <Label htmlFor="shareMessage">Share Message</Label>
                 <Textarea
                   id="shareMessage"
@@ -508,6 +558,16 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
           </PreviewPane>
         </div>
       </div>
-    </>
+
+      {/* Sticky Save Bar */}
+      <StickySaveBarRelative
+        isDirty={isDirty}
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        isSaving={updateConfig.isPending}
+        saveText="Save design changes"
+        message="You have unsaved design changes"
+      />
+    </div>
   );
 }

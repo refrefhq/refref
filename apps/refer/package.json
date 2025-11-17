@@ -20,6 +20,7 @@
     "@fastify/cors": "^10.0.1",
     "@fastify/rate-limit": "^10.3.0",
     "@refref/coredb": "workspace:*",
+    "@refref/types": "workspace:*",
     "@refref/utils": "workspace:*",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
