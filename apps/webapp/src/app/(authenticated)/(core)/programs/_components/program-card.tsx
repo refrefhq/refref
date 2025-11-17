@@ -31,6 +31,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@refref/ui/components/dropdown-menu";
+import { DateDisplay } from "@/components/date-display";
 
 // Define the types for our referral program
 export type ProgramStatus = "pending_setup" | "active" | "inactive";
@@ -121,7 +122,7 @@ export function ProgramCard({ program }: ProgramCardProps) {
               {getStatusBadge(program.status)}
             </div>
             <CardDescription className="mt-1">
-              Created {program.createdAt.toLocaleDateString()}
+              Created <DateDisplay date={program.createdAt} />
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">

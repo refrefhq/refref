@@ -67,7 +67,7 @@ export function CreateProgramModalV2() {
   );
   const router = useRouter();
 
-  const { data: templates } = api.programTemplate.getAll.useQuery();
+  const { data: templates } = api.program.listTemplates.useQuery();
   const { data: existingPrograms } = api.program.getAll.useQuery();
 
   // Create a set of used template IDs for quick lookup

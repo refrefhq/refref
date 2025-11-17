@@ -17,7 +17,6 @@ import {
 import { createId as createCuid } from "@paralleldrive/cuid2";
 import { createId, isValidEntityType } from "@refref/id";
 import type {
-  ProgramTemplateConfigType,
   ProgramConfigV1Type,
   EventDefinitionConfigV1Type,
   EventMetadataV1Type,
@@ -179,22 +178,12 @@ export const apikey = pgTable("apikey", {
   metadata: text("metadata"),
 });
 
-export const programTemplate = pgTable("program_template", {
-  ...baseFields("programTemplate"),
-  templateName: text("template_name").notNull(),
-  description: text("description").notNull(),
-  // Assuming config is part of the template definition based on ProgramConfigV1 type usage elsewhere
-  config: jsonb("config").$type<ProgramTemplateConfigType>(),
-});
-
 export const program = pgTable("program", {
   ...baseFields("program"),
   productId: text("product_id")
     .notNull()
     .references(() => product.id, { onDelete: "cascade" }),
-  programTemplateId: text("program_template_id")
-    .notNull()
-    .references(() => programTemplate.id, { onDelete: "restrict" }), // Restrict deletion if programs use it
+  programTemplateId: text("program_template_id").notNull(), // Template ID from PROGRAM_TEMPLATES constants
   name: text("name").notNull(),
   status: text("status").notNull(), // e.g., "active", "inactive", "draft"
   startDate: timestamp("start_date"),
@@ -355,13 +344,6 @@ export const participantRelations = relations(participant, ({ one, many }) => ({
     references: [product.id],
   }),
   refcodes: many(refcode),
-}));
-
-export const programRelations = relations(program, ({ one }) => ({
-  programTemplate: one(programTemplate, {
-    fields: [program.programTemplateId],
-    references: [programTemplate.id],
-  }),
 }));
 
 export const referral = pgTable("referral", {

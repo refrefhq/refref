@@ -16,6 +16,7 @@ const stackSansNotch = Stack_Sans_Notch({
   subsets: ["latin"],
   variable: "--font-stack-sans-notch",
   display: "swap",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

@@ -113,7 +113,6 @@ const betterAuthPlugin = fp(
           }
 
           // Fetch product with organization relation for authorization context
-          const { product: productTable } = schema;
           const productData = await opts.db.query.product.findFirst({
             where: (product, { eq }) => eq(product.id, productId),
           });
@@ -126,7 +125,6 @@ const betterAuthPlugin = fp(
           }
 
           // Fetch organization relation
-          const { org: orgTable } = schema;
           const orgData = productData.orgId
             ? await opts.db.query.org.findFirst({
                 where: (org, { eq }) => eq(org.id, productData.orgId!),

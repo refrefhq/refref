@@ -4,7 +4,6 @@ import { db, schema } from "@/server/db";
 const {
   product,
   program: programTable,
-  programTemplate,
   participant,
   referral,
 } = schema;
@@ -19,6 +18,8 @@ import {
   WidgetConfigType,
   widgetConfigSchema,
   defaultWidgetConfig,
+  getAllProgramTemplates,
+  getProgramTemplateById,
 } from "@refref/types";
 import { TRPCError } from "@trpc/server";
 import {
@@ -76,12 +77,8 @@ export const programRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Get the selected template
-      const [selectedTemplate] = await ctx.db
-        .select()
-        .from(programTemplate)
-        .where(eq(programTemplate.id, input.templateId))
-        .limit(1);
+      // Get the selected template from constants
+      const selectedTemplate = getProgramTemplateById(input.templateId);
 
       if (!selectedTemplate) {
         throw new TRPCError({
@@ -149,18 +146,24 @@ export const programRouter = createTRPCRouter({
       // Get required modules from the already imported schema
       const { eventDefinition, rewardRule } = schema;
 
-      // get the program along with the template
+      // get the program
       const program = await ctx.db.query.program.findFirst({
         where: and(
           eq(programTable.id, input.id),
           eq(programTable.productId, ctx.activeProductId),
         ),
-        with: {
-          programTemplate: true,
-        },
       });
 
       assert(program);
+
+      // Get the template config from constants
+      const programTemplate = getProgramTemplateById(program.programTemplateId);
+      if (!programTemplate) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Template not found",
+        });
+      }
 
       // Use a transaction for the entire configuration save operation
       const result = await ctx.db.transaction(async (tx) => {
@@ -289,7 +292,7 @@ export const programRouter = createTRPCRouter({
           widgetConfig,
           actions: undefined,
           notification: undefined,
-          templateConfig: program.programTemplate?.config || undefined,
+          templateConfig: programTemplate.config,
         };
 
         // 4. Update the program record within the transaction
@@ -309,8 +312,8 @@ export const programRouter = createTRPCRouter({
     }),
 
   // Add a new procedure to list available templates
-  listTemplates: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.select().from(programTemplate);
+  listTemplates: protectedProcedure.query(async () => {
+    return getAllProgramTemplates();
   }),
 
   getById: protectedProcedure
@@ -318,9 +321,6 @@ export const programRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const program = await ctx.db.query.program.findFirst({
         where: eq(programTable.id, input),
-        with: {
-          programTemplate: true,
-        },
       });
 
       if (!program) {

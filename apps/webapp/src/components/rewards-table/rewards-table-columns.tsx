@@ -12,6 +12,7 @@ import {
 } from "@refref/ui/components/dropdown-menu";
 import { api } from "@/trpc/react"; // For calling mutations
 import { toast } from "sonner"; // For notifications
+import { DateDisplay } from "@/components/date-display";
 
 // Define the interface for a Reward row in the table
 export interface Reward {
@@ -153,7 +154,7 @@ export function getRewardsTableColumns(): ColumnDef<Reward>[] {
       cell: ({ row }) => {
         const disbursedAt = row.getValue("disbursedAt");
         return disbursedAt ? (
-          new Date(disbursedAt as string).toLocaleString()
+          <DateDisplay date={disbursedAt as string} />
         ) : (
           <span className="text-muted-foreground italic">N/A</span>
         );
@@ -170,8 +171,7 @@ export function getRewardsTableColumns(): ColumnDef<Reward>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created At" />
       ),
-      cell: ({ row }) =>
-        new Date(row.getValue("createdAt") as string).toLocaleString(),
+      cell: ({ row }) => <DateDisplay date={row.getValue("createdAt")} />,
       enableSorting: true,
       enableColumnFilter: true,
       meta: {

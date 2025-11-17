@@ -1,6 +1,5 @@
 import { postRouter } from "@/server/api/routers/post";
 import { programRouter } from "@/server/api/routers/program";
-import { programTemplateRouter } from "@/server/api/routers/program-template";
 import { productRouter } from "@/server/api/routers/product";
 import { productSecretsRouter } from "@/server/api/routers/product-secrets";
 import { referralRouter } from "@/server/api/routers/referral";
@@ -24,7 +23,6 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 export const appRouter = createTRPCRouter({
   post: postRouter,
   program: programRouter,
-  programTemplate: programTemplateRouter,
   product: productRouter,
   productSecrets: productSecretsRouter,
   referral: referralRouter,

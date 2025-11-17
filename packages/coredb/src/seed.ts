@@ -1,5 +1,4 @@
 import { createDb, schema } from "./index.js";
-import type { ProgramTemplateConfigType } from "@refref/types";
 
 // Get database URL from environment
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -30,11 +29,6 @@ export const SEED_IDS = {
   // Products (prd_ prefix)
   PRODUCT_1: "prd_rfl78apntmdzwuyxykqd7ait", // Fixed ID for main product
   PRODUCT_2: "prd_g83m2tqa1wfbn21zuioyfzjp",
-
-  // Program Templates (pgt_ prefix)
-  TEMPLATE_STANDARD: "pgt_yic2ws4jnnoo4dbps3017lda",
-  TEMPLATE_SINGLE_SIDED: "pgt_k8m2vx9zp1rtn4wq7ejs6blh",
-  TEMPLATE_AFFILIATE: "pgt_n5q8rx3tp2ywl9km1vhd4ucg",
 
   // Programs (prg_ prefix)
   PROGRAM_1: "prg_yjuc7b0lplvfvtl1nmj3jqg1",
@@ -186,85 +180,12 @@ export const SEED_DATA = {
     },
   ],
 
-  // 5. Program Templates
-  PROGRAM_TEMPLATES: [
-    {
-      id: SEED_IDS.TEMPLATE_STANDARD,
-      templateName: "Standard Referral Program",
-      description: "A simple referral program with customizable rewards",
-      config: {
-        schemaVersion: 1,
-        steps: [
-          {
-            key: "brand",
-            title: "Brand",
-            description: "Set your brand color",
-          },
-          {
-            key: "reward",
-            title: "Rewards",
-            description: "Configure reward structure",
-          },
-        ],
-        meta: {},
-      } satisfies ProgramTemplateConfigType,
-    },
-    {
-      id: SEED_IDS.TEMPLATE_SINGLE_SIDED,
-      templateName: "Single-Sided Referral Program",
-      description: "Reward only the referrer - perfect for affiliate-style programs where advocates earn for bringing new customers",
-      config: {
-        schemaVersion: 1,
-        steps: [
-          {
-            key: "brand",
-            title: "Brand",
-            description: "Set your brand color",
-          },
-          {
-            key: "reward",
-            title: "Rewards",
-            description: "Configure referrer rewards",
-          },
-        ],
-        meta: {
-          rewardModel: "single-sided",
-          recommendedFor: ["affiliate", "advocate", "influencer"],
-        },
-      } satisfies ProgramTemplateConfigType,
-    },
-    {
-      id: SEED_IDS.TEMPLATE_AFFILIATE,
-      templateName: "Affiliate Program",
-      description: "Commission-based program with ongoing revenue sharing - ideal for partners and content creators",
-      config: {
-        schemaVersion: 1,
-        steps: [
-          {
-            key: "brand",
-            title: "Brand",
-            description: "Set your brand color",
-          },
-          {
-            key: "reward",
-            title: "Commission",
-            description: "Configure commission structure",
-          },
-        ],
-        meta: {
-          rewardModel: "commission",
-          recommendedFor: ["partners", "creators", "resellers"],
-        },
-      } satisfies ProgramTemplateConfigType,
-    },
-  ],
-
-  // 6. Programs
+  // 5. Programs
   PROGRAMS: [
     {
       id: SEED_IDS.PROGRAM_1,
       productId: SEED_IDS.PRODUCT_1,
-      programTemplateId: SEED_IDS.TEMPLATE_STANDARD,
+      programTemplateId: "standard", // Using constant template ID
       name: "Standard Referral Program",
       status: "pending_setup",
       startDate: null,
@@ -274,7 +195,7 @@ export const SEED_DATA = {
     {
       id: SEED_IDS.PROGRAM_2,
       productId: SEED_IDS.PRODUCT_1,
-      programTemplateId: SEED_IDS.TEMPLATE_STANDARD,
+      programTemplateId: "standard", // Using constant template ID
       name: "Standard Referral Program",
       status: "active",
       startDate: null,
@@ -537,17 +458,7 @@ const seedData = async () => {
         .onConflictDoNothing();
       console.log(`   ✓ Inserted ${SEED_DATA.PRODUCTS.length} product(s)`);
 
-      // 5. Program Templates
-      console.log("📋 Creating program templates...");
-      await tx
-        .insert(schema.programTemplate)
-        .values([...SEED_DATA.PROGRAM_TEMPLATES])
-        .onConflictDoNothing();
-      console.log(
-        `   ✓ Inserted ${SEED_DATA.PROGRAM_TEMPLATES.length} program template(s)`,
-      );
-
-      // 6. Programs
+      // 5. Programs (templates are now code constants, no DB seeding needed)
       console.log("🎯 Creating programs...");
       await tx
         .insert(schema.program)
@@ -693,9 +604,6 @@ const deleteSeedData = async () => {
 
       console.log("🗑️  Deleting programs...");
       await tx.delete(schema.program);
-
-      console.log("🗑️  Deleting program templates...");
-      await tx.delete(schema.programTemplate);
 
       console.log("🗑️  Deleting products...");
       await tx.delete(schema.product);

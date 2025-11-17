@@ -21,6 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@refref/ui/components/alert-dialog";
+import { DateDisplay } from "@/components/date-display";
 
 export function ProductApiKeysCard() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -43,17 +44,6 @@ export function ProductApiKeysCard() {
   const handleRevoke = async () => {
     if (!keyToDelete) return;
     await revokeKeyMutation.mutateAsync({ keyId: keyToDelete });
-  };
-
-  const formatExpiration = (expiresAt: Date | null) => {
-    if (!expiresAt) return "Never expires";
-
-    const expiresDate = new Date(expiresAt);
-    return `Expires ${expiresDate.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })}`;
   };
 
   if (isLoading) {
@@ -126,7 +116,13 @@ export function ProductApiKeysCard() {
                       </span>
                     </div>
                     <div className="truncate text-muted-foreground text-xs">
-                      {formatExpiration(key.expiresAt)}
+                      {key.expiresAt ? (
+                        <>
+                          Expires <DateDisplay date={key.expiresAt} />
+                        </>
+                      ) : (
+                        "Never expires"
+                      )}
                     </div>
                   </div>
                   <Button

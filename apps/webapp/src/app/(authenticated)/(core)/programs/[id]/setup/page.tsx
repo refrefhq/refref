@@ -17,7 +17,7 @@ import { RewardStep } from "./_components/RewardStep";
 import { BrandStep } from "@/components/program-setup/brand-step";
 import { toast } from "sonner";
 import assert from "assert";
-import { ProgramTemplateStepKeyType } from "@refref/types";
+import { ProgramTemplateStepKeyType, getProgramTemplateById } from "@refref/types";
 
 // Map step keys to their respective components
 const stepComponentMap: Record<
@@ -82,11 +82,12 @@ export default function ProgramSetupPage() {
   }
 
   // Dynamically build steps from template config
+  const programTemplate = getProgramTemplateById(program.programTemplateId);
   const templateSteps: Array<{
     key: ProgramTemplateStepKeyType;
     title: string;
     description?: string;
-  }> = program.programTemplate?.config?.steps ?? [];
+  }> = programTemplate?.config?.steps ?? [];
 
   const STEPS: StepDef[] = templateSteps
     .map(

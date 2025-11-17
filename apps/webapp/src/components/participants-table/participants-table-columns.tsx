@@ -1,6 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@refref/ui/components/data-table/data-table-column-header";
 import Link from "next/link";
+import { DateDisplay } from "@/components/date-display";
 
 export interface Participant {
   id: string;
@@ -66,7 +67,7 @@ export function getParticipantsTableColumns(): ColumnDef<Participant>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created At" />
       ),
-      cell: ({ row }) => new Date(row.getValue("createdAt")).toLocaleString(),
+      cell: ({ row }) => <DateDisplay date={row.getValue("createdAt")} />,
       enableSorting: true,
       enableColumnFilter: true,
       meta: {

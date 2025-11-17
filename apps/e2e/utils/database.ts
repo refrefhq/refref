@@ -38,21 +38,11 @@ export class TestDatabase {
 
   /**
    * Seed test database with required data
-   * Note: Program templates should already be seeded via pnpm -F @refref/coredb db:seed
    */
   async seed() {
     console.log("Seeding test database...");
-    const db = this.getDb();
-
-    // Check if program templates exist
-    const templates = await db.select().from(schema.programTemplate);
-    if (templates.length === 0) {
-      console.warn(
-        "⚠ No program templates found. Run: pnpm -F @refref/coredb db:seed",
-      );
-    } else {
-      console.log(`✓ Found ${templates.length} program template(s)`);
-    }
+    // Program templates are now defined as constants in code, no database seeding needed
+    console.log("✓ Test database ready");
   }
 
   /**

@@ -99,7 +99,7 @@ export function CreateApiKeyDialog({
             </DialogDescription>
           </DialogHeader>
 
-          <Alert variant="warning" className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Make sure to copy your API key now. For security reasons, we

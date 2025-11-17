@@ -69,33 +69,31 @@ export default function SettingsLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  console.log("pathname", pathname);
   return (
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--sidebar-width": "calc(var(--spacing) * 54)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
     >
       {/* Sidebar */}
       <Sidebar collapsible="offcanvas" variant="inset">
-        {/* Back to app button */}
-        <SidebarMenu className="my-4">
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className="w-min whitespace-nowrap text-muted-foreground"
-              asChild
-            >
-              <Link href="/">
-                <IconChevronLeft className="size-4" />
-                Back to app
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
         <SidebarContent>
+        {/* Back to app button */}
+          <SidebarMenu className="my-4">
+            <SidebarMenuItem className="px-2">
+              <SidebarMenuButton
+                asChild
+              >
+                <Link href="/">
+                  <IconChevronLeft className="size-4" />
+                  Back to app
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
           {SidebarItems.map((group) => (
             <SidebarMenu key={group.group}>
               <SidebarGroup className="flex flex-col gap-1">

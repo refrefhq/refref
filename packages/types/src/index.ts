@@ -8,6 +8,7 @@ import {
 
 export * from "./program-config";
 export * from "./program-template-steps";
+export * from "./program-templates";
 export * from "./widget-config";
 export * from "./event-config";
 export * from "./reward-config";

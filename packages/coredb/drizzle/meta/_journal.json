@@ -50,6 +50,13 @@
       "when": 1763324278744,
       "tag": "0006_clever_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1763330493945,
+      "tag": "0007_tricky_mole_man",
+      "breakpoints": true
     }
   ]
 }
