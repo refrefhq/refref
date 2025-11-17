@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@refref/ui/components/tooltip";
 import { IconPlus } from "@tabler/icons-react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "@/server/api/root";
 import { cn } from "@refref/ui/lib/utils";
@@ -34,6 +34,7 @@ import {
   DoubleSidedVisual,
   AffiliateVisual,
 } from "@/components/template-visuals";
+import { toast } from "sonner";
 
 type Template = {
   id: string;
@@ -47,15 +48,20 @@ function getTemplateVisual(templateName: string) {
   const lowerName = templateName.toLowerCase();
 
   // Match template names to visual components
-  if (lowerName.includes("single") || lowerName.includes("affiliate")) {
-    return SingleSidedVisual;
-  } else if (lowerName.includes("double") || lowerName.includes("two-sided") || lowerName.includes("standard") || lowerName.includes("referral")) {
-    return DoubleSidedVisual;
-  } else if (lowerName.includes("partner") || lowerName.includes("commission")) {
+  // Check for affiliate first (most specific)
+  if (lowerName.includes("affiliate") || lowerName.includes("partner") || lowerName.includes("commission")) {
     return AffiliateVisual;
   }
+  // Then check for single-sided
+  if (lowerName.includes("single")) {
+    return SingleSidedVisual;
+  }
+  // Double-sided referral programs
+  if (lowerName.includes("double") || lowerName.includes("two-sided") || lowerName.includes("referral")) {
+    return DoubleSidedVisual;
+  }
 
-  // Default to double-sided for standard referral programs
+  // Final fallback
   return DoubleSidedVisual;
 }
 
@@ -75,6 +81,18 @@ export function CreateProgramModalV2() {
     existingPrograms?.map((program) => program.programTemplateId) || [],
   );
 
+  // Mutation to create program
+  const createProgram = api.program.create.useMutation({
+    onSuccess: (data) => {
+      setOpen(false);
+      toast.success("Program created successfully!");
+      router.push(`/programs/${data.id}/setup`);
+    },
+    onError: (error) => {
+      toast.error(`Failed to create program: ${error.message}`);
+    },
+  });
+
   const handleTemplateSelect = (template: Template) => {
     // Check if template is already used
     if (usedTemplateIds.has(template.id)) {
@@ -82,11 +100,11 @@ export function CreateProgramModalV2() {
     }
 
     setSelectedTemplate(template);
-    setShowSetup(true);
-    setOpen(false);
-    router.push(
-      `/programs/new?templateId=${template.id}&title=${template.templateName}`,
-    );
+    createProgram.mutate({
+      name: template.templateName,
+      description: "",
+      templateId: template.id,
+    });
   };
 
   return (
@@ -106,6 +124,8 @@ export function CreateProgramModalV2() {
             <div className="grid grid-cols-2 gap-4">
               {templates?.map((template) => {
                 const isUsed = usedTemplateIds.has(template.id);
+                const isCreating = createProgram.isPending && selectedTemplate?.id === template.id;
+                const isComingSoon = template.status === "coming_soon";
                 const existingProgram = existingPrograms?.find(
                   (p) => p.programTemplateId === template.id,
                 );
@@ -117,32 +137,47 @@ export function CreateProgramModalV2() {
                     key={template.id}
                     className={cn(
                       "transition-all relative",
-                      isUsed
+                      isUsed || createProgram.isPending || isComingSoon
                         ? "opacity-60 cursor-not-allowed border-muted"
                         : "cursor-pointer hover:border-primary hover:shadow-sm",
                     )}
-                    onClick={() => !isUsed && handleTemplateSelect(template)}
+                    onClick={() => !isUsed && !createProgram.isPending && !isComingSoon && handleTemplateSelect(template)}
                   >
                     <CardHeader>
                       <div className="space-y-3">
                         {/* Visual Component */}
                         <div className={cn(
                           "w-full h-24 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 flex items-center justify-center",
-                          isUsed && "opacity-50"
+                          (isUsed || isComingSoon) && "opacity-50"
                         )}>
-                          <TemplateVisual className="w-full h-full" />
+                          {isCreating ? (
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                          ) : (
+                            <TemplateVisual className="w-full h-full" />
+                          )}
                         </div>
 
                         <div className="flex items-start justify-between">
                           <CardTitle
-                            className={cn(isUsed && "text-muted-foreground")}
+                            className={cn((isUsed || isComingSoon) && "text-muted-foreground")}
                           >
                             {template.templateName}
                           </CardTitle>
-                          {isUsed && (
+                          {isComingSoon && (
+                            <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2 py-1 rounded-full">
+                              <span>Coming Soon</span>
+                            </div>
+                          )}
+                          {isUsed && !isComingSoon && (
                             <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
                               <CheckCircle2 className="h-3 w-3" />
                               <span>In Use</span>
+                            </div>
+                          )}
+                          {isCreating && (
+                            <div className="flex items-center gap-1 text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              <span>Creating...</span>
                             </div>
                           )}
                         </div>
@@ -158,6 +193,17 @@ export function CreateProgramModalV2() {
                     </CardHeader>
                   </Card>
                 );
+
+                if (isComingSoon) {
+                  return (
+                    <Tooltip key={template.id}>
+                      <TooltipTrigger asChild>{cardContent}</TooltipTrigger>
+                      <TooltipContent>
+                        <p>This template is coming soon</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
 
                 if (isUsed) {
                   return (

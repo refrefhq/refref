@@ -186,7 +186,7 @@ export const SEED_DATA = {
       id: SEED_IDS.PROGRAM_1,
       productId: SEED_IDS.PRODUCT_1,
       programTemplateId: "standard", // Using constant template ID
-      name: "Standard Referral Program",
+      name: "Double-Sided Referral Program",
       status: "pending_setup",
       startDate: null,
       endDate: null,
@@ -196,7 +196,7 @@ export const SEED_DATA = {
       id: SEED_IDS.PROGRAM_2,
       productId: SEED_IDS.PRODUCT_1,
       programTemplateId: "standard", // Using constant template ID
-      name: "Standard Referral Program",
+      name: "Double-Sided Referral Program",
       status: "active",
       startDate: null,
       endDate: null,

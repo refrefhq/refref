@@ -54,6 +54,15 @@ export default function ProgramSetupPage() {
     },
   });
 
+  // Redirect to setup if program is not configured yet
+  useEffect(() => {
+    if (!program) return;
+
+    if (program.status === "pending_setup") {
+      router.replace(`/programs/${params?.id}/setup`);
+    }
+  }, [program, params?.id, router]);
+
   // Handle URL step parameter and validation
   useEffect(() => {
     if (!program) return;
@@ -132,15 +141,16 @@ export default function ProgramSetupPage() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
+                  <Button
+                    type="button"
+                    variant="destructive"
                     onClick={() =>
                       deleteProgram.mutate({ id: params?.id ?? "" })
                     }
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     disabled={deleteProgram.isPending}
                   >
                     {deleteProgram.isPending ? "Deleting..." : "Delete"}
-                  </AlertDialogAction>
+                  </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

@@ -8,6 +8,7 @@ export interface ProgramTemplate {
   templateName: string;
   description: string;
   config: ProgramTemplateConfigType;
+  status?: "available" | "coming_soon";
 }
 
 /**
@@ -27,32 +28,12 @@ export type ProgramTemplateId =
  * These templates define the setup wizard flow for creating programs
  */
 export const PROGRAM_TEMPLATES: Record<ProgramTemplateId, ProgramTemplate> = {
-  [PROGRAM_TEMPLATE_IDS.STANDARD]: {
-    id: PROGRAM_TEMPLATE_IDS.STANDARD,
-    templateName: "Standard Referral Program",
-    description: "A simple referral program with customizable rewards",
-    config: {
-      schemaVersion: 1,
-      steps: [
-        {
-          key: "brand",
-          title: "Brand",
-          description: "Set your brand color",
-        },
-        {
-          key: "reward",
-          title: "Rewards",
-          description: "Configure reward structure",
-        },
-      ],
-      meta: {},
-    },
-  },
   [PROGRAM_TEMPLATE_IDS.SINGLE_SIDED]: {
     id: PROGRAM_TEMPLATE_IDS.SINGLE_SIDED,
     templateName: "Single-Sided Referral Program",
     description:
       "Reward only the referrer - perfect for affiliate-style programs where advocates earn for bringing new customers",
+    status: "available",
     config: {
       schemaVersion: 1,
       steps: [
@@ -73,11 +54,34 @@ export const PROGRAM_TEMPLATES: Record<ProgramTemplateId, ProgramTemplate> = {
       },
     },
   },
+  [PROGRAM_TEMPLATE_IDS.STANDARD]: {
+    id: PROGRAM_TEMPLATE_IDS.STANDARD,
+    templateName: "Double-Sided Referral Program",
+    description: "Reward both referrer and referee - classic referral program where both parties benefit",
+    status: "coming_soon",
+    config: {
+      schemaVersion: 1,
+      steps: [
+        {
+          key: "brand",
+          title: "Brand",
+          description: "Set your brand color",
+        },
+        {
+          key: "reward",
+          title: "Rewards",
+          description: "Configure reward structure",
+        },
+      ],
+      meta: {},
+    },
+  },
   [PROGRAM_TEMPLATE_IDS.AFFILIATE]: {
     id: PROGRAM_TEMPLATE_IDS.AFFILIATE,
     templateName: "Affiliate Program",
     description:
       "Commission-based program with ongoing revenue sharing - ideal for partners and content creators",
+    status: "coming_soon",
     config: {
       schemaVersion: 1,
       steps: [

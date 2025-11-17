@@ -219,7 +219,7 @@ export const productRouter = createTRPCRouter({
   // Update product information
   update: protectedProcedure
     .input(
-      updateProductSchema.extend({
+      updateProductSchema.safeExtend({
         productId: z.string(),
       }),
     )

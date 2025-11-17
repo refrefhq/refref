@@ -72,6 +72,15 @@ export default function ProgramSetupPage() {
       },
     });
 
+  // Redirect to program detail if setup is already completed
+  useEffect(() => {
+    if (!program) return;
+
+    if (program.status === "active") {
+      router.replace(`/programs/${params?.id}`);
+    }
+  }, [program, params?.id, router]);
+
   if (isLoadingProgram || !program) {
     return (
       <div className="flex flex-1 items-center justify-center h-screen">
