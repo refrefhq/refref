@@ -279,7 +279,7 @@ export const reward = pgTable(
 );
 
 // Product secrets for JWT generation
-export const productSecrets = pgTable("product_secrets", {
+export const productSecrets = pgTable("product_secret", {
   ...baseFields("productSecrets"),
   productId: text("product_id")
     .notNull()

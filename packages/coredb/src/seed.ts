@@ -1,3 +1,4 @@
+import { PROGRAM_TEMPLATE_IDS } from "@refref/types";
 import { createDb, schema } from "./index.js";
 
 // Get database URL from environment
@@ -185,7 +186,7 @@ export const SEED_DATA = {
     {
       id: SEED_IDS.PROGRAM_1,
       productId: SEED_IDS.PRODUCT_1,
-      programTemplateId: "standard", // Using constant template ID
+      programTemplateId: PROGRAM_TEMPLATE_IDS.DOUBLE_SIDED, // Using constant template ID
       name: "Double-Sided Referral Program",
       status: "pending_setup",
       startDate: null,
@@ -195,7 +196,7 @@ export const SEED_DATA = {
     {
       id: SEED_IDS.PROGRAM_2,
       productId: SEED_IDS.PRODUCT_1,
-      programTemplateId: "standard", // Using constant template ID
+      programTemplateId: PROGRAM_TEMPLATE_IDS.DOUBLE_SIDED, // Using constant template ID
       name: "Double-Sided Referral Program",
       status: "active",
       startDate: null,

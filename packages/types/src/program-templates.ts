@@ -15,8 +15,8 @@ export interface ProgramTemplate {
  * Available program template IDs
  */
 export const PROGRAM_TEMPLATE_IDS = {
-  STANDARD: "standard",
   SINGLE_SIDED: "single-sided",
+  DOUBLE_SIDED: "double-sided",
   AFFILIATE: "affiliate",
 } as const;
 
@@ -54,8 +54,8 @@ export const PROGRAM_TEMPLATES: Record<ProgramTemplateId, ProgramTemplate> = {
       },
     },
   },
-  [PROGRAM_TEMPLATE_IDS.STANDARD]: {
-    id: PROGRAM_TEMPLATE_IDS.STANDARD,
+  [PROGRAM_TEMPLATE_IDS.DOUBLE_SIDED]: {
+    id: PROGRAM_TEMPLATE_IDS.DOUBLE_SIDED,
     templateName: "Double-Sided Referral Program",
     description:
       "Reward both referrer and referee - classic referral program where both parties benefit",

@@ -26,7 +26,7 @@ export function PreviewPane({
   return (
     <div
       className={cn(
-        "flex h-full w-144 flex-col border-l bg-muted/40",
+        "flex h-full w-xl flex-col border-l bg-muted/40",
         className,
       )}
       {...props}

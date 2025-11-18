@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS "referral_link_slug_idx" ON "referral_link" USING btree ("slug");
