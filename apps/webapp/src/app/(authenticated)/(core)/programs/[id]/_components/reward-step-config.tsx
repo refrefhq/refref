@@ -40,18 +40,20 @@ function convertRewardRulesToFormData(
     id: string;
     config: RewardRuleConfigV1Type;
     isActive: boolean | null;
-  }>
+  }>,
 ): ProgramTemplateRewardStepV2Type {
   // Find referrer and referee rules
   const referrerRule = rules.find(
-    (rule) => rule.config.participantType === "referrer"
+    (rule) => rule.config.participantType === "referrer",
   );
   const refereeRule = rules.find(
-    (rule) => rule.config.participantType === "referee"
+    (rule) => rule.config.participantType === "referee",
   );
 
   // Helper to validate currency
-  const validateCurrency = (currency: string | undefined): "USD" | "EUR" | "GBP" => {
+  const validateCurrency = (
+    currency: string | undefined,
+  ): "USD" | "EUR" | "GBP" => {
     if (currency === "EUR" || currency === "GBP") return currency;
     return "USD"; // Default to USD if invalid or undefined
   };
@@ -81,7 +83,8 @@ export function RewardStepConfig({
   onStepComplete,
 }: RewardStepConfigProps) {
   const { data: program } = api.program.getById.useQuery(programId);
-  const { data: rewardRules } = api.rewardRules.getByProgram.useQuery(programId);
+  const { data: rewardRules } =
+    api.rewardRules.getByProgram.useQuery(programId);
   const utils = api.useUtils();
 
   // Mutation to save template configuration

@@ -17,7 +17,10 @@ import { RewardStep } from "./_components/RewardStep";
 import { BrandStep } from "@/components/program-setup/brand-step";
 import { toast } from "sonner";
 import assert from "assert";
-import { ProgramTemplateStepKeyType, getProgramTemplateById } from "@refref/types";
+import {
+  ProgramTemplateStepKeyType,
+  getProgramTemplateById,
+} from "@refref/types";
 
 // Map step keys to their respective components
 const stepComponentMap: Record<

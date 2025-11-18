@@ -57,11 +57,7 @@ const updateProductSchema = z
       .min(1, "Name is required")
       .max(100, "Name is too long")
       .optional(),
-    url: z
-      .string()
-      .url({ message: "Invalid URL" })
-      .nullable()
-      .optional(),
+    url: z.string().url({ message: "Invalid URL" }).nullable().optional(),
   })
   .refine((data) => data.name !== undefined || data.url !== undefined, {
     message: "At least one field (name or url) must be provided",

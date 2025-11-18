@@ -21,7 +21,8 @@ const stackSansNotch = Stack_Sans_Notch({
 
 export const metadata: Metadata = {
   title: "RefRef - Referral Management Platform",
-  description: "RefRef is an open source referral marketing platform that helps you launch and manage powerful referral programs in minutes. Drive customer acquisition through word-of-mouth marketing with customizable rewards, analytics, and seamless integration.",
+  description:
+    "RefRef is an open source referral marketing platform that helps you launch and manage powerful referral programs in minutes. Drive customer acquisition through word-of-mouth marketing with customizable rewards, analytics, and seamless integration.",
   icons: [
     { rel: "icon", url: "/logo.svg", type: "image/svg+xml" },
     { rel: "apple-touch-icon", url: "/logo.svg" },

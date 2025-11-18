@@ -81,12 +81,10 @@ export default function SettingsLayout({
       {/* Sidebar */}
       <Sidebar collapsible="offcanvas" variant="inset">
         <SidebarContent>
-        {/* Back to app button */}
+          {/* Back to app button */}
           <SidebarMenu className="my-4">
             <SidebarMenuItem className="px-2">
-              <SidebarMenuButton
-                asChild
-              >
+              <SidebarMenuButton asChild>
                 <Link href="/">
                   <IconChevronLeft className="size-4" />
                   Back to app

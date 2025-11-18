@@ -42,8 +42,13 @@ export const organizationRouter = createTRPCRouter({
         )
         .limit(1);
 
-      if (!membership || (membership.role !== "owner" && membership.role !== "admin")) {
-        throw new Error("You don't have permission to update this organization");
+      if (
+        !membership ||
+        (membership.role !== "owner" && membership.role !== "admin")
+      ) {
+        throw new Error(
+          "You don't have permission to update this organization",
+        );
       }
 
       const [updatedOrg] = await ctx.db

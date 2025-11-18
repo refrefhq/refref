@@ -88,7 +88,10 @@ export const apiKeysRouter = createTRPCRouter({
         body: {
           name: input.name,
           userId: serviceAccountId,
-          expiresIn: input.expiresIn === 0 ? null : (input.expiresIn ?? 60 * 60 * 24 * 365), // Default: 1 year
+          expiresIn:
+            input.expiresIn === 0
+              ? null
+              : (input.expiresIn ?? 60 * 60 * 24 * 365), // Default: 1 year
           prefix: "prod_refref_key_",
           permissions: {
             [ctx.activeProductId]: ["track", "read", "write"],

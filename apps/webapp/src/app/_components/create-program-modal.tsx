@@ -49,7 +49,11 @@ function getTemplateVisual(templateName: string) {
 
   // Match template names to visual components
   // Check for affiliate first (most specific)
-  if (lowerName.includes("affiliate") || lowerName.includes("partner") || lowerName.includes("commission")) {
+  if (
+    lowerName.includes("affiliate") ||
+    lowerName.includes("partner") ||
+    lowerName.includes("commission")
+  ) {
     return AffiliateVisual;
   }
   // Then check for single-sided
@@ -57,7 +61,11 @@ function getTemplateVisual(templateName: string) {
     return SingleSidedVisual;
   }
   // Double-sided referral programs
-  if (lowerName.includes("double") || lowerName.includes("two-sided") || lowerName.includes("referral")) {
+  if (
+    lowerName.includes("double") ||
+    lowerName.includes("two-sided") ||
+    lowerName.includes("referral")
+  ) {
     return DoubleSidedVisual;
   }
 
@@ -124,7 +132,9 @@ export function CreateProgramModalV2() {
             <div className="grid grid-cols-2 gap-4">
               {templates?.map((template) => {
                 const isUsed = usedTemplateIds.has(template.id);
-                const isCreating = createProgram.isPending && selectedTemplate?.id === template.id;
+                const isCreating =
+                  createProgram.isPending &&
+                  selectedTemplate?.id === template.id;
                 const isComingSoon = template.status === "coming_soon";
                 const existingProgram = existingPrograms?.find(
                   (p) => p.programTemplateId === template.id,
@@ -141,15 +151,22 @@ export function CreateProgramModalV2() {
                         ? "opacity-60 cursor-not-allowed border-muted"
                         : "cursor-pointer hover:border-primary hover:shadow-sm",
                     )}
-                    onClick={() => !isUsed && !createProgram.isPending && !isComingSoon && handleTemplateSelect(template)}
+                    onClick={() =>
+                      !isUsed &&
+                      !createProgram.isPending &&
+                      !isComingSoon &&
+                      handleTemplateSelect(template)
+                    }
                   >
                     <CardHeader>
                       <div className="space-y-3">
                         {/* Visual Component */}
-                        <div className={cn(
-                          "w-full h-24 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 flex items-center justify-center",
-                          (isUsed || isComingSoon) && "opacity-50"
-                        )}>
+                        <div
+                          className={cn(
+                            "w-full h-24 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 flex items-center justify-center",
+                            (isUsed || isComingSoon) && "opacity-50",
+                          )}
+                        >
                           {isCreating ? (
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
                           ) : (
@@ -159,7 +176,10 @@ export function CreateProgramModalV2() {
 
                         <div className="flex items-start justify-between">
                           <CardTitle
-                            className={cn((isUsed || isComingSoon) && "text-muted-foreground")}
+                            className={cn(
+                              (isUsed || isComingSoon) &&
+                                "text-muted-foreground",
+                            )}
                           >
                             {template.templateName}
                           </CardTitle>

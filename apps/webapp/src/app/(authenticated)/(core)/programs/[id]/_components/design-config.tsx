@@ -67,8 +67,10 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
   const [showPreview, setShowPreview] = useState(true);
 
   // Local state for widget config
-  const [widgetConfig, setWidgetConfig] = useState<WidgetConfigType>(defaultWidgetConfig);
-  const [initialConfig, setInitialConfig] = useState<WidgetConfigType>(defaultWidgetConfig);
+  const [widgetConfig, setWidgetConfig] =
+    useState<WidgetConfigType>(defaultWidgetConfig);
+  const [initialConfig, setInitialConfig] =
+    useState<WidgetConfigType>(defaultWidgetConfig);
 
   // State for landing page URL (from brandConfig)
   const [landingPageUrl, setLandingPageUrl] = useState("");
@@ -111,14 +113,14 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
   }, [program?.config]);
 
   const updateWidgetConfig = (updates: Partial<WidgetConfigType>) => {
-    setWidgetConfig(current => ({ ...current, ...updates }));
+    setWidgetConfig((current) => ({ ...current, ...updates }));
   };
 
   const updatePlatform = (
     platform: keyof WidgetConfigType["enabledPlatforms"],
     enabled: boolean,
   ) => {
-    setWidgetConfig(current => ({
+    setWidgetConfig((current) => ({
       ...current,
       enabledPlatforms: {
         ...current.enabledPlatforms,
@@ -128,8 +130,9 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
   };
 
   // Check if form is dirty
-  const isDirty = JSON.stringify(widgetConfig) !== JSON.stringify(initialConfig) ||
-                  landingPageUrl !== initialLandingPageUrl;
+  const isDirty =
+    JSON.stringify(widgetConfig) !== JSON.stringify(initialConfig) ||
+    landingPageUrl !== initialLandingPageUrl;
 
   const handleSave = async () => {
     if (!program?.config) {

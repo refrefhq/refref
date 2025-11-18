@@ -6,6 +6,9 @@ const {
   program: programTable,
   participant,
   referral,
+  orgUser,
+  programUser,
+  user,
 } = schema;
 import { eq, and, asc, sql, count } from "drizzle-orm";
 import assert from "assert";
@@ -119,6 +122,59 @@ export const programRouter = createTRPCRouter({
         .returning();
 
       assert(program, "Program not created");
+
+      // Sync all org members to the new program
+      try {
+        // Get the product to find its org
+        const [currentProduct] = await ctx.db
+          .select()
+          .from(product)
+          .where(eq(product.id, ctx.activeProductId))
+          .limit(1);
+
+        if (currentProduct?.orgId) {
+          // Get all org members
+          const orgMembers = await ctx.db
+            .select({
+              userId: orgUser.userId,
+              role: orgUser.role,
+              email: user.email,
+              name: user.name,
+            })
+            .from(orgUser)
+            .innerJoin(user, eq(orgUser.userId, user.id))
+            .where(eq(orgUser.orgId, currentProduct.orgId));
+
+          // Filter out service accounts and add members to programUser
+          const membersToAdd = orgMembers.filter(
+            (member) =>
+              !member.email?.includes("service-account") &&
+              !member.name?.includes("Service Account"),
+          );
+
+          if (membersToAdd.length > 0) {
+            await ctx.db.insert(programUser).values(
+              membersToAdd.map((member) => ({
+                programId: program.id,
+                userId: member.userId,
+                role: member.role,
+              })),
+            );
+
+            ctx.logger?.info("Synced org members to new program", {
+              programId: program.id,
+              memberCount: membersToAdd.length,
+            });
+          }
+        }
+      } catch (error) {
+        ctx.logger?.error("Failed to sync org members to new program", {
+          error,
+          programId: program.id,
+        });
+        // Don't fail program creation if sync fails
+      }
+
       return {
         ...program,
         setup: getSetupProgress(program.config),

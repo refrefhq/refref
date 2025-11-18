@@ -118,7 +118,10 @@ export function NotificationSetup({
                   <Switch
                     checked={notificationConfig.welcomeEmail.enabled}
                     onCheckedChange={(checked) =>
-                      updateNotificationConfig(["welcomeEmail", "enabled"], checked)
+                      updateNotificationConfig(
+                        ["welcomeEmail", "enabled"],
+                        checked,
+                      )
                     }
                   />
                 </div>
@@ -128,7 +131,10 @@ export function NotificationSetup({
                     placeholder="Welcome to our referral program!"
                     value={notificationConfig.welcomeEmail.subject}
                     onChange={(e) =>
-                      updateNotificationConfig(["welcomeEmail", "subject"], e.target.value)
+                      updateNotificationConfig(
+                        ["welcomeEmail", "subject"],
+                        e.target.value,
+                      )
                     }
                   />
                 </div>
@@ -139,7 +145,10 @@ export function NotificationSetup({
                     className="min-h-[100px]"
                     value={notificationConfig.welcomeEmail.template}
                     onChange={(e) =>
-                      updateNotificationConfig(["welcomeEmail", "template"], e.target.value)
+                      updateNotificationConfig(
+                        ["welcomeEmail", "template"],
+                        e.target.value,
+                      )
                     }
                   />
                 </div>
@@ -156,7 +165,10 @@ export function NotificationSetup({
                   <Switch
                     checked={notificationConfig.successEmail.enabled}
                     onCheckedChange={(checked) =>
-                      updateNotificationConfig(["successEmail", "enabled"], checked)
+                      updateNotificationConfig(
+                        ["successEmail", "enabled"],
+                        checked,
+                      )
                     }
                   />
                 </div>
@@ -166,7 +178,10 @@ export function NotificationSetup({
                     placeholder="Congratulations on your successful referral!"
                     value={notificationConfig.successEmail.subject}
                     onChange={(e) =>
-                      updateNotificationConfig(["successEmail", "subject"], e.target.value)
+                      updateNotificationConfig(
+                        ["successEmail", "subject"],
+                        e.target.value,
+                      )
                     }
                   />
                 </div>
@@ -177,7 +192,10 @@ export function NotificationSetup({
                     className="min-h-[100px]"
                     value={notificationConfig.successEmail.template}
                     onChange={(e) =>
-                      updateNotificationConfig(["successEmail", "template"], e.target.value)
+                      updateNotificationConfig(
+                        ["successEmail", "template"],
+                        e.target.value,
+                      )
                     }
                   />
                 </div>
@@ -203,7 +221,10 @@ export function NotificationSetup({
                 <Switch
                   checked={notificationConfig.inApp.progressUpdates}
                   onCheckedChange={(checked) =>
-                    updateNotificationConfig(["inApp", "progressUpdates"], checked)
+                    updateNotificationConfig(
+                      ["inApp", "progressUpdates"],
+                      checked,
+                    )
                   }
                 />
               </div>
@@ -217,7 +238,10 @@ export function NotificationSetup({
                 <Switch
                   checked={notificationConfig.inApp.rewardNotifications}
                   onCheckedChange={(checked) =>
-                    updateNotificationConfig(["inApp", "rewardNotifications"], checked)
+                    updateNotificationConfig(
+                      ["inApp", "rewardNotifications"],
+                      checked,
+                    )
                   }
                 />
               </div>

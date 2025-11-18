@@ -37,12 +37,12 @@ export function StickySaveBar({
             type: "spring",
             stiffness: 300,
             damping: 30,
-            opacity: { duration: 0.2 }
+            opacity: { duration: 0.2 },
           }}
           className={cn(
             "fixed bottom-0 left-0 right-0 z-50",
             "border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-            className
+            className,
           )}
         >
           <div className="container mx-auto px-4 py-3">
@@ -62,11 +62,7 @@ export function StickySaveBar({
                   {discardText}
                 </Button>
 
-                <Button
-                  size="sm"
-                  onClick={onSave}
-                  disabled={isSaving}
-                >
+                <Button size="sm" onClick={onSave} disabled={isSaving}>
                   {isSaving && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -103,13 +99,13 @@ export function StickySaveBarRelative({
             type: "spring",
             stiffness: 300,
             damping: 30,
-            opacity: { duration: 0.2 }
+            opacity: { duration: 0.2 },
           }}
           className={cn(
             "sticky bottom-0 left-0 right-0 z-40",
             "border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
             "mt-auto", // Push to bottom of flex container
-            className
+            className,
           )}
         >
           <div className="px-4 lg:px-6 py-3">
@@ -129,11 +125,7 @@ export function StickySaveBarRelative({
                   {discardText}
                 </Button>
 
-                <Button
-                  size="sm"
-                  onClick={onSave}
-                  disabled={isSaving}
-                >
+                <Button size="sm" onClick={onSave} disabled={isSaving}>
                   {isSaving && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}

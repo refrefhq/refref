@@ -61,7 +61,7 @@ describe("Referral Redirect Endpoint", () => {
     });
 
     it("should return 500 when product URL not configured", async () => {
-      // Mock database to return nested data with no product URL (relational query)
+      // Mock database to return nested data with no landing page URL (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
         id: "rc_123",
         code: "abc1234",
@@ -74,9 +74,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_123",
           name: "John Doe",
           email: "john@example.com",
-          product: {
-            id: "prd_123",
-            url: null, // No URL configured
+        },
+        program: {
+          id: "prg_123",
+          config: {
+            brandConfig: {
+              landingPageUrl: null, // No URL configured
+            },
           },
         },
       });
@@ -86,7 +90,9 @@ describe("Referral Redirect Endpoint", () => {
       expect(response.status()).toBe(500);
 
       const body = await response.json();
-      expect(body.error).toBe("Redirect URL not configured for this product");
+      expect(body.error).toBe(
+        "Landing page URL not configured for this program",
+      );
     });
   });
 
@@ -105,9 +111,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_123",
           name: "John Doe",
           email: "john@example.com",
-          product: {
-            id: "prd_123",
-            url: "https://example.com",
+        },
+        program: {
+          id: "prg_123",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://example.com",
+            },
           },
         },
       });
@@ -138,9 +148,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_456",
           name: null,
           email: null,
-          product: {
-            id: "prd_456",
-            url: "https://minimal.example.com",
+        },
+        program: {
+          id: "prg_456",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://minimal.example.com",
+            },
           },
         },
       });
@@ -171,9 +185,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_789",
           name: "Jane Smith",
           email: "jane@example.com",
-          product: {
-            id: "prd_789",
-            url: "https://example.com?existing=param",
+        },
+        program: {
+          id: "prg_789",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://example.com?existing=param",
+            },
           },
         },
       });
@@ -202,9 +220,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_case",
           name: "Case Test",
           email: "case@example.com",
-          product: {
-            id: "prd_case",
-            url: "https://case.example.com",
+        },
+        program: {
+          id: "prg_case",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://case.example.com",
+            },
           },
         },
       });
@@ -271,10 +293,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_acme",
           name: "John Doe",
           email: "john@acme.com",
-          product: {
-            id: "prd_acme",
-            slug: "acme",
-            url: "https://acme.example.com",
+        },
+        program: {
+          id: "prg_acme",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://acme.example.com",
+            },
           },
         },
       });
@@ -307,9 +332,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_encode",
           name: "Test User",
           email: "test@example.com",
-          product: {
-            id: "prd_encode",
-            url: "https://test.example.com",
+        },
+        program: {
+          id: "prg_encode",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://test.example.com",
+            },
           },
         },
       });
@@ -323,24 +352,15 @@ describe("Referral Redirect Endpoint", () => {
 
       // Verify base64 encoding
       const nameParam = url.searchParams.get("name");
-      const emailParam = url.searchParams.get("email");
       const participantIdParam = url.searchParams.get("participantId");
 
       expect(nameParam).toBeDefined();
-      expect(emailParam).toBeDefined();
       expect(participantIdParam).toBeDefined();
 
       // Decode and verify
       if (nameParam) {
         const decodedName = Buffer.from(nameParam, "base64").toString("utf-8");
         expect(decodedName).toBe("Test User");
-      }
-
-      if (emailParam) {
-        const decodedEmail = Buffer.from(emailParam, "base64").toString(
-          "utf-8",
-        );
-        expect(decodedEmail).toBe("test@example.com");
       }
 
       if (participantIdParam) {
@@ -365,9 +385,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_special",
           name: "John O'Brien & Co.",
           email: "john+test@example.com",
-          product: {
-            id: "prd_special",
-            url: "https://special.example.com",
+        },
+        program: {
+          id: "prg_special",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://special.example.com",
+            },
           },
         },
       });
@@ -406,9 +430,13 @@ describe("Referral Redirect Endpoint", () => {
           productId: "prd_perf",
           name: "Perf User",
           email: "perf@example.com",
-          product: {
-            id: "prd_perf",
-            url: "https://perf.example.com",
+        },
+        program: {
+          id: "prg_perf",
+          config: {
+            brandConfig: {
+              landingPageUrl: "https://perf.example.com",
+            },
           },
         },
       });

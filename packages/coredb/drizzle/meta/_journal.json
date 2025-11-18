@@ -57,6 +57,13 @@
       "when": 1763330493945,
       "tag": "0007_tricky_mole_man",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1763458351811,
+      "tag": "0008_curvy_paibok",
+      "breakpoints": true
     }
   ]
 }

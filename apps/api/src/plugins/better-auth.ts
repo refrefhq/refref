@@ -11,6 +11,12 @@ declare module "fastify" {
       organizationId: string | null;
       permissions: string | null;
       enabled: boolean | null;
+      metadata?: {
+        productId?: string;
+        organizationId?: string;
+        createdBy?: string;
+        createdAt?: string;
+      };
     };
     product?: {
       id: string;
@@ -73,32 +79,18 @@ const betterAuthPlugin = fp(
           });
         }
 
-        // Extract productId from request body for product-scoped validation
-        const productId = (request.body as any)?.productId;
-
-        if (!productId) {
-          return reply.code(400).send({
-            error: "Bad Request",
-            message: "productId is required in request body",
-          });
-        }
-
         try {
-          // Use Better Auth's verifyApiKey with product-scoped permissions
-          // This validates the API key has the required permissions for this specific product
+          // First, verify the API key without permissions to get metadata
           const result = await auth.api.verifyApiKey({
             body: {
               key: apiKeyHeader,
-              permissions: {
-                [productId]: ["track", "read"], // Validate API key has these permissions for this product
-              },
             },
           });
 
           if (!result || !(result as any).apiKey) {
-            return reply.code(403).send({
-              error: "Forbidden",
-              message: "Invalid API key or insufficient permissions for this product",
+            return reply.code(401).send({
+              error: "Unauthorized",
+              message: "Invalid API key",
             });
           }
 
@@ -109,6 +101,34 @@ const betterAuthPlugin = fp(
             return reply.code(401).send({
               error: "Unauthorized",
               message: "API key is disabled",
+            });
+          }
+
+          // Extract productId from API key metadata
+          const metadata = apiKeyData.metadata;
+          const productId = metadata?.productId;
+
+          if (!productId) {
+            return reply.code(500).send({
+              error: "Internal Server Error",
+              message: "API key is missing product context",
+            });
+          }
+
+          // Validate that the API key has the required permissions for this product
+          const permissions =
+            typeof apiKeyData.permissions === "string"
+              ? JSON.parse(apiKeyData.permissions)
+              : apiKeyData.permissions;
+
+          if (
+            !permissions ||
+            !permissions[productId] ||
+            !Array.isArray(permissions[productId])
+          ) {
+            return reply.code(403).send({
+              error: "Forbidden",
+              message: "API key does not have permissions for this product",
             });
           }
 
@@ -138,6 +158,7 @@ const betterAuthPlugin = fp(
             organizationId: apiKeyData.organizationId,
             permissions: apiKeyData.permissions,
             enabled: apiKeyData.enabled,
+            metadata: metadata,
           };
 
           // Attach product and organization to request for route handlers

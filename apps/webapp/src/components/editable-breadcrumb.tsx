@@ -106,23 +106,24 @@ export function EditableBreadcrumb({
           disabled={isSaving}
           className={cn(
             "h-7 text-sm font-medium",
-            error && "border-destructive"
+            error && "border-destructive",
           )}
           aria-invalid={!!error}
         />
-        {isSaving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-        {error && <span className="text-xs text-destructive absolute mt-8">{error}</span>}
+        {isSaving && (
+          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+        )}
+        {error && (
+          <span className="text-xs text-destructive absolute mt-8">
+            {error}
+          </span>
+        )}
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "flex items-center gap-2 font-medium",
-        className
-      )}
-    >
+    <div className={cn("flex items-center gap-2 font-medium", className)}>
       <span className="text-sm">{value}</span>
       <button
         onClick={handleEdit}

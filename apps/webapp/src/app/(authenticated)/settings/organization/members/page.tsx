@@ -1,6 +1,9 @@
 "use client";
 
-import { OrganizationMembersCard, OrganizationInvitationsCard } from "@daveyplate/better-auth-ui";
+import {
+  OrganizationMembersCard,
+  OrganizationInvitationsCard,
+} from "@daveyplate/better-auth-ui";
 import { Separator } from "@refref/ui/components/separator";
 
 export default function OrganizationMembersPage() {

@@ -7,6 +7,7 @@ import {
 } from "@refref/email-templates";
 import type { DBType } from "@refref/coredb";
 import { Resend } from "resend";
+import { eq, and, inArray } from "drizzle-orm";
 
 export interface AuthConfig {
   /**
@@ -211,6 +212,158 @@ export function getAuth(config: AuthConfig) {
             html: emailContent,
           });
         },
+        organizationHooks: {
+          async afterAddMember({ member }) {
+            try {
+              const { product, productUser, program, programUser, user } =
+                schema;
+
+              // Check if user is a service account (service accounts have no email or special naming)
+              const [userRecord] = await db
+                .select()
+                .from(user)
+                .where(eq(user.id, member.userId))
+                .limit(1);
+
+              // Skip sync for service accounts (identified by email pattern or other criteria)
+              if (
+                userRecord?.email?.includes("service-account") ||
+                userRecord?.name?.includes("Service Account")
+              ) {
+                logger?.info("Skipping member sync for service account", {
+                  userId: member.userId,
+                });
+                return;
+              }
+
+              // Get the product for this organization
+              const [orgProduct] = await db
+                .select()
+                .from(product)
+                .where(eq(product.orgId, member.organizationId))
+                .limit(1);
+
+              if (!orgProduct) {
+                logger?.info("No product found for organization", {
+                  organizationId: member.organizationId,
+                });
+                return;
+              }
+
+              // Add user to productUser table
+              await db.insert(productUser).values({
+                productId: orgProduct.id,
+                userId: member.userId,
+                role: member.role,
+              });
+
+              // Get all programs for this product
+              const programs = await db
+                .select()
+                .from(program)
+                .where(eq(program.productId, orgProduct.id));
+
+              // Add user to all programs
+              if (programs.length > 0) {
+                await db.insert(programUser).values(
+                  programs.map((prog) => ({
+                    programId: prog.id,
+                    userId: member.userId,
+                    role: member.role,
+                  })),
+                );
+              }
+
+              logger?.info(
+                "Successfully synced member to product and programs",
+                {
+                  userId: member.userId,
+                  organizationId: member.organizationId,
+                  productId: orgProduct.id,
+                  programCount: programs.length,
+                },
+              );
+            } catch (error) {
+              logger?.error("Failed to sync member to product and programs", {
+                error,
+                userId: member.userId,
+                organizationId: member.organizationId,
+              });
+              // Don't throw - allow member addition to succeed even if sync fails
+            }
+          },
+          async beforeRemoveMember({ member }) {
+            try {
+              const { product, productUser, program, programUser } = schema;
+
+              // Get the product for this organization
+              const [orgProduct] = await db
+                .select()
+                .from(product)
+                .where(eq(product.orgId, member.organizationId))
+                .limit(1);
+
+              if (!orgProduct) {
+                logger?.info(
+                  "No product found for organization during removal",
+                  {
+                    organizationId: member.organizationId,
+                  },
+                );
+                return;
+              }
+
+              // Get all program IDs for this product
+              const programs = await db
+                .select({ id: program.id })
+                .from(program)
+                .where(eq(program.productId, orgProduct.id));
+
+              // Remove from programUser entries for this product's programs
+              if (programs.length > 0) {
+                await db.delete(programUser).where(
+                  and(
+                    eq(programUser.userId, member.userId),
+                    inArray(
+                      programUser.programId,
+                      programs.map((p) => p.id),
+                    ),
+                  ),
+                );
+              }
+
+              // Remove from productUser table
+              await db
+                .delete(productUser)
+                .where(
+                  and(
+                    eq(productUser.productId, orgProduct.id),
+                    eq(productUser.userId, member.userId),
+                  ),
+                );
+
+              logger?.info(
+                "Successfully removed member from product and programs",
+                {
+                  userId: member.userId,
+                  organizationId: member.organizationId,
+                  productId: orgProduct.id,
+                  programCount: programs.length,
+                },
+              );
+            } catch (error) {
+              logger?.error(
+                "Failed to remove member from product and programs",
+                {
+                  error,
+                  userId: member.userId,
+                  organizationId: member.organizationId,
+                },
+              );
+              // Don't throw - allow member removal to succeed even if cleanup fails
+            }
+          },
+        },
       }),
       apiKey({
         defaultPrefix: "prod_refref_key_",
@@ -234,6 +387,24 @@ export function getAuth(config: AuthConfig) {
             // Auto-create default organization for new users
             try {
               const { org: orgTable, orgUser } = schema;
+
+              // Check if user is already a member of any organization
+              const existingMembership = await db
+                .select()
+                .from(orgUser)
+                .where(eq(orgUser.userId, user.id))
+                .limit(1);
+
+              if (existingMembership.length > 0) {
+                logger?.info(
+                  "User already has org membership, skipping default org creation",
+                  {
+                    userId: user.id,
+                    orgId: existingMembership[0]!.orgId,
+                  },
+                );
+                return;
+              }
 
               // Create default organization
               const [newOrg] = await db

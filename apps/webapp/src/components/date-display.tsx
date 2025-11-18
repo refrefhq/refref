@@ -1,6 +1,10 @@
 "use client";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@refref/ui/components/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@refref/ui/components/tooltip";
 import { formatFullDateTime, formatRelativeDate } from "@/lib/date-utils";
 
 interface DateDisplayProps {

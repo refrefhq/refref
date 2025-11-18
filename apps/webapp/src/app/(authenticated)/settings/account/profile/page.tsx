@@ -1,6 +1,10 @@
 "use client";
 
-import { UpdateNameCard, UpdateAvatarCard, ChangeEmailCard } from "@daveyplate/better-auth-ui";
+import {
+  UpdateNameCard,
+  UpdateAvatarCard,
+  ChangeEmailCard,
+} from "@daveyplate/better-auth-ui";
 import { Separator } from "@refref/ui/components/separator";
 
 export default function AccountProfilePage() {

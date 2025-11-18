@@ -117,11 +117,12 @@ export function UpdateProductUrlCard() {
                   disabled={updateProductMutation.isPending}
                   placeholder="https://example.com"
                 />
-                {field.state.meta.errors && field.state.meta.errors.length > 0 && (
-                  <p className="text-xs text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                )}
+                {field.state.meta.errors &&
+                  field.state.meta.errors.length > 0 && (
+                    <p className="text-xs text-destructive">
+                      {field.state.meta.errors.join(", ")}
+                    </p>
+                  )}
               </div>
             )}
           </form.Field>
@@ -131,10 +132,7 @@ export function UpdateProductUrlCard() {
           <div className="text-center text-muted-foreground text-xs md:text-start md:text-sm">
             Enter a valid URL for your product website.
           </div>
-          <Button
-            type="submit"
-            disabled={updateProductMutation.isPending}
-          >
+          <Button type="submit" disabled={updateProductMutation.isPending}>
             {updateProductMutation.isPending ? "Saving..." : "Save"}
           </Button>
         </CardFooter>

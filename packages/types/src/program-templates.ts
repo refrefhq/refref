@@ -57,7 +57,8 @@ export const PROGRAM_TEMPLATES: Record<ProgramTemplateId, ProgramTemplate> = {
   [PROGRAM_TEMPLATE_IDS.STANDARD]: {
     id: PROGRAM_TEMPLATE_IDS.STANDARD,
     templateName: "Double-Sided Referral Program",
-    description: "Reward both referrer and referee - classic referral program where both parties benefit",
+    description:
+      "Reward both referrer and referee - classic referral program where both parties benefit",
     status: "coming_soon",
     config: {
       schemaVersion: 1,

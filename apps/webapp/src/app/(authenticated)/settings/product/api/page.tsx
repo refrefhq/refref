@@ -13,12 +13,12 @@ import { ProductApiKeysCard } from "@/components/settings/product/product-api-ke
 
 export default function ProductAPIPage() {
   const { data: product } = api.product.getCurrent.useQuery();
-  const {
-    data: secrets,
-    isLoading,
-  } = api.productSecrets.get.useQuery(product?.id ?? "", {
-    enabled: !!product?.id,
-  });
+  const { data: secrets, isLoading } = api.productSecrets.get.useQuery(
+    product?.id ?? "",
+    {
+      enabled: !!product?.id,
+    },
+  );
 
   const [showClientSecret, setShowClientSecret] = useState(false);
 
@@ -31,7 +31,9 @@ export default function ProductAPIPage() {
     return (
       <div className="flex flex-col gap-6 p-6 w-full max-w-[var(--content-max-width)] mx-auto">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">API & Secrets</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            API & Secrets
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Manage your product API credentials and integration settings
           </p>
@@ -132,7 +134,10 @@ export default function ProductAPIPage() {
                   variant="outline"
                   size="icon"
                   onClick={() =>
-                    copyToClipboard(secrets?.clientSecret ?? "", "Client Secret")
+                    copyToClipboard(
+                      secrets?.clientSecret ?? "",
+                      "Client Secret",
+                    )
                   }
                 >
                   <Copy className="h-4 w-4" />

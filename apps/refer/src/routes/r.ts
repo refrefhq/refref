@@ -69,9 +69,9 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
             programId: result.programId,
             message: "No landing page URL configured in brand config",
           });
-          return reply
-            .code(500)
-            .send({ error: "Landing page URL not configured for this program" });
+          return reply.code(500).send({
+            error: "Landing page URL not configured for this program",
+          });
         }
 
         // Helper to encode and only add non-empty values
@@ -167,9 +167,9 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
             programId: result.programId,
             message: "No landing page URL configured in brand config",
           });
-          return reply
-            .code(500)
-            .send({ error: "Landing page URL not configured for this program" });
+          return reply.code(500).send({
+            error: "Landing page URL not configured for this program",
+          });
         }
 
         // Helper to encode and only add non-empty values

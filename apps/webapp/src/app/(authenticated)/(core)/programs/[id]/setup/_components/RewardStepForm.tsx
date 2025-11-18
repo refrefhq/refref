@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@refref/ui/components/card";
-import { DollarSign, Percent, Tag, Info } from "lucide-react";
+import { DollarSign, Percent, Tag } from "lucide-react";
 import {
   CurrencyType,
   ProgramTemplateRewardStepV2Type,
@@ -128,8 +128,8 @@ export function RewardStepForm({ form }: RewardStepFormProps) {
                               {form.state.values.referrerReward.currency ===
                               "USD"
                                 ? "$"
-                                : form.state.values.referrerReward
-                                      .currency === "EUR"
+                                : form.state.values.referrerReward.currency ===
+                                    "EUR"
                                   ? "€"
                                   : form.state.values.referrerReward
                                         .currency === "GBP"
@@ -169,7 +169,8 @@ export function RewardStepForm({ form }: RewardStepFormProps) {
         </form.Field>
       </Card>
 
-      {/* Referee Reward Card */}
+      {/* Referee Reward Card - COMMENTED OUT */}
+      {/*
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -197,7 +198,7 @@ export function RewardStepForm({ form }: RewardStepFormProps) {
           {(enabledField: any) =>
             enabledField.state.value && (
               <CardContent className="space-y-4">
-                {/* Discount Type */}
+                {/* Discount Type *\/}
                 <form.Field name="refereeReward.valueType">
                   {(field: any) => (
                     <div className="space-y-2">
@@ -233,11 +234,10 @@ export function RewardStepForm({ form }: RewardStepFormProps) {
                   )}
                 </form.Field>
 
-                {/* Discount Value */}
+                {/* Discount Value *\/}
                 <form.Field name="refereeReward.value">
                   {(field: any) => {
-                    const valueType =
-                      form.state.values.refereeReward.valueType;
+                    const valueType = form.state.values.refereeReward.valueType;
                     return (
                       <div className="space-y-2">
                         <Label htmlFor="referee-value">
@@ -293,7 +293,7 @@ export function RewardStepForm({ form }: RewardStepFormProps) {
                   }}
                 </form.Field>
 
-                {/* Minimum Purchase Amount */}
+                {/* Minimum Purchase Amount *\/}
                 <form.Field name="refereeReward.minPurchaseAmount">
                   {(field: any) => (
                     <div className="space-y-2">
@@ -326,7 +326,7 @@ export function RewardStepForm({ form }: RewardStepFormProps) {
                   )}
                 </form.Field>
 
-                {/* Validity Period */}
+                {/* Validity Period *\/}
                 <form.Field name="refereeReward.validityDays">
                   {(field: any) => (
                     <div className="space-y-2">
@@ -360,31 +360,7 @@ export function RewardStepForm({ form }: RewardStepFormProps) {
           }
         </form.Field>
       </Card>
-
-      {/* Info Card */}
-      <Card className="bg-muted/30">
-        <CardContent className="pt-6">
-          <div className="flex gap-3">
-            <Info className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>
-                <strong>How it works:</strong>
-              </p>
-              <ul className="space-y-1 ml-4 list-disc">
-                <li>
-                  When a referee signs up using a referral link, they receive
-                  a discount code
-                </li>
-                <li>
-                  When the referee makes a purchase, the referrer earns a cash
-                  reward
-                </li>
-                <li>Rewards are automatically calculated and tracked</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      */}
     </>
   );
 }

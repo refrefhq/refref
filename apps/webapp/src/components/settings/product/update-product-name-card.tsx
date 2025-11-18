@@ -12,7 +12,10 @@ import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
 const productNameSchema = z.object({
-  name: z.string().min(1, "Product name is required").max(100, "Product name is too long"),
+  name: z
+    .string()
+    .min(1, "Product name is required")
+    .max(100, "Product name is too long"),
 });
 
 export function UpdateProductNameCard() {
@@ -116,11 +119,12 @@ export function UpdateProductNameCard() {
                   disabled={updateProductMutation.isPending}
                   placeholder="Enter product name"
                 />
-                {field.state.meta.errors && field.state.meta.errors.length > 0 && (
-                  <p className="text-xs text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                )}
+                {field.state.meta.errors &&
+                  field.state.meta.errors.length > 0 && (
+                    <p className="text-xs text-destructive">
+                      {field.state.meta.errors.join(", ")}
+                    </p>
+                  )}
               </div>
             )}
           </form.Field>
@@ -130,10 +134,7 @@ export function UpdateProductNameCard() {
           <div className="text-center text-muted-foreground text-xs md:text-start md:text-sm">
             Please use 100 characters at maximum.
           </div>
-          <Button
-            type="submit"
-            disabled={updateProductMutation.isPending}
-          >
+          <Button type="submit" disabled={updateProductMutation.isPending}>
             {updateProductMutation.isPending ? "Saving..." : "Save"}
           </Button>
         </CardFooter>
