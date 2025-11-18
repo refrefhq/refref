@@ -14,10 +14,10 @@ describe("Template Config Generator", () => {
         "TestApp",
       );
 
-      expect(result.buttonBgColor).toBe("#ff0000");
-      expect(result.accentColor).toBe("#ff0000");
       expect(result.title).toBe("Invite your friends");
       expect(result.logoUrl).toBe("");
+      expect(result.borderRadius).toBe(25);
+      expect(result.modalBorderRadius).toBe(12);
     });
 
     it("should generate share message based on reward config", () => {

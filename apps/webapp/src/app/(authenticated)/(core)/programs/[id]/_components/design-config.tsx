@@ -27,6 +27,7 @@ import React from "react";
 import { ReferralWidgetContent } from "@refref/ui/components/referral-widget/referral-widget-dialog-content";
 import { ReferralWidgetDialogTrigger } from "@refref/ui/components/referral-widget/referral-widget-dialog-trigger";
 import { StickySaveBarRelative } from "@/components/sticky-save-bar";
+import { ColorPicker } from "@/components/theme/color-picker";
 
 interface DesignConfigProps {
   programId: string;
@@ -37,16 +38,11 @@ interface DesignConfigProps {
 const defaultWidgetConfig: WidgetConfigType = {
   position: "bottom-right",
   triggerText: "Refer & Earn",
-  buttonBgColor: "#3b82f6",
-  buttonTextColor: "#ffffff",
   borderRadius: 25,
   icon: "gift",
   title: "Invite your friends",
   subtitle: "Share your referral link and earn rewards when your friends join!",
   logoUrl: "",
-  modalBgColor: "#ffffff",
-  accentColor: "#3b82f6",
-  textColor: "#1f2937",
   modalBorderRadius: 12,
   shareMessage: "Join me on {productName} and get a reward!",
   enabledPlatforms: {
@@ -58,7 +54,7 @@ const defaultWidgetConfig: WidgetConfigType = {
     instagram: false,
     telegram: false,
   },
-  referralLink: "https://yourapp.com/ref/user123",
+  referralLink: "https://i.refref.ai/<ref_code>",
   productName: "YourSaaS",
 };
 
@@ -75,6 +71,24 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
   // State for landing page URL (from brandConfig)
   const [landingPageUrl, setLandingPageUrl] = useState("");
   const [initialLandingPageUrl, setInitialLandingPageUrl] = useState("");
+
+  // State for theme colors
+  const [themeColors, setThemeColors] = useState({
+    primary: "#a995c9",
+    primaryForeground: "#1a1823",
+    secondary: "#5a5370",
+    secondaryForeground: "#e0ddef",
+    muted: "#f5f5f5",
+    mutedForeground: "#737373",
+  });
+  const [initialThemeColors, setInitialThemeColors] = useState({
+    primary: "#a995c9",
+    primaryForeground: "#1a1823",
+    secondary: "#5a5370",
+    secondaryForeground: "#e0ddef",
+    muted: "#f5f5f5",
+    mutedForeground: "#737373",
+  });
 
   const { data: program } = api.program.getById.useQuery(programId);
 
@@ -98,9 +112,34 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
         const newConfig = {
           ...defaultWidgetConfig,
           ...program.config.widgetConfig,
+          // Use default referralLink if saved one is empty
+          referralLink:
+            program.config.widgetConfig.referralLink ||
+            defaultWidgetConfig.referralLink,
         };
         setWidgetConfig(newConfig);
         setInitialConfig(newConfig);
+
+        // Load theme colors from cssVariables if they exist
+        if (newConfig.cssVariables) {
+          const loadedColors = {
+            primary: newConfig.cssVariables["--primary"] || themeColors.primary,
+            primaryForeground:
+              newConfig.cssVariables["--primary-foreground"] ||
+              themeColors.primaryForeground,
+            secondary:
+              newConfig.cssVariables["--secondary"] || themeColors.secondary,
+            secondaryForeground:
+              newConfig.cssVariables["--secondary-foreground"] ||
+              themeColors.secondaryForeground,
+            muted: newConfig.cssVariables["--muted"] || themeColors.muted,
+            mutedForeground:
+              newConfig.cssVariables["--muted-foreground"] ||
+              themeColors.mutedForeground,
+          };
+          setThemeColors(loadedColors);
+          setInitialThemeColors(loadedColors);
+        }
       }
 
       // Update landing page URL from brandConfig
@@ -132,7 +171,8 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
   // Check if form is dirty
   const isDirty =
     JSON.stringify(widgetConfig) !== JSON.stringify(initialConfig) ||
-    landingPageUrl !== initialLandingPageUrl;
+    landingPageUrl !== initialLandingPageUrl ||
+    JSON.stringify(themeColors) !== JSON.stringify(initialThemeColors);
 
   const handleSave = async () => {
     if (!program?.config) {
@@ -142,11 +182,24 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
 
     const currentConfig = program.config as ProgramConfigV1Type;
 
+    // Convert theme colors to CSS variables format
+    const cssVariables = {
+      "--primary": themeColors.primary,
+      "--primary-foreground": themeColors.primaryForeground,
+      "--secondary": themeColors.secondary,
+      "--secondary-foreground": themeColors.secondaryForeground,
+      "--muted": themeColors.muted,
+      "--muted-foreground": themeColors.mutedForeground,
+    };
+
     await updateConfig.mutateAsync({
       id: programId,
       config: {
         ...currentConfig,
-        widgetConfig: widgetConfig,
+        widgetConfig: {
+          ...widgetConfig,
+          cssVariables,
+        },
         brandConfig: {
           primaryColor: currentConfig.brandConfig?.primaryColor || "#3b82f6",
           landingPageUrl: landingPageUrl,
@@ -158,12 +211,94 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
   const handleDiscard = () => {
     setWidgetConfig(initialConfig);
     setLandingPageUrl(initialLandingPageUrl);
+    setThemeColors(initialThemeColors);
   };
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 lg:px-6 overflow-hidden">
         <div className="py-6 space-y-6 overflow-y-auto">
+          {/* Theme Colors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Theme</CardTitle>
+              <CardDescription>
+                Customize your widget's color scheme
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Primary Colors */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">Primary Colors</h4>
+                <ColorPicker
+                  label="Primary"
+                  color={themeColors.primary}
+                  onChange={(color) =>
+                    setThemeColors((prev) => ({ ...prev, primary: color }))
+                  }
+                />
+                <ColorPicker
+                  label="Primary Foreground"
+                  color={themeColors.primaryForeground}
+                  onChange={(color) =>
+                    setThemeColors((prev) => ({
+                      ...prev,
+                      primaryForeground: color,
+                    }))
+                  }
+                />
+              </div>
+
+              <Separator />
+
+              {/* Secondary Colors */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">Secondary Colors</h4>
+                <ColorPicker
+                  label="Secondary"
+                  color={themeColors.secondary}
+                  onChange={(color) =>
+                    setThemeColors((prev) => ({ ...prev, secondary: color }))
+                  }
+                />
+                <ColorPicker
+                  label="Secondary Foreground"
+                  color={themeColors.secondaryForeground}
+                  onChange={(color) =>
+                    setThemeColors((prev) => ({
+                      ...prev,
+                      secondaryForeground: color,
+                    }))
+                  }
+                />
+              </div>
+
+              <Separator />
+
+              {/* Muted Colors */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">Muted Colors</h4>
+                <ColorPicker
+                  label="Muted"
+                  color={themeColors.muted}
+                  onChange={(color) =>
+                    setThemeColors((prev) => ({ ...prev, muted: color }))
+                  }
+                />
+                <ColorPicker
+                  label="Muted Foreground"
+                  color={themeColors.mutedForeground}
+                  onChange={(color) =>
+                    setThemeColors((prev) => ({
+                      ...prev,
+                      mutedForeground: color,
+                    }))
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Widget Button Settings */}
           <Card>
             <CardHeader>
@@ -226,68 +361,6 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
                   </SelectContent>
                 </Select>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="buttonBgColor">Background Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="buttonBgColor"
-                      type="color"
-                      value={widgetConfig.buttonBgColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ buttonBgColor: e.target.value })
-                      }
-                      className="w-12 h-10 p-1 border rounded"
-                    />
-                    <Input
-                      value={widgetConfig.buttonBgColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ buttonBgColor: e.target.value })
-                      }
-                      placeholder="#3b82f6"
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="buttonTextColor">Text Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="buttonTextColor"
-                      type="color"
-                      value={widgetConfig.buttonTextColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ buttonTextColor: e.target.value })
-                      }
-                      className="w-12 h-10 p-1 border rounded"
-                    />
-                    <Input
-                      value={widgetConfig.buttonTextColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ buttonTextColor: e.target.value })
-                      }
-                      placeholder="#ffffff"
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Border Radius: {widgetConfig.borderRadius}px</Label>
-                <Slider
-                  value={[widgetConfig.borderRadius]}
-                  onValueChange={([value]) =>
-                    updateWidgetConfig({ borderRadius: value })
-                  }
-                  max={50}
-                  min={0}
-                  step={1}
-                  className="w-full"
-                />
-              </div>
             </CardContent>
           </Card>
 
@@ -334,93 +407,6 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
                     updateWidgetConfig({ logoUrl: e.target.value })
                   }
                   placeholder="https://example.com/logo.png"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="modalBgColor">Background Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="modalBgColor"
-                      type="color"
-                      value={widgetConfig.modalBgColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ modalBgColor: e.target.value })
-                      }
-                      className="w-12 h-10 p-1 border rounded"
-                    />
-                    <Input
-                      value={widgetConfig.modalBgColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ modalBgColor: e.target.value })
-                      }
-                      placeholder="#ffffff"
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="accentColor">Accent Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="accentColor"
-                      type="color"
-                      value={widgetConfig.accentColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ accentColor: e.target.value })
-                      }
-                      className="w-12 h-10 p-1 border rounded"
-                    />
-                    <Input
-                      value={widgetConfig.accentColor}
-                      onChange={(e) =>
-                        updateWidgetConfig({ accentColor: e.target.value })
-                      }
-                      placeholder="#3b82f6"
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="textColor">Text Color</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="textColor"
-                    type="color"
-                    value={widgetConfig.textColor}
-                    onChange={(e) =>
-                      updateWidgetConfig({ textColor: e.target.value })
-                    }
-                    className="w-12 h-10 p-1 border rounded"
-                  />
-                  <Input
-                    value={widgetConfig.textColor}
-                    onChange={(e) =>
-                      updateWidgetConfig({ textColor: e.target.value })
-                    }
-                    placeholder="#1f2937"
-                    className="text-xs"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>
-                  Modal Border Radius: {widgetConfig.modalBorderRadius}px
-                </Label>
-                <Slider
-                  value={[widgetConfig.modalBorderRadius]}
-                  onValueChange={([value]) =>
-                    updateWidgetConfig({ modalBorderRadius: value })
-                  }
-                  max={24}
-                  min={0}
-                  step={1}
-                  className="w-full"
                 />
               </div>
             </CardContent>
@@ -521,10 +507,9 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
                 <Input
                   id="referralLink"
                   value={widgetConfig.referralLink}
-                  onChange={(e) =>
-                    updateWidgetConfig({ referralLink: e.target.value })
-                  }
-                  placeholder="https://yourapp.com/ref/user123"
+                  readOnly
+                  className="text-muted-foreground cursor-default"
+                  placeholder="https://i.refref.ai/<ref_code>"
                 />
               </div>
             </CardContent>
@@ -537,26 +522,39 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
             onClose={() => setShowPreview(false)}
             className="w-full h-full"
           >
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-semibold mb-2">Modal Preview</h2>
-              <p className="text-sm text-muted-foreground">
-                See how your modal will look in real-time
-              </p>
-            </div>
-            <ReferralWidgetContent config={widgetConfig} />
+            <div
+              style={
+                {
+                  "--primary": themeColors.primary,
+                  "--primary-foreground": themeColors.primaryForeground,
+                  "--secondary": themeColors.secondary,
+                  "--secondary-foreground": themeColors.secondaryForeground,
+                  "--muted": themeColors.muted,
+                  "--muted-foreground": themeColors.mutedForeground,
+                } as React.CSSProperties
+              }
+            >
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-semibold mb-2">Modal Preview</h2>
+                <p className="text-sm text-muted-foreground">
+                  See how your modal will look in real-time
+                </p>
+              </div>
+              <ReferralWidgetContent config={widgetConfig} />
 
-            <div className="text-center mt-6">
-              <h2 className="text-xl font-semibold mb-2">
-                Floating Widget Preview
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                See how your floating widget will look in real-time
-              </p>
-              <ReferralWidgetDialogTrigger
-                className="mx-auto mt-4"
-                config={widgetConfig}
-                onOpenChange={() => {}}
-              />
+              <div className="text-center mt-6">
+                <h2 className="text-xl font-semibold mb-2">
+                  Floating Widget Preview
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  See how your floating widget will look in real-time
+                </p>
+                <ReferralWidgetDialogTrigger
+                  className="mx-auto mt-4"
+                  config={widgetConfig}
+                  onOpenChange={() => {}}
+                />
+              </div>
             </div>
           </PreviewPane>
         </div>

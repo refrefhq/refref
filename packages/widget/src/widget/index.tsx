@@ -2,6 +2,7 @@ import styles from "@refref/ui/globals.css?inline";
 import { createRoot } from "react-dom/client";
 import { WidgetContainer } from "./components/widget-container";
 import { initRefRef } from "@/lib/refref";
+import { widgetStore } from "@/lib/store";
 
 function initializeWidget() {
   if (document.readyState !== "loading") {
@@ -19,10 +20,24 @@ function onReady() {
     const element = document.createElement("div");
     const shadow = element.attachShadow({ mode: "open" });
 
+    // Get config from store to check for CSS variable overrides
+    const config = widgetStore.getState().config;
+
     // @link https://github.com/tailwindlabs/tailwindcss/discussions/1935
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(styles.replaceAll(":root", ":host"));
-    shadow.adoptedStyleSheets = [sheet];
+
+    // Apply CSS variable overrides if provided
+    if (config.cssVariables && Object.keys(config.cssVariables).length > 0) {
+      const varsSheet = new CSSStyleSheet();
+      const cssVars = Object.entries(config.cssVariables)
+        .map(([key, value]) => `  ${key}: ${value};`)
+        .join("\n");
+      varsSheet.replaceSync(`:host {\n${cssVars}\n}`);
+      shadow.adoptedStyleSheets = [sheet, varsSheet];
+    } else {
+      shadow.adoptedStyleSheets = [sheet];
+    }
 
     const shadowRoot = document.createElement("div");
     shadowRoot.id = "widget-root";

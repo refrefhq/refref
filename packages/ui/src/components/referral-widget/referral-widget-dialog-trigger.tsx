@@ -28,12 +28,11 @@ export function ReferralWidgetDialogTrigger({
       data-testid="refref-widget-trigger"
       className={cn(
         className,
+        "bg-primary text-primary-foreground",
         "shadow-lg hover:shadow-xl transition-all duration-200",
         "inline-flex items-center justify-center",
       )}
       style={{
-        backgroundColor: config.buttonBgColor,
-        color: config.buttonTextColor,
         borderRadius: `${config.borderRadius}px`,
       }}
       onClick={() => onOpenChange(true)}

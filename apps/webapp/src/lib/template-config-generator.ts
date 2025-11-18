@@ -97,8 +97,6 @@ export function generateWidgetConfigFromTemplate(
     // Widget Button
     position: "bottom-right",
     triggerText: "Refer & Earn",
-    buttonBgColor: primaryColor,
-    buttonTextColor: "#ffffff",
     borderRadius: 25,
     icon: "gift",
 
@@ -106,9 +104,6 @@ export function generateWidgetConfigFromTemplate(
     title: "Invite your friends",
     subtitle,
     logoUrl: "",
-    modalBgColor: "#ffffff",
-    accentColor: primaryColor,
-    textColor: "#1f2937",
     modalBorderRadius: 12,
 
     // Sharing
