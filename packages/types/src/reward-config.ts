@@ -19,6 +19,9 @@ export const rewardRuleConfigV1Schema = z.object({
     type: rewardTypeSchema,
     amount: z.number(),
     unit: z.enum(["fixed", "percent"]).optional(), // for discount: percent, for cash: fixed
+    currency: z.string().optional(), // Currency code (USD, EUR, GBP, etc.)
+    minPurchaseAmount: z.number().optional(), // Minimum purchase amount for discount
+    validityDays: z.number().int().positive().optional(), // Discount validity period in days
   }),
 });
 export type RewardRuleConfigV1Type = z.infer<typeof rewardRuleConfigV1Schema>;

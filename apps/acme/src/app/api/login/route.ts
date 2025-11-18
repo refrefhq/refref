@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getUserByEmail, verifyPassword, createSession } from '@/lib/state';
+import { NextRequest, NextResponse } from "next/server";
+import { getUserByEmail, verifyPassword, createSession } from "@/lib/state";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,8 +9,8 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
+        { error: "Email and password are required" },
+        { status: 400 },
       );
     }
 
@@ -18,16 +18,16 @@ export async function POST(request: NextRequest) {
     const user = getUserByEmail(email);
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
-        { status: 401 }
+        { error: "Invalid email or password" },
+        { status: 401 },
       );
     }
 
     // Verify password
     if (!verifyPassword(user, password)) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
-        { status: 401 }
+        { error: "Invalid email or password" },
+        { status: 401 },
       );
     }
 
@@ -44,24 +44,24 @@ export async function POST(request: NextRequest) {
           name: user.name,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
 
     // Set session cookie
-    response.cookies.set('session', session.id, {
+    response.cookies.set("session", session.id, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24, // 24 hours
-      path: '/',
+      path: "/",
     });
 
     return response;
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }

@@ -1,4 +1,4 @@
-import { getTestConfig } from '../../utils/config';
+import { getTestConfig } from "../../utils/config";
 
 const config = getTestConfig();
 
@@ -21,7 +21,7 @@ export const testData = {
    */
   organization: {
     name: config.testUser.organizationName,
-    slug: `${config.prefix}${config.testUser.organizationName.toLowerCase().replace(/\s+/g, '-')}`,
+    slug: `${config.prefix}${config.testUser.organizationName.toLowerCase().replace(/\s+/g, "-")}`,
   },
 
   /**
@@ -29,7 +29,7 @@ export const testData = {
    */
   product: {
     name: config.testUser.productName,
-    slug: `${config.prefix}${config.testUser.productName.toLowerCase().replace(/\s+/g, '-')}`,
+    slug: `${config.prefix}${config.testUser.productName.toLowerCase().replace(/\s+/g, "-")}`,
   },
 
   /**
@@ -37,7 +37,7 @@ export const testData = {
    */
   program: {
     name: config.testUser.programName,
-    slug: `${config.prefix}${config.testUser.programName.toLowerCase().replace(/\s+/g, '-')}`,
+    slug: `${config.prefix}${config.testUser.programName.toLowerCase().replace(/\s+/g, "-")}`,
   },
 
   /**
@@ -63,11 +63,11 @@ export const testData = {
    */
   events: {
     signup: {
-      eventName: 'user_signup',
+      eventName: "user_signup",
       value: 0,
     },
     purchase: {
-      eventName: 'purchase',
+      eventName: "purchase",
       value: 100,
     },
   },

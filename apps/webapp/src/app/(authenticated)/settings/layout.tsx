@@ -19,6 +19,8 @@ import {
   IconPalette,
   IconUsers,
   IconBuilding,
+  IconSettings,
+  IconKey,
 } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 
@@ -26,15 +28,38 @@ const SidebarItems = [
   {
     group: "Account",
     items: [
-      { label: "Profile", href: "/settings/profile", icon: IconUser },
-      { label: "Appearance", href: "/settings/appearance", icon: IconPalette },
+      { label: "Profile", href: "/settings/account/profile", icon: IconUser },
+      {
+        label: "Appearance",
+        href: "/settings/account/appearance",
+        icon: IconPalette,
+      },
     ],
   },
   {
-    group: "Team",
+    group: "Organization",
     items: [
-      { label: "Product", href: "/settings/product", icon: IconBuilding },
-      { label: "Members", href: "/settings/members", icon: IconUsers },
+      {
+        label: "General",
+        href: "/settings/organization/general",
+        icon: IconSettings,
+      },
+      {
+        label: "Members",
+        href: "/settings/organization/members",
+        icon: IconUsers,
+      },
+    ],
+  },
+  {
+    group: "Product",
+    items: [
+      {
+        label: "General",
+        href: "/settings/product/general",
+        icon: IconBuilding,
+      },
+      { label: "API & Secrets", href: "/settings/product/api", icon: IconKey },
     ],
   },
 ];
@@ -44,33 +69,29 @@ export default function SettingsLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  console.log("pathname", pathname);
   return (
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--sidebar-width": "calc(var(--spacing) * 54)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
     >
       {/* Sidebar */}
       <Sidebar collapsible="offcanvas" variant="inset">
-        {/* Back to app button */}
-        <SidebarMenu className="my-4">
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className="w-min whitespace-nowrap text-muted-foreground"
-              asChild
-            >
-              <Link href="/">
-                <IconChevronLeft className="size-4" />
-                Back to app
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
         <SidebarContent>
+          {/* Back to app button */}
+          <SidebarMenu className="my-4">
+            <SidebarMenuItem className="px-2">
+              <SidebarMenuButton asChild>
+                <Link href="/">
+                  <IconChevronLeft className="size-4" />
+                  Back to app
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
           {SidebarItems.map((group) => (
             <SidebarMenu key={group.group}>
               <SidebarGroup className="flex flex-col gap-1">

@@ -1,0 +1,6 @@
+@import "@daveyplate/better-auth-ui/css";
+@import "@refref/ui/globals.css";
+
+:root {
+  --content-max-width: 128rem;
+}

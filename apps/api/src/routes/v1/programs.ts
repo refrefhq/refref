@@ -29,7 +29,7 @@ export default async function programsRoutes(fastify: FastifyInstance) {
         if (!programRecord) {
           return reply.code(404).send({
             error: "Not Found",
-            message: "Program not found"
+            message: "Program not found",
           });
         }
 
@@ -45,15 +45,15 @@ export default async function programsRoutes(fastify: FastifyInstance) {
           return reply.code(400).send({
             error: "Bad Request",
             message: "Invalid request parameters",
-            details: error.issues
+            details: error.issues,
           });
         }
 
         return reply.code(500).send({
           error: "Internal Server Error",
-          message: "An unexpected error occurred"
+          message: "An unexpected error occurred",
         });
       }
-    }
+    },
   );
 }

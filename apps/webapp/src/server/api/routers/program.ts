@@ -4,9 +4,11 @@ import { db, schema } from "@/server/db";
 const {
   product,
   program: programTable,
-  programTemplate,
   participant,
   referral,
+  orgUser,
+  programUser,
+  user,
 } = schema;
 import { eq, and, asc, sql, count } from "drizzle-orm";
 import assert from "assert";
@@ -19,6 +21,8 @@ import {
   WidgetConfigType,
   widgetConfigSchema,
   defaultWidgetConfig,
+  getAllProgramTemplates,
+  getProgramTemplateById,
 } from "@refref/types";
 import { TRPCError } from "@trpc/server";
 import {
@@ -76,12 +80,8 @@ export const programRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Get the selected template
-      const [selectedTemplate] = await ctx.db
-        .select()
-        .from(programTemplate)
-        .where(eq(programTemplate.id, input.templateId))
-        .limit(1);
+      // Get the selected template from constants
+      const selectedTemplate = getProgramTemplateById(input.templateId);
 
       if (!selectedTemplate) {
         throw new TRPCError({
@@ -122,6 +122,59 @@ export const programRouter = createTRPCRouter({
         .returning();
 
       assert(program, "Program not created");
+
+      // Sync all org members to the new program
+      try {
+        // Get the product to find its org
+        const [currentProduct] = await ctx.db
+          .select()
+          .from(product)
+          .where(eq(product.id, ctx.activeProductId))
+          .limit(1);
+
+        if (currentProduct?.orgId) {
+          // Get all org members
+          const orgMembers = await ctx.db
+            .select({
+              userId: orgUser.userId,
+              role: orgUser.role,
+              email: user.email,
+              name: user.name,
+            })
+            .from(orgUser)
+            .innerJoin(user, eq(orgUser.userId, user.id))
+            .where(eq(orgUser.orgId, currentProduct.orgId));
+
+          // Filter out service accounts and add members to programUser
+          const membersToAdd = orgMembers.filter(
+            (member) =>
+              !member.email?.includes("service-account") &&
+              !member.name?.includes("Service Account"),
+          );
+
+          if (membersToAdd.length > 0) {
+            await ctx.db.insert(programUser).values(
+              membersToAdd.map((member) => ({
+                programId: program.id,
+                userId: member.userId,
+                role: member.role,
+              })),
+            );
+
+            ctx.logger?.info("Synced org members to new program", {
+              programId: program.id,
+              memberCount: membersToAdd.length,
+            });
+          }
+        }
+      } catch (error) {
+        ctx.logger?.error("Failed to sync org members to new program", {
+          error,
+          programId: program.id,
+        });
+        // Don't fail program creation if sync fails
+      }
+
       return {
         ...program,
         setup: getSetupProgress(program.config),
@@ -138,6 +191,9 @@ export const programRouter = createTRPCRouter({
             primaryColor: z
               .string()
               .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color"),
+            landingPageUrl: z.string().url({
+              message: "Please enter a valid URL",
+            }),
           })
           .optional(),
       }),
@@ -149,18 +205,24 @@ export const programRouter = createTRPCRouter({
       // Get required modules from the already imported schema
       const { eventDefinition, rewardRule } = schema;
 
-      // get the program along with the template
+      // get the program
       const program = await ctx.db.query.program.findFirst({
         where: and(
           eq(programTable.id, input.id),
           eq(programTable.productId, ctx.activeProductId),
         ),
-        with: {
-          programTemplate: true,
-        },
       });
 
       assert(program);
+
+      // Get the template config from constants
+      const programTemplate = getProgramTemplateById(program.programTemplateId);
+      if (!programTemplate) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Template not found",
+        });
+      }
 
       // Use a transaction for the entire configuration save operation
       const result = await ctx.db.transaction(async (tx) => {
@@ -218,6 +280,7 @@ export const programRouter = createTRPCRouter({
                   type: "cash" as const,
                   amount: rewardConfig.referrer.value,
                   unit: rewardConfig.referrer.valueType as "fixed" | "percent",
+                  currency: rewardConfig.referrer.currency,
                 },
               },
               priority: 100,
@@ -242,6 +305,9 @@ export const programRouter = createTRPCRouter({
                   type: "discount" as const,
                   amount: rewardConfig.referee.value,
                   unit: rewardConfig.referee.valueType as "fixed" | "percent",
+                  currency: rewardConfig.referee.currency,
+                  minPurchaseAmount: rewardConfig.referee.minPurchaseAmount,
+                  validityDays: rewardConfig.referee.validityDays,
                 },
               },
               priority: 90,
@@ -287,9 +353,10 @@ export const programRouter = createTRPCRouter({
         const finalProgramConfig: ProgramConfigV1Type = {
           schemaVersion: 1,
           widgetConfig,
+          brandConfig: brandConfig || undefined,
           actions: undefined,
           notification: undefined,
-          templateConfig: program.programTemplate?.config || undefined,
+          templateConfig: programTemplate.config,
         };
 
         // 4. Update the program record within the transaction
@@ -309,8 +376,8 @@ export const programRouter = createTRPCRouter({
     }),
 
   // Add a new procedure to list available templates
-  listTemplates: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.select().from(programTemplate);
+  listTemplates: protectedProcedure.query(async () => {
+    return getAllProgramTemplates();
   }),
 
   getById: protectedProcedure
@@ -318,9 +385,6 @@ export const programRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const program = await ctx.db.query.program.findFirst({
         where: eq(programTable.id, input),
-        with: {
-          programTemplate: true,
-        },
       });
 
       if (!program) {
@@ -434,6 +498,66 @@ export const programRouter = createTRPCRouter({
         .update(programTable)
         .set({
           config: input.config,
+        })
+        .where(eq(programTable.id, input.id))
+        .returning();
+
+      assert(updatedProgram, "Program not updated");
+      return {
+        ...updatedProgram,
+        setup: getSetupProgress(updatedProgram.config),
+      };
+    }),
+
+  updateName: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z
+          .string()
+          .min(1, "Name is required")
+          .max(100, "Name is too long"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Find the program
+      const [program] = await ctx.db
+        .select()
+        .from(programTable)
+        .where(eq(programTable.id, input.id))
+        .limit(1);
+
+      if (!program) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Program not found",
+        });
+      }
+
+      // Verify program belongs to active organization through product
+      const [productRecord] = await ctx.db
+        .select()
+        .from(product)
+        .where(
+          and(
+            eq(product.id, program.productId),
+            eq(product.id, ctx.activeProductId),
+          ),
+        )
+        .limit(1);
+
+      if (!productRecord) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Program does not belong to your organization",
+        });
+      }
+
+      // Update the program name
+      const [updatedProgram] = await ctx.db
+        .update(programTable)
+        .set({
+          name: input.name,
         })
         .where(eq(programTable.id, input.id))
         .returning();

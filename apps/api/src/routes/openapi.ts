@@ -9,16 +9,13 @@ const __dirname = dirname(__filename);
 // Read OpenAPI spec at module load time
 const openapiSpec = readFileSync(
   join(__dirname, "../../openapi.yaml"),
-  "utf-8"
+  "utf-8",
 );
 
 export default async function openapiRoutes(fastify: FastifyInstance) {
   fastify.get("/openapi", openapiHandler);
 }
 
-async function openapiHandler(
-  _request: FastifyRequest,
-  reply: FastifyReply
-) {
+async function openapiHandler(_request: FastifyRequest, reply: FastifyReply) {
   return reply.type("text/yaml").send(openapiSpec);
 }

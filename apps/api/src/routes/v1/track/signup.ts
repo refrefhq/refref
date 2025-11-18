@@ -76,8 +76,8 @@ export default async function signupTrackRoutes(fastify: FastifyInstance) {
               .where(
                 and(
                   eq(refcode.code, normalizedRefcode),
-                  eq(refcode.productId, body.productId)
-                )
+                  eq(refcode.productId, body.productId),
+                ),
               )
               .limit(1);
 

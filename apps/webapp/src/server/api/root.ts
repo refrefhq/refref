@@ -1,6 +1,5 @@
 import { postRouter } from "@/server/api/routers/post";
 import { programRouter } from "@/server/api/routers/program";
-import { programTemplateRouter } from "@/server/api/routers/program-template";
 import { productRouter } from "@/server/api/routers/product";
 import { productSecretsRouter } from "@/server/api/routers/product-secrets";
 import { referralRouter } from "@/server/api/routers/referral";
@@ -12,6 +11,8 @@ import { userRouter } from "@/server/api/routers/user";
 import { productMembersRouter } from "@/server/api/routers/product-members";
 import { searchRouter } from "@/server/api/routers/search";
 import { analyticsRouter } from "@/server/api/routers/analytics";
+import { organizationRouter } from "@/server/api/routers/organization";
+import { apiKeysRouter } from "@/server/api/routers/api-keys";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -22,7 +23,6 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 export const appRouter = createTRPCRouter({
   post: postRouter,
   program: programRouter,
-  programTemplate: programTemplateRouter,
   product: productRouter,
   productSecrets: productSecretsRouter,
   referral: referralRouter,
@@ -32,8 +32,10 @@ export const appRouter = createTRPCRouter({
   rewardRules: rewardRulesRouter,
   user: userRouter,
   productMembers: productMembersRouter,
+  organization: organizationRouter,
   search: searchRouter,
   analytics: analyticsRouter,
+  apiKeys: apiKeysRouter,
 });
 
 // export type definition of API

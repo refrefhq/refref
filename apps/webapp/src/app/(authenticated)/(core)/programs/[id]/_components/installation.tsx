@@ -55,11 +55,8 @@ export function Installation({ programId, onStepComplete }: InstallationProps) {
   const isLoading = programLoading || secretsLoading;
 
   return (
-    <>
-      <div className="py-4 border-b px-4 lg:px-6 flex items-center justify-between sticky">
-        <h2 className="text-lg font-bold">Installation Steps</h2>
-      </div>
-      <div className="flex-1 p-4 lg:p-6">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 p-4 lg:p-6 overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="animate-spin w-6 h-6 text-muted-foreground" />
@@ -94,6 +91,6 @@ export function Installation({ programId, onStepComplete }: InstallationProps) {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

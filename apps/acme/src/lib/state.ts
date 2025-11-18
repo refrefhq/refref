@@ -30,7 +30,7 @@ const users = globalForState.users ?? new Map<string, User>();
 const sessions = globalForState.sessions ?? new Map<string, Session>();
 const emailToUserId = globalForState.emailToUserId ?? new Map<string, string>();
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   globalForState.users = users;
   globalForState.sessions = sessions;
   globalForState.emailToUserId = emailToUserId;
@@ -42,10 +42,14 @@ function generateId(): string {
 }
 
 // User management
-export function createUser(email: string, password: string, name: string): User {
+export function createUser(
+  email: string,
+  password: string,
+  name: string,
+): User {
   // Check if user already exists
   if (emailToUserId.has(email)) {
-    throw new Error('User with this email already exists');
+    throw new Error("User with this email already exists");
   }
 
   const user: User = {

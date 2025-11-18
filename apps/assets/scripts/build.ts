@@ -24,7 +24,7 @@ const SCRIPTS = [
       "packages",
       "attribution-script",
       "dist",
-      "attribution-script.umd.js"
+      "attribution-script.umd.js",
     ),
     outputName: "attribution.v1.js",
   },
@@ -67,7 +67,7 @@ async function copyScript(config: (typeof SCRIPTS)[0]): Promise<BuildStats> {
     await stat(config.sourcePath);
   } catch (error) {
     throw new Error(
-      `Source file not found: ${config.sourcePath}\nMake sure to build the ${config.name} package first.`
+      `Source file not found: ${config.sourcePath}\nMake sure to build the ${config.name} package first.`,
     );
   }
 
@@ -125,7 +125,7 @@ async function build() {
         "Original".padEnd(15) +
         "Gzip".padEnd(15) +
         "Brotli".padEnd(15) +
-        "Hash"
+        "Hash",
     );
     console.log("─".repeat(90));
 
@@ -145,17 +145,15 @@ async function build() {
       ).toFixed(1);
 
       console.log(
-        `${result.name.padEnd(20)}${result.version.padEnd(10)}${sizeFormatted.padEnd(15)}${gzipFormatted.padEnd(15)}${brotliFormatted.padEnd(15)}${result.checksum}`
+        `${result.name.padEnd(20)}${result.version.padEnd(10)}${sizeFormatted.padEnd(15)}${gzipFormatted.padEnd(15)}${brotliFormatted.padEnd(15)}${result.checksum}`,
       );
       console.log(
-        `${"".padEnd(40)}(-${gzipRatio}%)${"".padEnd(8)}(-${brotliRatio}%)`
+        `${"".padEnd(40)}(-${gzipRatio}%)${"".padEnd(8)}(-${brotliRatio}%)`,
       );
     }
 
     console.log("─".repeat(90));
-    console.log(
-      "\n💡 Cloudflare serves with Brotli compression automatically"
-    );
+    console.log("\n💡 Cloudflare serves with Brotli compression automatically");
     console.log(`📁 Output directory: ${PUBLIC_DIR}`);
     console.log("\n📝 Next steps:");
     console.log("   1. Deploy: pnpm -F @refref/assets deploy:cloudflare");

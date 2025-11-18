@@ -6,7 +6,6 @@ import { Slot } from "@radix-ui/react-slot";
 import {
   Controller,
   FormProvider,
-  FormProviderProps,
   useFormContext,
   useFormState,
   type ControllerProps,
@@ -17,7 +16,7 @@ import {
 import { cn } from "@refref/ui/lib/utils";
 import { Label } from "@refref/ui/components/label";
 
-const Form = FormProvider as React.ComponentType<FormProviderProps>;
+const Form = FormProvider;
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,

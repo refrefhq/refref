@@ -129,7 +129,7 @@ describe("Track API", () => {
         programId: "test-program-id",
         payload: {
           userId: "user_existing_456",
-          orderAmount: 150.50,
+          orderAmount: 150.5,
           orderId: "order_789",
           productIds: ["prod_1", "prod_2"],
           currency: "USD",

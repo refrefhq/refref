@@ -204,6 +204,9 @@ importers:
       '@refref/coredb':
         specifier: workspace:*
         version: link:../../packages/coredb
+      '@refref/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@refref/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -245,8 +248,8 @@ importers:
   apps/webapp:
     dependencies:
       '@daveyplate/better-auth-ui':
-        specifier: ^3.2.6
-        version: 3.2.8(c8fe00d8bd5a757415923536bda77308)
+        specifier: ^3.2.9
+        version: 3.2.9(85141c937b22b32ce69d6c3b580833f7)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -412,6 +415,9 @@ importers:
       embla-carousel-react:
         specifier: ^8.5.2
         version: 8.6.0(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.24
+        version: 12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       geist:
         specifier: ^1.3.0
         version: 1.5.1(next@16.0.3(@babel/core@7.28.5)(@playwright/test@1.56.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
@@ -808,82 +814,82 @@ importers:
         specifier: ^3.8.0
         version: 3.10.0
       '@radix-ui/react-accordion':
-        specifier: ^1.2.3
+        specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-alert-dialog':
-        specifier: ^1.1.6
+        specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-aspect-ratio':
-        specifier: ^1.1.2
+        specifier: ^1.1.8
         version: 1.1.8(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-avatar':
-        specifier: ^1.1.3
+        specifier: ^1.1.11
         version: 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-checkbox':
-        specifier: ^1.1.4
+        specifier: ^1.3.3
         version: 1.3.3(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-collapsible':
-        specifier: ^1.1.3
+        specifier: ^1.1.12
         version: 1.1.12(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-context-menu':
-        specifier: ^2.2.6
+        specifier: ^2.2.16
         version: 2.2.16(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-dialog':
-        specifier: ^1.1.6
+        specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.6
+        specifier: ^2.1.16
         version: 2.1.16(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-hover-card':
-        specifier: ^1.1.6
+        specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-label':
-        specifier: ^2.1.2
+        specifier: ^2.1.8
         version: 2.1.8(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-menubar':
-        specifier: ^1.1.6
+        specifier: ^1.1.16
         version: 1.1.16(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-navigation-menu':
-        specifier: ^1.2.5
+        specifier: ^1.2.14
         version: 1.2.14(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-popover':
-        specifier: ^1.1.6
+        specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-progress':
-        specifier: ^1.1.2
+        specifier: ^1.1.8
         version: 1.1.8(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-radio-group':
-        specifier: ^1.2.3
+        specifier: ^1.3.8
         version: 1.3.8(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-scroll-area':
-        specifier: ^1.2.3
+        specifier: ^1.2.10
         version: 1.2.10(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-select':
-        specifier: ^2.1.6
+        specifier: ^2.2.6
         version: 2.2.6(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-separator':
-        specifier: ^1.1.2
+        specifier: ^1.1.8
         version: 1.1.8(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-slider':
-        specifier: ^1.2.3
+        specifier: ^1.3.6
         version: 1.3.6(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-slot':
-        specifier: ^1.1.2
+        specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.4)(react@19.2.0)
       '@radix-ui/react-switch':
-        specifier: ^1.1.3
+        specifier: ^1.2.6
         version: 1.2.6(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-tabs':
-        specifier: ^1.1.3
+        specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-toggle':
-        specifier: ^1.1.2
+        specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-toggle-group':
-        specifier: ^1.1.2
+        specifier: ^1.1.11
         version: 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-tooltip':
-        specifier: ^1.1.8
+        specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@refref/types':
         specifier: workspace:*
@@ -904,7 +910,7 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       embla-carousel-react:
-        specifier: ^8.5.2
+        specifier: ^8.6.0
         version: 8.6.0(react@19.2.0)
       input-otp:
         specifier: ^1.4.2
@@ -937,25 +943,25 @@ importers:
         specifier: ^1.8.0
         version: 1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-day-picker:
-        specifier: 8.10.1
-        version: 8.10.1(date-fns@4.1.0)(react@19.2.0)
+        specifier: 9.11.1
+        version: 9.11.1(react@19.2.0)
       react-dom:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
       react-hook-form:
-        specifier: ^7.54.2
+        specifier: ^7.66.0
         version: 7.66.0(react@19.2.0)
       react-icons:
         specifier: ^5.5.0
         version: 5.5.0(react@19.2.0)
       react-resizable-panels:
-        specifier: ^2.1.7
+        specifier: ^2.1.9
         version: 2.1.9(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       recharts:
-        specifier: ^2.15.1
+        specifier: ^2.15.4
         version: 2.15.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       sonner:
-        specifier: ^2.0.1
+        specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       tailwind-merge:
         specifier: ^3.0.2
@@ -967,7 +973,7 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       zod:
-        specifier: ^4.0.17
+        specifier: ^4.1.12
         version: 4.1.12
     devDependencies:
       '@refref/eslint-config':
@@ -1376,6 +1382,15 @@ packages:
   '@better-fetch/fetch@1.1.18':
     resolution: {integrity: sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==}
 
+  '@captchafox/react@1.10.0':
+    resolution: {integrity: sha512-GRGdqZnz2KsJUXj17abe+V1kL1GhE3JsFgD0IkhZ6XVlr7IGJrnGWco1aID2jhFPunAtcdNuY+YuIEidtNNEpQ==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@captchafox/types@1.4.0':
+    resolution: {integrity: sha512-4xnPMICLinsXghw6zWEF436lhMsBmLxui2QmU7xAEz/+572BRdvc518Sz5OoofbJ7GZG6QPz/wOtJoN8BfKyCg==}
+
   '@chevrotain/cst-dts-gen@10.5.0':
     resolution: {integrity: sha512-lhmC/FyqQ2o7pGK4Om+hzuDrm9rhFYIJ/AXoQBeongmn870Xeb0L6oGEiuR8nohFNL5sMaQEJWCxr1oIVIVXrw==}
 
@@ -1451,6 +1466,9 @@ packages:
   '@dabh/diagnostics@2.0.8':
     resolution: {integrity: sha512-R4MSXTVnuMzGD7bzHdW2ZhhdPC/igELENcq5IjEverBvq5hn1SXCWcsi6eSsdWP0/Ur+SItRRjAktmdoX/8R/Q==}
 
+  '@date-fns/tz@1.4.1':
+    resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
+
   '@daveyplate/better-auth-tanstack@1.3.6':
     resolution: {integrity: sha512-GvIGdbjRMZCEfAffU7LeWpGpie4vSli8V9jmNFCQOziZZMEFbO4cd53HBFmAushC9oEYIyhSNZBgV2ADzW94Ww==}
     peerDependencies:
@@ -1460,9 +1478,10 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@daveyplate/better-auth-ui@3.2.8':
-    resolution: {integrity: sha512-6EJaqQkAZzoVuh4WCslWuiowgX9JLWT3TrOLYfKjzQJdNmV/duNBa0lIvN9Pwul1jYP0vGNmwDBaIoh8LsBWag==}
+  '@daveyplate/better-auth-ui@3.2.9':
+    resolution: {integrity: sha512-u2SWpWeaR4ooHjbasw5Hu0F4NM/zY9eAgw2V8QH9/TPno7I+s6bTO9SeT22wDiFk26vl5VmwS5xeQs9DpY+sLA==}
     peerDependencies:
+      '@captchafox/react': ^1.10.0
       '@daveyplate/better-auth-tanstack': ^1.3.6
       '@hookform/resolvers': '>=5.2.0'
       '@instantdb/react': '>=0.18.0'
@@ -6675,6 +6694,9 @@ packages:
     resolution: {integrity: sha512-BS8PfmtDGnrgYdOonGZQdLZslWIeCGFP9tpan0hi1Co2Zr2NKADsvGYA8XxuG/4UWgJ6Cjtv+YJnB6MM69QGlQ==}
     engines: {node: '>= 0.4'}
 
+  date-fns-jalali@4.1.0-0:
+    resolution: {integrity: sha512-hTIP/z+t+qKwBDcmmsnmjWTduxCg+5KfdqWQvb2X/8C9+knYY6epN/pfxdDuyVlSVeFz0sM5eEfwIUQ70U4ckg==}
+
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
@@ -9270,6 +9292,12 @@ packages:
       date-fns: ^2.28.0 || ^3.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
+  react-day-picker@9.11.1:
+    resolution: {integrity: sha512-l3ub6o8NlchqIjPKrRFUCkTUEq6KwemQlfv3XZzzwpUeGwmDJ+0u0Upmt38hJyd7D/vn2dQoOoLV/qAp0o3uUw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: '>=16.8.0'
+
   react-dom@19.2.0:
     resolution: {integrity: sha512-UlbRu4cAiGaIewkPyiRGJk0imDN2T3JjieT6spoL2UeSf5od4n5LB/mQ4ejmxhCFT1tYe8IvaFulzynWovsEFQ==}
     peerDependencies:
@@ -11131,6 +11159,14 @@ snapshots:
 
   '@better-fetch/fetch@1.1.18': {}
 
+  '@captchafox/react@1.10.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@captchafox/types': 1.4.0
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+
+  '@captchafox/types@1.4.0': {}
+
   '@chevrotain/cst-dts-gen@10.5.0':
     dependencies:
       '@chevrotain/gast': 10.5.0
@@ -11196,6 +11232,8 @@ snapshots:
       enabled: 2.0.0
       kuler: 2.0.0
 
+  '@date-fns/tz@1.4.1': {}
+
   '@daveyplate/better-auth-tanstack@1.3.6(@tanstack/query-core@5.90.8)(@tanstack/react-query@5.90.8(react@19.2.0))(better-auth@1.3.34(next@16.0.3(@babel/core@7.28.5)(@playwright/test@1.56.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@tanstack/query-core': 5.90.8
@@ -11204,9 +11242,10 @@ snapshots:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  '@daveyplate/better-auth-ui@3.2.8(c8fe00d8bd5a757415923536bda77308)':
+  '@daveyplate/better-auth-ui@3.2.9(85141c937b22b32ce69d6c3b580833f7)':
     dependencies:
       '@better-fetch/fetch': 1.1.18
+      '@captchafox/react': 1.10.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@daveyplate/better-auth-tanstack': 1.3.6(@tanstack/query-core@5.90.8)(@tanstack/react-query@5.90.8(react@19.2.0))(better-auth@1.3.34(next@16.0.3(@babel/core@7.28.5)(@playwright/test@1.56.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@hcaptcha/react-hcaptcha': 1.14.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@hookform/resolvers': 4.1.3(react-hook-form@7.66.0(react@19.2.0))
@@ -16681,6 +16720,8 @@ snapshots:
       es-errors: 1.3.0
       is-data-view: 1.0.2
 
+  date-fns-jalali@4.1.0-0: {}
+
   date-fns@4.1.0: {}
 
   dateformat@4.6.3: {}
@@ -19631,6 +19672,13 @@ snapshots:
   react-day-picker@8.10.1(date-fns@4.1.0)(react@19.2.0):
     dependencies:
       date-fns: 4.1.0
+      react: 19.2.0
+
+  react-day-picker@9.11.1(react@19.2.0):
+    dependencies:
+      '@date-fns/tz': 1.4.1
+      date-fns: 4.1.0
+      date-fns-jalali: 4.1.0-0
       react: 19.2.0
 
   react-dom@19.2.0(react@19.2.0):

@@ -51,7 +51,7 @@ export default async function MainLayout({
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--sidebar-width": "calc(var(--spacing) * 54)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
@@ -60,7 +60,7 @@ export default async function MainLayout({
       <GlobalSearch />
       <AppSidebar variant="inset" />
       <SidebarInset
-        className="overflow-hidden"
+        className="overflow-auto"
         style={{
           height: "calc(100vh - var(--spacing) * 4)",
         }}

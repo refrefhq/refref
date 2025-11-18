@@ -17,7 +17,10 @@ import { RewardStep } from "./_components/RewardStep";
 import { BrandStep } from "@/components/program-setup/brand-step";
 import { toast } from "sonner";
 import assert from "assert";
-import { ProgramTemplateStepKeyType } from "@refref/types";
+import {
+  ProgramTemplateStepKeyType,
+  getProgramTemplateById,
+} from "@refref/types";
 
 // Map step keys to their respective components
 const stepComponentMap: Record<
@@ -72,6 +75,15 @@ export default function ProgramSetupPage() {
       },
     });
 
+  // Redirect to program detail if setup is already completed
+  useEffect(() => {
+    if (!program) return;
+
+    if (program.status === "active") {
+      router.replace(`/programs/${params?.id}`);
+    }
+  }, [program, params?.id, router]);
+
   if (isLoadingProgram || !program) {
     return (
       <div className="flex flex-1 items-center justify-center h-screen">
@@ -82,11 +94,12 @@ export default function ProgramSetupPage() {
   }
 
   // Dynamically build steps from template config
+  const programTemplate = getProgramTemplateById(program.programTemplateId);
   const templateSteps: Array<{
     key: ProgramTemplateStepKeyType;
     title: string;
     description?: string;
-  }> = program.programTemplate?.config?.steps ?? [];
+  }> = programTemplate?.config?.steps ?? [];
 
   const STEPS: StepDef[] = templateSteps
     .map(

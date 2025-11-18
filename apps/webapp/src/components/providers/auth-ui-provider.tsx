@@ -21,6 +21,9 @@ export function AuthUIProvider({ children }: { children: React.ReactNode }) {
       social={{
         providers: env.NEXT_PUBLIC_ENABLED_SOCIAL_AUTH,
       }}
+      organization={{
+        logo: true,
+      }}
     >
       {children}
     </BetterAuthUIProvider>

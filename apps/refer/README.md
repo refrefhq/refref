@@ -5,6 +5,7 @@ Public-facing Fastify server for handling referral redirects.
 ## Overview
 
 The refer server provides public endpoints for:
+
 - **Referral Link Redirects** (`/:id`) - Redirects referral links to target URLs with attribution
 
 ## Development
@@ -48,11 +49,13 @@ GET /:slug
 Redirects to the target URL associated with the referral link slug.
 
 **Performance:**
+
 - Optimized with database index on `referral_link.slug`
 - Single JOIN query for fast lookups
 - Minimal latency for redirect operations
 
 **Response:**
+
 - `302 Found` - Redirects to target URL
 - `404 Not Found` - Invalid or expired referral link
 
@@ -65,6 +68,7 @@ GET /health
 Returns server health status.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -103,6 +107,7 @@ apps/refer/
 ### Referral Redirect Deployment
 
 The `/:id` redirect endpoint can be deployed as:
+
 - **Cloudflare Workers** - Global edge deployment
 - **Vercel/Netlify** - Serverless functions
 - **Traditional Server** - Docker container or VPS
@@ -123,6 +128,7 @@ pnpm -F @refref/refer test:ui
 ```
 
 Tests use:
+
 - **Vitest** - Fast test runner
 - **Playwright** - HTTP request testing
 - In-memory database or mocks
@@ -150,6 +156,7 @@ The `/:slug` endpoint is highly optimized:
 ### Port Already in Use
 
 Change port in `.env`:
+
 ```bash
 PORT=3003
 ```

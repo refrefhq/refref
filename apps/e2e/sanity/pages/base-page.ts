@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page } from "@playwright/test";
 
 /**
  * Base page class that all page objects extend
@@ -18,13 +18,15 @@ export class BasePage {
    * Wait for the page to be fully loaded
    */
   async waitForPageLoad() {
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState("networkidle");
   }
 
   /**
    * Take a screenshot (useful for debugging)
    */
   async screenshot(name: string) {
-    await this.page.screenshot({ path: `test-results/screenshots/${name}.png` });
+    await this.page.screenshot({
+      path: `test-results/screenshots/${name}.png`,
+    });
   }
 }

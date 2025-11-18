@@ -12,7 +12,10 @@
 /**
  * Track signup event
  */
-export async function trackSignup(userEmail: string, userName: string): Promise<void> {
+export async function trackSignup(
+  userEmail: string,
+  userName: string,
+): Promise<void> {
   console.log(`[TODO] Track signup event for ${userEmail} (${userName})`);
   // Placeholder for future implementation
   return Promise.resolve();
@@ -22,11 +25,13 @@ export async function trackSignup(userEmail: string, userName: string): Promise<
  * Track purchase event
  */
 export async function trackPurchase(
-  userEmail:string,
+  userEmail: string,
   amount: number,
-  productName?: string
+  productName?: string,
 ): Promise<void> {
-  console.log(`[TODO] Track purchase event for ${userEmail} ($${amount} for ${productName})`);
+  console.log(
+    `[TODO] Track purchase event for ${userEmail} ($${amount} for ${productName})`,
+  );
   // Placeholder for future implementation
   return Promise.resolve();
 }

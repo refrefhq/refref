@@ -9,22 +9,32 @@ const settingsPages = [
   {
     id: "profile-settings",
     name: "Profile",
-    href: `/settings/profile`,
-  },
-  {
-    id: "product-settings",
-    name: "Product",
-    href: `/settings/product`,
+    href: `/settings/account/profile`,
   },
   {
     id: "appearance-settings",
     name: "Appearance",
-    href: `/settings/appearance`,
+    href: `/settings/account/appearance`,
   },
   {
-    id: "members-settings",
-    name: "Members",
-    href: "/settings/members",
+    id: "organization-settings",
+    name: "Organization",
+    href: `/settings/organization/general`,
+  },
+  {
+    id: "organization-members-settings",
+    name: "Organization Members",
+    href: `/settings/organization/members`,
+  },
+  {
+    id: "product-settings",
+    name: "Product",
+    href: `/settings/product/general`,
+  },
+  {
+    id: "api-settings",
+    name: "API & Secrets",
+    href: "/settings/product/api",
   },
 ];
 
@@ -57,10 +67,7 @@ export const searchRouter = createTRPCRouter({
             name: participant.name,
           })
           .from(participant)
-          .leftJoin(
-            refcode,
-            eq(participant.id, refcode.participantId),
-          )
+          .leftJoin(refcode, eq(participant.id, refcode.participantId))
           .where(
             and(
               eq(participant.productId, productId),

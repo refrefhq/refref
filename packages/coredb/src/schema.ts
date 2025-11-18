@@ -17,7 +17,6 @@ import {
 import { createId as createCuid } from "@paralleldrive/cuid2";
 import { createId, isValidEntityType } from "@refref/id";
 import type {
-  ProgramTemplateConfigType,
   ProgramConfigV1Type,
   EventDefinitionConfigV1Type,
   EventMetadataV1Type,
@@ -157,9 +156,6 @@ export const invitation = pgTable("invitation", {
 
 export const apikey = pgTable("apikey", {
   ...baseFields("apikey"),
-  organizationId: text("organization_id").references(() => org.id, {
-    onDelete: "cascade",
-  }),
   name: text("name"),
   start: text("start"),
   prefix: text("prefix"),
@@ -182,27 +178,28 @@ export const apikey = pgTable("apikey", {
   metadata: text("metadata"),
 });
 
-export const programTemplate = pgTable("program_template", {
-  ...baseFields("programTemplate"),
-  templateName: text("template_name").notNull(),
-  description: text("description").notNull(),
-  // Assuming config is part of the template definition based on ProgramConfigV1 type usage elsewhere
-  config: jsonb("config").$type<ProgramTemplateConfigType>(),
-});
-
 export const program = pgTable("program", {
   ...baseFields("program"),
   productId: text("product_id")
     .notNull()
     .references(() => product.id, { onDelete: "cascade" }),
-  programTemplateId: text("program_template_id")
-    .notNull()
-    .references(() => programTemplate.id, { onDelete: "restrict" }), // Restrict deletion if programs use it
+  programTemplateId: text("program_template_id").notNull(), // Template ID from PROGRAM_TEMPLATES constants
   name: text("name").notNull(),
   status: text("status").notNull(), // e.g., "active", "inactive", "draft"
   startDate: timestamp("start_date"),
   endDate: timestamp("end_date"),
   config: jsonb("config").$type<ProgramConfigV1Type>(),
+});
+
+export const programUser = pgTable("program_user", {
+  ...baseFields("programUser"),
+  programId: text("program_id")
+    .notNull()
+    .references(() => program.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  role: text("role").notNull(),
 });
 
 export const eventDefinition = pgTable("event_definition", {
@@ -224,12 +221,7 @@ export const participant = pgTable(
       .references(() => product.id, { onDelete: "cascade" }),
     externalId: text("external_id"),
   },
-  (participant) => ({
-    productExternalUnique: unique().on(
-      participant.productId,
-      participant.externalId,
-    ),
-  }),
+  (table) => [unique().on(table.productId, table.externalId)],
 );
 
 // Note: event table moved after referral table to fix forward reference
@@ -248,12 +240,12 @@ export const rewardRule = pgTable(
     priority: integer("priority").default(0),
     isActive: boolean("is_active").default(true),
   },
-  (table) => ({
+  (table) => [
     // Indexes for performance
-    programIdIdx: index("reward_rule_program_id_idx").on(table.programId),
-    typeIdx: index("reward_rule_type_idx").on(table.type),
-    isActiveIdx: index("reward_rule_is_active_idx").on(table.isActive),
-  }),
+    index("reward_rule_program_id_idx").on(table.programId),
+    index("reward_rule_type_idx").on(table.type),
+    index("reward_rule_is_active_idx").on(table.isActive),
+  ],
 );
 
 export const reward = pgTable(
@@ -275,21 +267,19 @@ export const reward = pgTable(
     disbursedAt: timestamp("disbursed_at"),
     metadata: jsonb("metadata").$type<RewardMetadataV1Type>(),
   },
-  (table) => ({
+  (table) => [
     // Indexes for performance
-    participantIdIdx: index("reward_participant_id_idx").on(
-      table.participantId,
-    ),
-    programIdIdx: index("reward_program_id_idx").on(table.programId),
-    rewardRuleIdIdx: index("reward_rule_id_idx").on(table.rewardRuleId),
-    eventIdIdx: index("reward_event_id_idx").on(table.eventId),
-    statusIdx: index("reward_status_idx").on(table.status),
-    createdAtIdx: index("reward_created_at_idx").on(table.createdAt),
-  }),
+    index("reward_participant_id_idx").on(table.participantId),
+    index("reward_program_id_idx").on(table.programId),
+    index("reward_rule_id_idx").on(table.rewardRuleId),
+    index("reward_event_id_idx").on(table.eventId),
+    index("reward_status_idx").on(table.status),
+    index("reward_created_at_idx").on(table.createdAt),
+  ],
 );
 
 // Product secrets for JWT generation
-export const productSecrets = pgTable("product_secrets", {
+export const productSecrets = pgTable("product_secret", {
   ...baseFields("productSecrets"),
   productId: text("product_id")
     .notNull()
@@ -317,22 +307,22 @@ export const refcode = pgTable(
     // Code scope: global (unique across system) or local (unique within product)
     global: boolean("global").notNull().default(false),
   },
-  (table) => ({
+  (table) => [
     // Partial unique index for global codes (WHERE global = true)
-    globalCodeUnique: uniqueIndex("refcode_global_code_unique_idx")
+    uniqueIndex("refcode_global_code_unique_idx")
       .on(table.code)
       .where(sql`${table.global} = true`),
     // Partial unique index for local codes (WHERE global = false)
-    localCodeUnique: uniqueIndex("refcode_local_code_unique_idx")
+    uniqueIndex("refcode_local_code_unique_idx")
       .on(table.code, table.productId)
       .where(sql`${table.global} = false`),
     // Index for fast code lookups (hot path for referral redirects)
-    codeIdx: index("refcode_code_idx").on(table.code),
+    index("refcode_code_idx").on(table.code),
     // Index for participant lookups
-    participantIdx: index("refcode_participant_id_idx").on(table.participantId),
+    index("refcode_participant_id_idx").on(table.participantId),
     // Index for program lookups
-    programIdx: index("refcode_program_id_idx").on(table.programId),
-  }),
+    index("refcode_program_id_idx").on(table.programId),
+  ],
 );
 
 // Relations for refcode
@@ -358,13 +348,6 @@ export const participantRelations = relations(participant, ({ one, many }) => ({
     references: [product.id],
   }),
   refcodes: many(refcode),
-}));
-
-export const programRelations = relations(program, ({ one }) => ({
-  programTemplate: one(programTemplate, {
-    fields: [program.programTemplateId],
-    references: [programTemplate.id],
-  }),
 }));
 
 export const referral = pgTable("referral", {
@@ -396,18 +379,16 @@ export const event = pgTable(
     status: text("status").notNull().default("pending"),
     metadata: jsonb("metadata").$type<EventMetadataV1Type>(),
   },
-  (table) => ({
+  (table) => [
     // Indexes for performance
-    productIdIdx: index("event_product_id_idx").on(table.productId),
-    programIdIdx: index("event_program_id_idx").on(table.programId),
-    participantIdIdx: index("event_participant_id_idx").on(table.participantId),
-    referralIdIdx: index("event_referral_id_idx").on(table.referralId),
-    eventDefinitionIdIdx: index("event_definition_id_idx").on(
-      table.eventDefinitionId,
-    ),
-    statusIdx: index("event_status_idx").on(table.status),
-    createdAtIdx: index("event_created_at_idx").on(table.createdAt),
-  }),
+    index("event_product_id_idx").on(table.productId),
+    index("event_program_id_idx").on(table.programId),
+    index("event_participant_id_idx").on(table.participantId),
+    index("event_referral_id_idx").on(table.referralId),
+    index("event_definition_id_idx").on(table.eventDefinitionId),
+    index("event_status_idx").on(table.status),
+    index("event_created_at_idx").on(table.createdAt),
+  ],
 );
 
 export const referralRelations = relations(referral, ({ one }) => ({

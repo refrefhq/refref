@@ -35,19 +35,16 @@ This product implements a comprehensive authentication system with multiple laye
 ### Route Protection Layers
 
 1. **Middleware Protection (Server-side)**
-
    - Implemented in `src/middleware.ts`
    - Intercepts all requests and verifies authentication status
    - Redirects unauthenticated users from protected routes
    - Redirects authenticated users from auth pages
 
 2. **Layout Route Groups (Server-side)**
-
    - Protected routes use the `(dashboard)` route group with auth verification
    - Auth routes use the `auth` route group with redirect-if-authenticated logic
 
 3. **Client Components (Client-side)**
-
    - `<ProtectedClientRoute>` - Component wrapper for client pages that need auth
    - `<PublicClientRoute>` - Component wrapper to redirect authenticated users
 
@@ -106,6 +103,7 @@ export default function YourComponent() {
   return <div>Protected Content for {session?.user?.email}</div>;
 }
 ```
+
 ## Refcode Concept
 
 ### Global vs Local Codes
@@ -113,6 +111,7 @@ export default function YourComponent() {
 RefRef now supports two types of referral codes:
 
 #### 1. Global Codes
+
 - **Format**: 7 characters (numbers + lowercase letters: `23456789abcdefghjkmnpqrstuvwxyz`)
 - **Example**: `abc1234`
 - **URL Pattern**: `REFERRAL_HOST_URL/:code`
@@ -122,6 +121,7 @@ RefRef now supports two types of referral codes:
 - **Use Case**: Default referral codes for all participants
 
 #### 2. Local Codes
+
 - **Format**: User-specified vanity strings (3-50 characters, alphanumeric + hyphens)
 - **Example**: `john-doe`, `ceo`, `founder`
 - **URL Pattern**: `REFERRAL_HOST_URL/:product_slug/:code`
@@ -133,6 +133,7 @@ RefRef now supports two types of referral codes:
 ### Key Characteristics
 
 Both code types share these properties:
+
 - **Case-insensitive**: Stored and compared in lowercase
 - **Program Association**: Every refcode belongs to a specific program and participant
 - **Product Association**: Every refcode is associated with a product

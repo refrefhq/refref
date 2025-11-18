@@ -22,8 +22,6 @@ export const widgetConfigSchema = z.object({
   // Widget Button
   position: widgetPositionSchema,
   triggerText: z.string(),
-  buttonBgColor: z.string(),
-  buttonTextColor: z.string(),
   borderRadius: z.number(),
   icon: widgetIconSchema,
 
@@ -31,10 +29,10 @@ export const widgetConfigSchema = z.object({
   title: z.string(),
   subtitle: z.string(),
   logoUrl: z.string(),
-  modalBgColor: z.string(),
-  accentColor: z.string(),
-  textColor: z.string(),
   modalBorderRadius: z.number(),
+
+  // Theme (CSS Variables)
+  cssVariables: z.record(z.string(), z.string()).optional(),
 
   // Sharing
   shareMessage: z.string(),
@@ -59,16 +57,11 @@ export type WidgetConfigType = z.infer<typeof widgetConfigSchema>;
 export const defaultWidgetConfig: WidgetConfigType = {
   position: "bottom-right",
   triggerText: "Refer & Earn",
-  buttonBgColor: "#3b82f6",
-  buttonTextColor: "#ffffff",
   borderRadius: 25,
   icon: "gift",
   title: "Invite your friends",
   subtitle: "Share your referral link and earn rewards when your friends join!",
   logoUrl: "",
-  modalBgColor: "#ffffff",
-  accentColor: "#3b82f6",
-  textColor: "#1f2937",
   modalBorderRadius: 12,
   shareMessage: "Join me on {productName} and get a reward!",
   enabledPlatforms: {
@@ -80,6 +73,6 @@ export const defaultWidgetConfig: WidgetConfigType = {
     instagram: false,
     telegram: false,
   },
-  referralLink: "https://yourapp.com/ref/user123",
+  referralLink: "https://i.refref.ai/<ref_code>",
   productName: "YourSaaS",
 };

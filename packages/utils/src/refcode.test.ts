@@ -141,7 +141,9 @@ describe("refcode utilities", () => {
       it("should reject codes with spaces", () => {
         const result = validateVanityCode("john doe");
         expect(result.isValid).toBe(false);
-        expect(result.error).toContain("lowercase letters, numbers, and hyphens");
+        expect(result.error).toContain(
+          "lowercase letters, numbers, and hyphens",
+        );
       });
 
       it("should reject codes with special characters", () => {
@@ -157,7 +159,9 @@ describe("refcode utilities", () => {
         invalidCodes.forEach((code) => {
           const result = validateVanityCode(code);
           expect(result.isValid).toBe(false);
-          expect(result.error).toContain("lowercase letters, numbers, and hyphens");
+          expect(result.error).toContain(
+            "lowercase letters, numbers, and hyphens",
+          );
         });
       });
 

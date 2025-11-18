@@ -12,6 +12,7 @@ import {
 } from "@refref/ui/components/dropdown-menu";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
+import { DateDisplay } from "@/components/date-display";
 
 export interface Activity {
   id: string;
@@ -178,7 +179,7 @@ export function getActivityTableColumns() {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created At" />
       ),
-      cell: ({ getValue }) => new Date(getValue()).toLocaleString(),
+      cell: ({ getValue }) => <DateDisplay date={getValue()} />,
       enableSorting: true,
       enableColumnFilter: true,
       meta: {

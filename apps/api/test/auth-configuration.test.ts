@@ -63,7 +63,7 @@ describe("Authentication Configuration", () => {
     it("should reject widget init with invalid JWT", async () => {
       const response = await apiContext.post("/v1/widget/init", {
         headers: {
-          "Authorization": "Bearer invalid-token",
+          Authorization: "Bearer invalid-token",
         },
         data: {
           productId: "test",
@@ -147,7 +147,7 @@ describe("Authentication Configuration", () => {
     it("should not accept JWT for API-key-protected route", async () => {
       const response = await apiContext.post("/v1/track/signup", {
         headers: {
-          "Authorization": "Bearer some-jwt-token",
+          Authorization: "Bearer some-jwt-token",
         },
         data: {
           timestamp: new Date().toISOString(),

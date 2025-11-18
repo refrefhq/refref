@@ -50,10 +50,18 @@ export const createProductWithOnboardingSchema = z
   );
 
 // Input validation schema for updating product
-const updateProductSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  url: z.string().url({ message: "Invalid URL" }),
-});
+const updateProductSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "Name is required")
+      .max(100, "Name is too long")
+      .optional(),
+    url: z.string().url({ message: "Invalid URL" }).nullable().optional(),
+  })
+  .refine((data) => data.name !== undefined || data.url !== undefined, {
+    message: "At least one field (name or url) must be provided",
+  });
 
 export const productRouter = createTRPCRouter({
   create: onboardingProcedure
@@ -207,18 +215,31 @@ export const productRouter = createTRPCRouter({
   // Update product information
   update: protectedProcedure
     .input(
-      updateProductSchema.extend({
+      updateProductSchema.safeExtend({
         productId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // Build update object with only provided fields
+      const updateData: {
+        name?: string;
+        url?: string | null;
+        updatedAt: Date;
+      } = {
+        updatedAt: new Date(),
+      };
+
+      if (input.name !== undefined) {
+        updateData.name = input.name;
+      }
+
+      if (input.url !== undefined) {
+        updateData.url = input.url;
+      }
+
       const [updatedProduct] = await ctx.db
         .update(product)
-        .set({
-          name: input.name,
-          url: input.url,
-          updatedAt: new Date(),
-        })
+        .set(updateData)
         .where(
           and(
             eq(product.id, input.productId),

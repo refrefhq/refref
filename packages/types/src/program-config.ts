@@ -80,6 +80,15 @@ export const rewardConfigSchema = z.object({
 
 export type RewardConfigType = z.infer<typeof rewardConfigSchema>;
 
+// Brand config schema
+export const brandConfigSchema = z.object({
+  primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color"),
+  landingPageUrl: z.string().url({
+    message: "Please enter a valid URL",
+  }),
+});
+export type BrandConfigType = z.infer<typeof brandConfigSchema>;
+
 // Notification schema
 export const notificationConfigV1Schema = z
   .object({
@@ -94,6 +103,7 @@ export type NotificationConfigV1Type = z.infer<
 export const programConfigV1Schema = z.object({
   schemaVersion: z.literal(1),
   actions: z.array(z.any()).optional(), // Legacy field, being phased out
+  brandConfig: brandConfigSchema.optional(),
   notification: notificationConfigV1Schema,
   templateConfig: programTemplateConfigSchema.optional(),
   widgetConfig: widgetConfigSchema,

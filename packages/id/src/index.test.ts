@@ -47,11 +47,12 @@ describe("@refref/id", () => {
         ["apikey", "key"],
         ["programTemplate", "pgt"],
         ["program", "prg"],
+        ["programUser", "pru"],
         ["eventDefinition", "evd"],
         ["participant", "prt"],
         ["rewardRule", "rwr"],
         ["reward", "rwd"],
-        ["productSecrets", "sec"],
+        ["productSecrets", "psec"],
         ["refcode", "rc"],
         ["referral", "ref"],
         ["event", "evt"],
@@ -96,9 +97,9 @@ describe("@refref/id", () => {
       expect(validTypes).toContain("program");
     });
 
-    it("should return all 20 entity types", () => {
+    it("should return all 21 entity types", () => {
       const validTypes = getValidEntityTypes();
-      expect(validTypes.length).toBe(20);
+      expect(validTypes.length).toBe(21);
     });
   });
 

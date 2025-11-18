@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1756092145778,
-      "tag": "0000_material_blue_blade",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1761715884588,
-      "tag": "0001_seed_program_templates",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1762000000000,
-      "tag": "0002_add_organization_hierarchy",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1762837032467,
-      "tag": "0003_icy_bedlam",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1762922836358,
-      "tag": "0004_nosy_riptide",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1763011506956,
-      "tag": "0005_lowly_lord_hawal",
+      "when": 1763471717017,
+      "tag": "0000_flashy_infant_terrible",
       "breakpoints": true
     }
   ]

@@ -1,5 +1,5 @@
-import { Page } from '@playwright/test';
-import { BasePage } from '../base-page';
+import { Page } from "@playwright/test";
+import { BasePage } from "../base-page";
 
 /**
  * Base page for Acme test application pages
@@ -10,7 +10,7 @@ export class AcmeBasePage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.baseUrl = process.env.ACME_URL || 'http://localhost:3003';
+    this.baseUrl = process.env.ACME_URL || "http://localhost:3003";
   }
 
   /**

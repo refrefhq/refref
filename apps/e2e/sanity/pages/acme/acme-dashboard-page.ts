@@ -1,5 +1,5 @@
-import { Page } from '@playwright/test';
-import { AcmeBasePage } from './acme-base-page';
+import { Page } from "@playwright/test";
+import { AcmeBasePage } from "./acme-base-page";
 
 /**
  * Page object for Acme app dashboard (user logged in)
@@ -14,7 +14,7 @@ export class AcmeDashboardPage extends AcmeBasePage {
    * Navigate to the dashboard
    */
   async goto() {
-    await super.goto('/dashboard');
+    await super.goto("/dashboard");
   }
 
   /**
@@ -23,7 +23,7 @@ export class AcmeDashboardPage extends AcmeBasePage {
    */
   async getReferralLink() {
     // TODO: Implement in Task 3
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 
   /**
@@ -32,6 +32,6 @@ export class AcmeDashboardPage extends AcmeBasePage {
    */
   async verifyWidgetLoaded() {
     // TODO: Implement in Task 3
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 }

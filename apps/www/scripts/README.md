@@ -57,7 +57,6 @@ The script behaves differently based on the environment:
 1. **Normal mode** (with AWS credentials): Fetches content from S3 as expected.
 
 2. **Dry run mode** (`--dry-run`):
-
    - Logs what actions it would take
    - Does not make actual S3 requests
    - Does not download any files

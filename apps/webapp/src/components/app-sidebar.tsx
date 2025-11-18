@@ -109,7 +109,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   height={24}
                   alt="RefRef Logo"
                 />
-                RefRef
+                <span className="font-logo text-2xl font-light">RefRef</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { setRefRefConfig } from '@/lib/refref-runtime-config';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { setRefRefConfig } from "@/lib/refref-runtime-config";
+import { cookies } from "next/headers";
 
 /**
  * Test-only endpoint to configure RefRef integration
@@ -8,10 +8,10 @@ import { cookies } from 'next/headers';
  */
 export async function POST(request: NextRequest) {
   // Only allow in development
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     return NextResponse.json(
-      { error: 'Not available in production' },
-      { status: 403 }
+      { error: "Not available in production" },
+      { status: 403 },
     );
   }
 
@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!productId || !clientId || !clientSecret) {
       return NextResponse.json(
-        { error: 'productId, clientId, and clientSecret are required' },
-        { status: 400 }
+        { error: "productId, clientId, and clientSecret are required" },
+        { status: 400 },
       );
     }
 
@@ -39,36 +39,37 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies();
 
     // Store non-secret config in cookies
-    cookieStore.set('refref-config', JSON.stringify({
-      productId,
-      clientId,
-      programId,
-      // Store secret separately for security
-    }), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: false, // Allow in development
-      maxAge: 60 * 60, // 1 hour
-    });
+    cookieStore.set(
+      "refref-config",
+      JSON.stringify({
+        productId,
+        clientId,
+        programId,
+        // Store secret separately for security
+      }),
+      {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false, // Allow in development
+        maxAge: 60 * 60, // 1 hour
+      },
+    );
 
     // Store secret separately with more secure settings
-    cookieStore.set('refref-secret', clientSecret, {
+    cookieStore.set("refref-secret", clientSecret, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: "strict",
       secure: false, // Allow in development
       maxAge: 60 * 60, // 1 hour
     });
 
     return NextResponse.json({
       success: true,
-      message: 'RefRef configuration updated',
+      message: "RefRef configuration updated",
       config: { productId, programId }, // Don't return secrets
     });
   } catch (error) {
-    console.error('Configure error:', error);
-    return NextResponse.json(
-      { error: 'Failed to configure' },
-      { status: 500 }
-    );
+    console.error("Configure error:", error);
+    return NextResponse.json({ error: "Failed to configure" }, { status: 500 });
   }
 }

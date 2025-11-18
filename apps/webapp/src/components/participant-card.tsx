@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { DateDisplay } from "@/components/date-display";
 
 interface ParticipantCardProps {
   participant: {
@@ -85,14 +86,6 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
     window.open(participant.referralUrl, "_blank");
   };
 
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   return (
     <div className="space-y-6">
       {/* Main Participant Card */}
@@ -125,7 +118,7 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-sm">
                 <Calendar className="w-3 h-3 mr-1" />
-                Joined {formatDate(participant.createdAt)}
+                Joined <DateDisplay date={participant.createdAt} />
               </Badge>
             </div>
           </div>
@@ -236,7 +229,7 @@ export function ParticipantCard({ participant }: ParticipantCardProps) {
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(referral.createdAt)}
+                        <DateDisplay date={referral.createdAt} />
                       </p>
                       <p className="text-xs text-muted-foreground">
                         ID: {referral.externalId}

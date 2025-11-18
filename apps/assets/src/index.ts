@@ -72,7 +72,10 @@ export default {
     // Always set CORS headers for scripts
     if (url.pathname.endsWith(".js")) {
       newResponse.headers.set("Access-Control-Allow-Origin", "*");
-      newResponse.headers.set("Content-Type", "application/javascript; charset=utf-8");
+      newResponse.headers.set(
+        "Content-Type",
+        "application/javascript; charset=utf-8",
+      );
     }
 
     return newResponse;

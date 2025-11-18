@@ -19,7 +19,7 @@ let runtimeConfig: RefRefRuntimeConfig | null = null;
  */
 export function setRefRefConfig(config: RefRefRuntimeConfig): void {
   runtimeConfig = config;
-  console.log('RefRef configuration updated:', {
+  console.log("RefRef configuration updated:", {
     productId: config.productId,
     programId: config.programId,
   });
@@ -38,10 +38,10 @@ export async function getRefRefConfig(): Promise<RefRefRuntimeConfig> {
   // Try to read from cookies (for persistence across requests)
   // Only import cookies when actually needed (server-side only)
   try {
-    const { cookies } = await import('next/headers');
+    const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
-    const configCookie = cookieStore.get('refref-config');
-    const secretCookie = cookieStore.get('refref-secret');
+    const configCookie = cookieStore.get("refref-config");
+    const secretCookie = cookieStore.get("refref-secret");
 
     if (configCookie && secretCookie) {
       const config = JSON.parse(configCookie.value);
@@ -52,15 +52,15 @@ export async function getRefRefConfig(): Promise<RefRefRuntimeConfig> {
     }
   } catch (e) {
     // Cookies might not be available in some contexts
-    console.debug('Could not read cookies:', e);
+    console.debug("Could not read cookies:", e);
   }
 
   // Fallback to environment variables for non-test scenarios
   return {
-    productId: process.env.NEXT_PUBLIC_REFREF_PRODUCT_ID || 'acme-product',
-    clientId: process.env.REFREF_CLIENT_ID || 'test-client-id',
-    clientSecret: process.env.REFREF_CLIENT_SECRET || 'test-client-secret',
-    programId: process.env.NEXT_PUBLIC_REFREF_PROGRAM_ID || 'test-program-id',
+    productId: process.env.NEXT_PUBLIC_REFREF_PRODUCT_ID || "acme-product",
+    clientId: process.env.REFREF_CLIENT_ID || "test-client-id",
+    clientSecret: process.env.REFREF_CLIENT_SECRET || "test-client-secret",
+    programId: process.env.NEXT_PUBLIC_REFREF_PROGRAM_ID || "test-program-id",
   };
 }
 
@@ -76,10 +76,10 @@ export function getRefRefConfigSync(): RefRefRuntimeConfig | null {
 
   // Fallback to environment variables
   return {
-    productId: process.env.NEXT_PUBLIC_REFREF_PRODUCT_ID || 'acme-product',
-    clientId: process.env.REFREF_CLIENT_ID || 'test-client-id',
-    clientSecret: process.env.REFREF_CLIENT_SECRET || 'test-client-secret',
-    programId: process.env.NEXT_PUBLIC_REFREF_PROGRAM_ID || 'test-program-id',
+    productId: process.env.NEXT_PUBLIC_REFREF_PRODUCT_ID || "acme-product",
+    clientId: process.env.REFREF_CLIENT_ID || "test-client-id",
+    clientSecret: process.env.REFREF_CLIENT_SECRET || "test-client-secret",
+    programId: process.env.NEXT_PUBLIC_REFREF_PROGRAM_ID || "test-program-id",
   };
 }
 
@@ -88,7 +88,7 @@ export function getRefRefConfigSync(): RefRefRuntimeConfig | null {
  */
 export function clearRefRefConfig(): void {
   runtimeConfig = null;
-  console.log('RefRef configuration cleared');
+  console.log("RefRef configuration cleared");
 }
 
 /**
