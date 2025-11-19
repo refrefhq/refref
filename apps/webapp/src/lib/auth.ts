@@ -22,4 +22,5 @@ export const auth = getAuth({
   logger,
   posthog,
   trustedOrigins: [env.NEXT_PUBLIC_APP_URL],
+  emailFrom: env.NOTIFICATIONS_EMAIL_FROM,
 });

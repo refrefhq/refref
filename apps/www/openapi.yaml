@@ -5,12 +5,12 @@ info:
   version: 1.0.0
   contact:
     name: RefRef Support
-    email: support@refref.com
+    email: support@refref.ai
 
 servers:
-  - url: https://api.refref.com/v1
+  - url: https://api.refref.ai/v1
     description: Production server
-  - url: https://api-staging.refref.com/v1
+  - url: https://api-staging.refref.ai/v1
     description: Staging server
 
 components:

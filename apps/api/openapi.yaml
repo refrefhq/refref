@@ -10,7 +10,7 @@ info:
 servers:
   - url: http://localhost:3001
     description: Local development server
-  - url: https://api.refref.com
+  - url: https://api.refref.ai
     description: Production server
 
 paths:

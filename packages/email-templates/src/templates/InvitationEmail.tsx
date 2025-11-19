@@ -24,7 +24,7 @@ export function InvitationEmail({
   role = "member",
   inviterName,
   inviterEmail,
-  inviteLink = "https://app.refref.com/accept-invitation/example",
+  inviteLink = "https://app.refref.ai/accept-invitation/example",
 }: InvitationEmailProps) {
   const inviterDisplay = inviterName || inviterEmail || "Someone";
 
@@ -84,7 +84,7 @@ export function InvitationEmail({
             }}
           >
             <Img
-              src="https://app.refref.com/icon-192x192.png"
+              src="https://app.refref.ai/icon-192x192.png"
               alt="RefRef"
               width="48"
               height="48"

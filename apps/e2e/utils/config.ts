@@ -64,7 +64,7 @@ export function getTestConfig(): TestConfig {
     },
 
     testUser: {
-      email: process.env.TEST_USER_EMAIL || "e2e_test_admin@refref.com",
+      email: process.env.TEST_USER_EMAIL || "e2e_test_admin@refref.ai",
       password: process.env.TEST_USER_PASSWORD || "TestPassword123!",
       organizationName:
         process.env.TEST_ORGANIZATION_NAME || "E2E Test Organization",

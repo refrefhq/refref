@@ -11,7 +11,7 @@ import { eq, and, inArray } from "drizzle-orm";
 
 export interface AuthConfig {
   /**
-   * Base URL for the application (e.g., https://app.refref.com)
+   * Base URL for the application (e.g., https://app.refref.ai)
    */
   baseURL: string;
 
@@ -76,6 +76,11 @@ export interface AuthConfig {
    * Trusted origins for CORS
    */
   trustedOrigins?: string[];
+
+  /**
+   * Email address to use as the sender for notifications
+   */
+  emailFrom?: string;
 }
 
 /**
@@ -94,6 +99,7 @@ export function getAuth(config: AuthConfig) {
     logger,
     posthog,
     trustedOrigins = [baseURL],
+    emailFrom = "RefRef <notifications@mail.refref.ai>",
   } = config;
 
   // Build social providers object dynamically based on enabled providers
@@ -148,7 +154,7 @@ export function getAuth(config: AuthConfig) {
                   const emailContent = await renderMagicLinkEmail(url);
 
                   await resend.emails.send({
-                    from: "RefRef <notifications@refref.com>",
+                    from: emailFrom,
                     to: email,
                     subject: "Your Magic Link to Sign In",
                     html: emailContent,
@@ -206,7 +212,7 @@ export function getAuth(config: AuthConfig) {
           });
 
           await resend.emails.send({
-            from: "RefRef <notifications@refref.com>",
+            from: emailFrom,
             to: email,
             subject: "You've been invited to RefRef",
             html: emailContent,

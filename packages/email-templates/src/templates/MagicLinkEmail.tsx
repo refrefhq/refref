@@ -18,7 +18,7 @@ interface MagicLinkEmailProps {
 }
 
 export function MagicLinkEmail({
-  magicLink = "https://app.refref.com/auth/magic-link/verify?token=example",
+  magicLink = "https://app.refref.ai/auth/magic-link/verify?token=example",
 }: MagicLinkEmailProps) {
   return (
     <Html>
@@ -76,7 +76,7 @@ export function MagicLinkEmail({
             }}
           >
             <Img
-              src="https://app.refref.com/icon-192x192.png"
+              src="https://app.refref.ai/icon-192x192.png"
               alt="RefRef"
               width="48"
               height="48"
