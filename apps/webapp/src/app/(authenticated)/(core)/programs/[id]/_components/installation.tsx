@@ -76,13 +76,13 @@ export function Installation({ programId, onStepComplete }: InstallationProps) {
               step={1}
               title="Integrate Referral UI Elements"
               description="Add the necessary RefRef components or snippets to display referral links, forms, or dashboards within your application."
-              docsUrl="https://refref.ai"
+              docsUrl="https://refref.ai/docs/platform/installation/widget"
             />
             <InstallationStep
               step={2}
               title="Integrate Attribution Script"
               description="Add the RefRef attribution script to your landing pages and signup flow to track referred users."
-              docsUrl="https://refref.ai"
+              docsUrl="https://refref.ai/docs/platform/installation/attribution-script"
             />
           </div>
         ) : (
