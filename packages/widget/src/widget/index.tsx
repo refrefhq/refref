@@ -87,15 +87,4 @@ function onReady() {
   }
 }
 
-function getClientKey() {
-  const script = document.currentScript as HTMLScriptElement;
-  const clientKey = script?.getAttribute("data-client-key") || "test";
-
-  if (!clientKey) {
-    throw new Error("Missing data-client-key attribute");
-  }
-
-  return clientKey;
-}
-
 initializeWidget();
