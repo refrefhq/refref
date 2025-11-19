@@ -9,16 +9,28 @@
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
           Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 20px;
         line-height: 1.6;
+      }
+      .info-section {
+        background: #e3f2fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
       }
       .form-container {
         border: 1px solid #ddd;
         padding: 20px;
         margin: 20px 0;
         border-radius: 8px;
+      }
+      .form-container.with-attribute {
+        border-left: 4px solid #4caf50;
+      }
+      .form-container.without-attribute {
+        border-left: 4px solid #ff9800;
       }
       form {
         display: flex;
@@ -44,6 +56,13 @@
       button:hover {
         background: #0052a3;
       }
+      .action-button {
+        background: #4caf50;
+        margin: 5px;
+      }
+      .action-button:hover {
+        background: #45a049;
+      }
       #attribution-data {
         background: #f5f5f5;
         padding: 15px;
@@ -52,31 +71,75 @@
       }
       .hidden-fields {
         margin-top: 15px;
+        padding: 10px;
+        background: #fff3cd;
+        border-radius: 4px;
         font-size: 0.9em;
-        color: #666;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+      .badge.green {
+        background: #c8e6c9;
+        color: #2e7d32;
+      }
+      .badge.orange {
+        background: #ffe0b2;
+        color: #e65100;
+      }
+      #dynamic-forms-container {
+        border: 2px dashed #9c27b0;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        min-height: 100px;
+      }
+      code {
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
       }
     </style>
   </head>
   <body>
     <h1>RefRef Attribution Script Demo</h1>
-    <p>
-      This page demonstrates the RefRef attribution script functionality. Try
-      accessing with different URL parameters:
-    </p>
-    <ul>
-      <li><code>?rfc=TEST123</code> - Sets referral code</li>
-    </ul>
 
-    <div class="form-container">
-      <h2>Simple Sign Up Form</h2>
+    <div class="info-section">
+      <h3>🎯 Current Configuration</h3>
+      <p><strong>Auto-Attach Mode:</strong> <span id="current-mode"></span></p>
+      <p><strong>Referral Code:</strong> <span id="current-code"></span></p>
+      <p>Try accessing with <code>?refcode=TEST123</code> to set a referral code</p>
+    </div>
+
+    <div class="info-section">
+      <h3>📝 Auto-Attach Modes</h3>
+      <ul>
+        <li><strong>"data-refref"</strong> (default) - Only attaches to forms with <code>data-refref</code> attribute</li>
+        <li><strong>"all"</strong> - Attaches to ALL forms on the page</li>
+        <li><strong>"false"</strong> - No automatic attachment (manual API only)</li>
+      </ul>
+      <p><strong>Configuration:</strong> Set via script tag: <code>&lt;script data-auto-attach="data-refref"&gt;</code> or via <code>init({ autoAttach: "data-refref" })</code></p>
+      <p><strong>Cookie Options:</strong> <code>&lt;script data-cookie-options='{"domain":".example.com","max-age":7776000}'&gt;</code></p>
+    </div>
+
+    <h2>📋 Static Forms (loaded with page)</h2>
+
+    <div class="form-container with-attribute">
+      <h3>Form with <code>data-refref</code> <span class="badge green">HAS ATTRIBUTE</span></h3>
       <form data-refref id="signup-form">
         <div>
           <label for="name">Name:</label>
-          <input type="text" id="name" name="name" required />
+          <input type="text" id="name" name="name" />
         </div>
         <div>
           <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
+          <input type="email" id="email" name="email" />
         </div>
         <button type="submit">Sign Up</button>
         <div class="hidden-fields">
@@ -86,25 +149,16 @@
       </form>
     </div>
 
-    <div class="form-container">
-      <h2>Contact Form</h2>
-      <form data-refref id="contact-form">
+    <div class="form-container without-attribute">
+      <h3>Form without <code>data-refref</code> <span class="badge orange">NO ATTRIBUTE</span></h3>
+      <form id="contact-form">
         <div>
           <label for="contact-name">Name:</label>
-          <input type="text" id="contact-name" name="contact-name" required />
+          <input type="text" id="contact-name" name="contact-name" />
         </div>
         <div>
           <label for="contact-email">Email:</label>
-          <input
-            type="email"
-            id="contact-email"
-            name="contact-email"
-            required
-          />
-        </div>
-        <div>
-          <label for="message">Message:</label>
-          <input type="text" id="message" name="message" required />
+          <input type="email" id="contact-email" name="contact-email" />
         </div>
         <button type="submit">Send Message</button>
         <div class="hidden-fields">
@@ -114,39 +168,76 @@
       </form>
     </div>
 
+    <h2>🔄 Dynamic Forms (test MutationObserver)</h2>
+    <div>
+      <button class="action-button" onclick="addFormWithAttribute()">
+        Add Form WITH data-refref
+      </button>
+      <button class="action-button" onclick="addFormWithoutAttribute()">
+        Add Form WITHOUT data-refref
+      </button>
+      <button class="action-button" onclick="clearDynamicForms()">
+        Clear All Dynamic Forms
+      </button>
+    </div>
+
+    <div id="dynamic-forms-container">
+      <p style="color: #666; text-align: center;">No dynamic forms yet. Click buttons above to add forms.</p>
+    </div>
+
     <div id="attribution-data">
-      <h3>Current Attribution Data</h3>
+      <h3>🔍 Debug Information</h3>
       <pre id="current-data"></pre>
     </div>
 
-    <script src="../dist/index.js"></script>
+    <script type="module" src="/src/index.ts"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Initialize RefRef
-        const attribution = window.RefRef.init({
-          cookieOptions: {
-            domain: window.location.hostname,
-            maxAge: 30 * 24 * 60 * 60, // 30 days
-          },
-        });
+      let dynamicFormCounter = 0;
 
-        // Attach to all forms
-        attribution.attachToAll();
+      // Wait for RefRefAttribution to be available
+      function waitForRefRef(callback) {
+        if (window.RefRefAttribution) {
+          callback();
+        } else {
+          setTimeout(() => waitForRefRef(callback), 50);
+        }
+      }
 
-        // Function to display hidden fields
+      waitForRefRef(() => {
+        // Display current mode and code
+        const code = window.RefRefAttribution.getCode();
+        document.getElementById("current-mode").textContent = "data-refref (default)";
+        document.getElementById("current-code").textContent = code || "No referral code set";
+
+        // Function to display hidden fields for a form
         function displayHiddenFields(formId, displayId) {
           const form = document.getElementById(formId);
+          if (!form) return;
+
           const hiddenFields = Array.from(
             form.querySelectorAll('input[type="hidden"]')
-          )
-            .map((field) => `${field.name}: ${field.value}`)
-            .join("\n");
-          document.getElementById(displayId).textContent = hiddenFields;
+          );
+
+          if (hiddenFields.length === 0) {
+            document.getElementById(displayId).textContent = "No hidden fields found";
+          } else {
+            const fieldsText = hiddenFields
+              .map((field) => `${field.name}: ${field.value || "(empty)"}`)
+              .join("\n");
+            document.getElementById(displayId).textContent = fieldsText;
+          }
         }
 
         // Display current attribution data
         function updateAttributionDisplay() {
-          const data = attribution.getAttributionData();
+          const code = window.RefRefAttribution.getCode();
+          const data = {
+            referralCode: code || null,
+            timestamp: new Date().toISOString(),
+            totalForms: document.querySelectorAll("form").length,
+            formsWithAttribute: document.querySelectorAll("form[data-refref]").length,
+            formsWithHiddenField: document.querySelectorAll('form input[name="refcode"]').length,
+          };
           document.getElementById("current-data").textContent = JSON.stringify(
             data,
             null,
@@ -154,32 +245,97 @@
           );
         }
 
-        // Update displays initially
-        displayHiddenFields("signup-form", "signup-hidden-fields");
-        displayHiddenFields("contact-form", "contact-hidden-fields");
-        updateAttributionDisplay();
+        // Update all displays
+        function updateAllDisplays() {
+          displayHiddenFields("signup-form", "signup-hidden-fields");
+          displayHiddenFields("contact-form", "contact-hidden-fields");
+          updateAttributionDisplay();
+
+          // Update dynamic forms
+          const dynamicForms = document.querySelectorAll("#dynamic-forms-container form");
+          dynamicForms.forEach((form) => {
+            const displayId = form.id + "-hidden";
+            displayHiddenFields(form.id, displayId);
+          });
+        }
+
+        // Initial display update
+        updateAllDisplays();
 
         // Handle form submissions
-        ["signup-form", "contact-form"].forEach((formId) => {
-          document.getElementById(formId).addEventListener("submit", (e) => {
+        document.addEventListener("submit", (e) => {
+          if (e.target.tagName === "FORM") {
             e.preventDefault();
             const formData = new FormData(e.target);
             const data = {};
             for (let [key, value] of formData.entries()) {
               data[key] = value;
             }
-            console.log(`${formId} submission:`, data);
-            alert("Form submitted! Check console for data");
-          });
+            console.log(`Form submission:`, data);
+            alert("Form submitted! Check console for data.\n\nRefcode: " + (data.refcode || "Not found"));
+          }
         });
 
-        // Update displays when attribution data changes
-        setInterval(() => {
-          displayHiddenFields("signup-form", "signup-hidden-fields");
-          displayHiddenFields("contact-form", "contact-hidden-fields");
-          updateAttributionDisplay();
-        }, 1000);
+        // Update displays periodically
+        setInterval(updateAllDisplays, 1000);
       });
+
+      // Dynamic form functions
+      function addFormWithAttribute() {
+        dynamicFormCounter++;
+        const formId = `dynamic-form-${dynamicFormCounter}`;
+        const container = document.getElementById("dynamic-forms-container");
+
+        // Remove placeholder text if exists
+        const placeholder = container.querySelector("p");
+        if (placeholder) placeholder.remove();
+
+        const formHtml = `
+          <div class="form-container with-attribute">
+            <h4>Dynamic Form #${dynamicFormCounter} <span class="badge green">HAS ATTRIBUTE</span></h4>
+            <form data-refref id="${formId}">
+              <input type="text" name="field1" placeholder="Field 1" />
+              <button type="submit">Submit</button>
+              <div class="hidden-fields">
+                <strong>Hidden Fields:</strong>
+                <pre id="${formId}-hidden"></pre>
+              </div>
+            </form>
+          </div>
+        `;
+        container.insertAdjacentHTML("beforeend", formHtml);
+      }
+
+      function addFormWithoutAttribute() {
+        dynamicFormCounter++;
+        const formId = `dynamic-form-${dynamicFormCounter}`;
+        const container = document.getElementById("dynamic-forms-container");
+
+        // Remove placeholder text if exists
+        const placeholder = container.querySelector("p");
+        if (placeholder) placeholder.remove();
+
+        const formHtml = `
+          <div class="form-container without-attribute">
+            <h4>Dynamic Form #${dynamicFormCounter} <span class="badge orange">NO ATTRIBUTE</span></h4>
+            <form id="${formId}">
+              <input type="text" name="field1" placeholder="Field 1" />
+              <button type="submit">Submit</button>
+              <div class="hidden-fields">
+                <strong>Hidden Fields:</strong>
+                <pre id="${formId}-hidden"></pre>
+              </div>
+            </form>
+          </div>
+        `;
+        container.insertAdjacentHTML("beforeend", formHtml);
+      }
+
+      function clearDynamicForms() {
+        const container = document.getElementById("dynamic-forms-container");
+        container.innerHTML = '<p style="color: #666; text-align: center;">No dynamic forms yet. Click buttons above to add forms.</p>';
+        dynamicFormCounter = 0;
+      }
     </script>
   </body>
 </html>

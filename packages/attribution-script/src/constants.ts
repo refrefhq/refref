@@ -1,5 +1,10 @@
+import type { AutoAttachMode } from "@/types";
+
+export const DEFAULT_AUTO_ATTACH: AutoAttachMode = "data-refref";
+
 export const FORM = {
   SELECTOR: "form[data-refref]",
+  SELECTOR_ALL: "form",
   FIELD: "refcode",
 } as const;
 

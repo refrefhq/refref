@@ -1,58 +1,50 @@
-import type { FormOptions, FormElement } from "@/types";
+import type { FormElement, AutoAttachMode } from "@/types";
 import { FORM } from "@/constants";
 
 export class FormManager {
-  private defaultOptions: FormOptions = {
-    codeField: FORM.FIELD,
-  };
+  private readonly fieldName = FORM.FIELD; // Hard-coded to "refcode"
 
-  constructor(private options: FormOptions = {}) {
-    this.options = {
-      ...this.defaultOptions,
-      ...options,
-    };
+  constructor() {
+    // No configuration needed - field name is always "refcode"
   }
 
-  public attachToAll(fieldName: string, code: string | undefined): void {
-    const forms = document.querySelectorAll<FormElement>(FORM.SELECTOR);
-    forms.forEach((form) => this.attachTo(form, fieldName, code));
+  public attachToAll(mode: AutoAttachMode, code: string | undefined): void {
+    if (mode === "false") {
+      return; // Don't attach to any forms when mode is 'false'
+    }
+
+    const selector = mode === "all" ? FORM.SELECTOR_ALL : FORM.SELECTOR;
+    const forms = document.querySelectorAll<FormElement>(selector);
+    forms.forEach((form) => this.attachTo(form, code));
   }
 
-  public attachTo(
-    form: FormElement,
-    fieldName: string,
-    code: string | undefined,
-  ): void {
+  public attachTo(form: FormElement, code: string | undefined): void {
     if (!form || !(form instanceof HTMLFormElement)) {
       console.warn("Invalid form element provided to attachTo");
       return;
     }
 
     // Create hidden field if it doesn't exist
-    this.ensureHiddenField(form, fieldName);
+    this.ensureHiddenField(form);
 
     // Set the value if we have a code
     if (code) {
-      this.updateHiddenField(form, fieldName, code);
+      this.updateHiddenField(form, code);
     }
   }
 
-  private ensureHiddenField(form: FormElement, fieldName: string): void {
-    if (!form.querySelector(`input[name="${fieldName}"]`)) {
+  private ensureHiddenField(form: FormElement): void {
+    if (!form.querySelector(`input[name="${this.fieldName}"]`)) {
       const input = document.createElement("input");
       input.type = "hidden";
-      input.name = fieldName;
+      input.name = this.fieldName;
       form.appendChild(input);
     }
   }
 
-  private updateHiddenField(
-    form: FormElement,
-    fieldName: string,
-    value: string,
-  ): void {
+  private updateHiddenField(form: FormElement, value: string): void {
     const field = form.querySelector(
-      `input[name="${fieldName}"]`,
+      `input[name="${this.fieldName}"]`,
     ) as HTMLInputElement;
     if (field) {
       field.value = value;

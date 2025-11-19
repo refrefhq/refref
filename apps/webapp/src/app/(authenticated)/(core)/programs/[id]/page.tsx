@@ -10,7 +10,7 @@ import { useSidebar } from "@refref/ui/components/sidebar";
 import { useWindowSize } from "@uidotdev/usehooks";
 import { DesignConfig } from "./_components/design-config";
 import { RewardStepConfig } from "./_components/reward-step-config";
-import { NotificationSetup } from "./_components/notification-setup";
+// import { NotificationSetup } from "./_components/notification-setup";
 import { Installation } from "./_components/installation";
 import { canProceedToStep } from "@/lib/program";
 import { toast } from "sonner";
@@ -146,12 +146,12 @@ export default function ProgramSetupPage() {
               onStepComplete={handleStepComplete}
             />
           )}
-          {step === "notifications" && (
+          {/* {step === "notifications" && (
             <NotificationSetup
               programId={params?.id ?? ""}
               onStepComplete={handleStepComplete}
             />
-          )}
+          )} */}
           {(step === "installation" || !step) && (
             <Installation
               programId={params?.id ?? ""}

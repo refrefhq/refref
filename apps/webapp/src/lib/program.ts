@@ -43,14 +43,14 @@ export const SETUP_STEPS = [
     isRequired: true,
     docLink: "/docs/reward-configuration",
   },
-  {
-    id: "notifications",
-    title: "Notifications",
-    description:
-      "Set up email and in-app notifications for your referral program.",
-    isRequired: false,
-    docLink: "/docs/notifications",
-  },
+  // {
+  //   id: "notifications",
+  //   title: "Notifications",
+  //   description:
+  //     "Set up email and in-app notifications for your referral program.",
+  //   isRequired: false,
+  //   docLink: "/docs/notifications",
+  // },
   {
     id: "installation",
     title: "Installation",
@@ -96,13 +96,13 @@ export function getSetupProgress(
       case "rewards":
         isComplete = true;
         break;
-      case "notifications":
-        isComplete = !!(
-          parsedConfig.notification &&
-          Object.keys(parsedConfig.notification).length > 0 &&
-          !parsedConfig.notification.installation?.completed
-        );
-        break;
+      // case "notifications":
+      //   isComplete = !!(
+      //     parsedConfig.notification &&
+      //     Object.keys(parsedConfig.notification).length > 0 &&
+      //     !parsedConfig.notification.installation?.completed
+      //   );
+      //   break;
       case "installation":
         isComplete = !!parsedConfig.notification?.installation?.completed;
         break;

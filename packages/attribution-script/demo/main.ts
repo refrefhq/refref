@@ -67,16 +67,9 @@ document.getElementById("app")!.innerHTML = `
   </div>
 `;
 
-// Initialize RefRef
-window.RefRefAttribution.init({
-  cookieOptions: {
-    domain: window.location.hostname,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-});
-
-// Attach to all forms
-window.RefRefAttribution.attachToAll();
+// RefRef initializes automatically on page load
+// Configuration is via script tag attributes:
+// <script data-auto-attach="data-refref" data-cookie-options='{"Domain":".example.com"}'></script>
 
 // Function to display hidden fields
 function displayHiddenFields(formId: string, displayId: string) {
