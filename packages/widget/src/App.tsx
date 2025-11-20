@@ -65,7 +65,8 @@ function App() {
               Referral Widget Development
             </h1>
             <p className="text-gray-600">
-              Interactive playground for testing widget configurations and styles.
+              Interactive playground for testing widget configurations and
+              styles.
             </p>
           </div>
 

@@ -56,12 +56,12 @@ Both the widget and attribution script support environment-specific configuratio
 
 **Required Environment Variables in Infisical:**
 
-| Package | Environment | Variable | Example Value |
-|---------|-------------|----------|---------------|
-| Widget | `dev` | `VITE_REFREF_API_ENDPOINT` | `http://localhost:3001` |
-| Widget | `prod` | `VITE_REFREF_API_ENDPOINT` | `https://api.refref.ai` |
-| Attribution | `dev` | `VITE_*` | _(add as needed)_ |
-| Attribution | `prod` | `VITE_*` | _(add as needed)_ |
+| Package     | Environment | Variable                   | Example Value           |
+| ----------- | ----------- | -------------------------- | ----------------------- |
+| Widget      | `dev`       | `VITE_REFREF_API_ENDPOINT` | `http://localhost:3001` |
+| Widget      | `prod`      | `VITE_REFREF_API_ENDPOINT` | `https://api.refref.ai` |
+| Attribution | `dev`       | `VITE_*`                   | _(add as needed)_       |
+| Attribution | `prod`      | `VITE_*`                   | _(add as needed)_       |
 
 **Setup in Infisical Dashboard:**
 
