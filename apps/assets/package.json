@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "build": "tsx scripts/build.ts",
+    "build:prod": "tsx scripts/build.ts --prod",
     "clean": "rm -rf public/*.js public/*.map",
     "dev": "infisical run --env=dev -- concurrently \"tsx scripts/build.ts --watch\" \"wrangler dev --port 8787\" || concurrently \"tsx scripts/build.ts --watch\" \"wrangler dev --port 8787\"",
-    "deploy:cloudflare": "pnpm build && wrangler deploy",
+    "deploy:cloudflare": "pnpm build:prod && wrangler deploy",
     "deploy:cloudflare:dev": "pnpm build && wrangler deploy --env dev"
   },
   "devDependencies": {
@@ -19,6 +20,7 @@
     "@types/node": "^24.9.1",
     "chokidar": "^4.0.1",
     "concurrently": "^9.1.0",
+    "execa": "^9.5.2",
     "tsx": "^4.7.1",
     "typescript": "^5.9.2",
     "wrangler": "^4.0.0"
