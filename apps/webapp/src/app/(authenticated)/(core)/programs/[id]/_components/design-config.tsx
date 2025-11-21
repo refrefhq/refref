@@ -28,7 +28,7 @@ import { ReferralWidgetContent } from "@refref/ui/components/referral-widget/ref
 import { ReferralWidgetDialogTrigger } from "@refref/ui/components/referral-widget/referral-widget-dialog-trigger";
 import { StickySaveBarRelative } from "@/components/sticky-save-bar";
 import { ColorPicker } from "@/components/theme/color-picker";
-import { ShadowDomPreview } from "@/components/shadow-dom-preview";
+import { WidgetPreview } from "@/components/widget-preview";
 
 interface DesignConfigProps {
   programId: string;
@@ -506,7 +506,7 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
             onClose={() => setShowPreview(false)}
             className="w-full h-full"
           >
-            <ShadowDomPreview
+            <WidgetPreview
               cssVariables={{
                 "--primary": themeColors.primary,
                 "--primary-foreground": themeColors.primaryForeground,
@@ -518,7 +518,7 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
             >
               <div className="text-center mb-6">
                 <h2 className="text-xl font-semibold mb-2">Modal Preview</h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-background">
                   See how your modal will look in real-time
                 </p>
               </div>
@@ -528,7 +528,7 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
                 <h2 className="text-xl font-semibold mb-2">
                   Floating Widget Preview
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-background">
                   See how your floating widget will look in real-time
                 </p>
                 <ReferralWidgetDialogTrigger
@@ -537,7 +537,7 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
                   onOpenChange={() => {}}
                 />
               </div>
-            </ShadowDomPreview>
+            </WidgetPreview>
           </PreviewPane>
         </div>
       </div>
