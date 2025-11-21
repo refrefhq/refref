@@ -28,6 +28,7 @@ import { ReferralWidgetContent } from "@refref/ui/components/referral-widget/ref
 import { ReferralWidgetDialogTrigger } from "@refref/ui/components/referral-widget/referral-widget-dialog-trigger";
 import { StickySaveBarRelative } from "@/components/sticky-save-bar";
 import { ColorPicker } from "@/components/theme/color-picker";
+import { ShadowDomPreview } from "@/components/shadow-dom-preview";
 
 interface DesignConfigProps {
   programId: string;
@@ -42,7 +43,7 @@ const defaultWidgetConfig: WidgetConfigType = {
   title: "Invite your friends",
   subtitle: "Share your referral link and earn rewards when your friends join!",
   logoUrl: "",
-  shareMessage: "Join me on {productName} and get a reward!",
+  shareMessage: "Join me and get a reward!",
   enabledPlatforms: {
     facebook: true,
     twitter: true,
@@ -443,23 +444,8 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
                   onChange={(e) =>
                     updateWidgetConfig({ shareMessage: e.target.value })
                   }
-                  placeholder="Join me on {productName} and get a reward!"
+                  placeholder="Join me and get a reward!"
                   rows={2}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Use {"{productName}"} as a placeholder for your product name
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="productName">Product Name</Label>
-                <Input
-                  id="productName"
-                  value={widgetConfig.productName}
-                  onChange={(e) =>
-                    updateWidgetConfig({ productName: e.target.value })
-                  }
-                  placeholder="YourSaaS"
                 />
               </div>
 
@@ -520,17 +506,15 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
             onClose={() => setShowPreview(false)}
             className="w-full h-full"
           >
-            <div
-              style={
-                {
-                  "--primary": themeColors.primary,
-                  "--primary-foreground": themeColors.primaryForeground,
-                  "--secondary": themeColors.secondary,
-                  "--secondary-foreground": themeColors.secondaryForeground,
-                  "--muted": themeColors.muted,
-                  "--muted-foreground": themeColors.mutedForeground,
-                } as React.CSSProperties
-              }
+            <ShadowDomPreview
+              cssVariables={{
+                "--primary": themeColors.primary,
+                "--primary-foreground": themeColors.primaryForeground,
+                "--secondary": themeColors.secondary,
+                "--secondary-foreground": themeColors.secondaryForeground,
+                "--muted": themeColors.muted,
+                "--muted-foreground": themeColors.mutedForeground,
+              }}
             >
               <div className="text-center mb-6">
                 <h2 className="text-xl font-semibold mb-2">Modal Preview</h2>
@@ -553,7 +537,7 @@ export function DesignConfig({ programId, onStepComplete }: DesignConfigProps) {
                   onOpenChange={() => {}}
                 />
               </div>
-            </div>
+            </ShadowDomPreview>
           </PreviewPane>
         </div>
       </div>

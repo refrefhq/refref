@@ -254,7 +254,6 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
         });
 
         const widgetData = programData?.config?.widgetConfig;
-        console.error("widget config is ", widgetData);
 
         // Get REFERRAL_HOST_URL from environment
         const referralHostUrl =
