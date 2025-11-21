@@ -19,8 +19,6 @@ export function Widget() {
     };
   }, []);
 
-  console.log("config from widget file: ", config);
-
   if (!config) {
     return null;
   }

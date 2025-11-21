@@ -38,12 +38,10 @@ interface DesignConfigProps {
 const defaultWidgetConfig: WidgetConfigType = {
   position: "bottom-right",
   triggerText: "Refer & Earn",
-  borderRadius: 25,
   icon: "gift",
   title: "Invite your friends",
   subtitle: "Share your referral link and earn rewards when your friends join!",
   logoUrl: "",
-  modalBorderRadius: 12,
   shareMessage: "Join me on {productName} and get a reward!",
   enabledPlatforms: {
     facebook: true,

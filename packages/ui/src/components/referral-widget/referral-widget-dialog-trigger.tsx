@@ -31,10 +31,8 @@ export function ReferralWidgetDialogTrigger({
         "bg-primary text-primary-foreground",
         "shadow-lg hover:shadow-xl transition-all duration-200",
         "inline-flex items-center justify-center",
+        "rounded-full",
       )}
-      style={{
-        borderRadius: `${config.borderRadius}px`,
-      }}
       onClick={() => onOpenChange(true)}
       aria-label="Open referral widget"
     >

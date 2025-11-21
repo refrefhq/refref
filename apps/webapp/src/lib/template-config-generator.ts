@@ -97,14 +97,12 @@ export function generateWidgetConfigFromTemplate(
     // Widget Button
     position: "bottom-right",
     triggerText: "Refer & Earn",
-    borderRadius: 25,
     icon: "gift",
 
     // Modal
     title: "Invite your friends",
     subtitle,
     logoUrl: "",
-    modalBorderRadius: 12,
 
     // Sharing
     shareMessage,

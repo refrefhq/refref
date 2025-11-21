@@ -120,7 +120,7 @@ export function ShareButtons({ config, referralLink }: ShareButtonsProps) {
             variant="ghost"
             size="icon"
             onClick={() => handleShare(platform)}
-            className="h-11 w-11 rounded-xl hover:scale-110 transition-all duration-200 hover:shadow-lg"
+            className="size-10 rounded-lg hover:scale-110 transition-all duration-200 hover:shadow-lg"
             aria-label={platformData.label}
             title={platformData.label}
             style={{
