@@ -5,6 +5,7 @@
     }
   ],
   "search.exclude": {
-    "**/.next": true
+    "**/.next": true,
+    "**/dist": true
   }
 }

@@ -46,14 +46,12 @@ window.RefRef.setConfig({
   // Widget button settings
   position: "bottom-right", // 'bottom-left', 'top-right', 'top-left'
   triggerText: "Refer & Earn",
-  borderRadius: 25,
   icon: "gift", // 'gift', 'heart', 'star', 'zap'
 
   // Modal content
   title: "Invite your friends",
   subtitle: "Share your referral link and earn rewards when your friends join!",
   logoUrl: "",
-  modalBorderRadius: 12,
 
   // Theme customization using CSS variables (shadcn-style)
   cssVariables: {

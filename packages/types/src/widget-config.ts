@@ -22,14 +22,12 @@ export const widgetConfigSchema = z.object({
   // Widget Button
   position: widgetPositionSchema,
   triggerText: z.string(),
-  borderRadius: z.number(),
   icon: widgetIconSchema,
 
   // Modal
   title: z.string(),
   subtitle: z.string(),
   logoUrl: z.string(),
-  modalBorderRadius: z.number(),
 
   // Theme (CSS Variables)
   cssVariables: z.record(z.string(), z.string()).optional(),
@@ -57,12 +55,10 @@ export type WidgetConfigType = z.infer<typeof widgetConfigSchema>;
 export const defaultWidgetConfig: WidgetConfigType = {
   position: "bottom-right",
   triggerText: "Refer & Earn",
-  borderRadius: 25,
   icon: "gift",
   title: "Invite your friends",
   subtitle: "Share your referral link and earn rewards when your friends join!",
   logoUrl: "",
-  modalBorderRadius: 12,
   shareMessage: "Join me on {productName} and get a reward!",
   enabledPlatforms: {
     facebook: true,

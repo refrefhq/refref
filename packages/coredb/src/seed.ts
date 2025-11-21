@@ -209,17 +209,11 @@ export const SEED_DATA = {
           logoUrl: "",
           position: "bottom-right" as const,
           subtitle: "Earn $10 per referral • Friends get 20% off",
-          textColor: "#1f2937",
-          accentColor: "#3b82f6",
           productName: "refref-local",
           triggerText: "Refer & Earn",
-          borderRadius: 25,
-          modalBgColor: "#ffffff",
           referralLink: "",
           shareMessage:
             "Join refref-local! Get 20% off your first purchase and I'll earn $10",
-          buttonBgColor: "#3b82f6",
-          buttonTextColor: "#ffffff",
           enabledPlatforms: {
             email: true,
             twitter: true,
@@ -229,7 +223,6 @@ export const SEED_DATA = {
             whatsapp: true,
             instagram: false,
           },
-          modalBorderRadius: 12,
         },
         templateConfig: {
           schemaVersion: 1,

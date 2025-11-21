@@ -18,8 +18,9 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build --mode production",
+    "dev": "infisical run --env=dev vite || vite",
+    "build": "infisical run --env=dev -- vite build --mode development || vite build --mode development",
+    "build:prod": "infisical run --env=prod -- vite build --mode production || vite build --mode production",
     "build:widget": "vite build --out-dir dist/widget --mode development",
     "build:widget:production": "vite build --out-dir dist/widget --mode production",
     "lint": "eslint . --report-unused-disable-directives",
@@ -27,14 +28,14 @@
     "type:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@refref/types": "workspace:*",
     "@refref/ui": "workspace:*",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.483.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "zustand": "^5.0.3",
-    "clsx": "^2.1.1",
     "tailwind-merge": "^3.0.2",
-    "@refref/types": "workspace:*"
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@refref/eslint-config": "workspace:*",

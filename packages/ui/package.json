@@ -31,9 +31,6 @@
       "optional": true
     }
   },
-  "overrides": {
-    "react-is": "^19.0.0-rc-69d4b800-20241021"
-  },
   "devDependencies": {
     "@refref/eslint-config": "workspace:*",
     "@refref/typescript-config": "workspace:*",

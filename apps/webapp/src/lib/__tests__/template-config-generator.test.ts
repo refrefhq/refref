@@ -16,8 +16,6 @@ describe("Template Config Generator", () => {
 
       expect(result.title).toBe("Invite your friends");
       expect(result.logoUrl).toBe("");
-      expect(result.borderRadius).toBe(25);
-      expect(result.modalBorderRadius).toBe(12);
     });
 
     it("should generate share message based on reward config", () => {

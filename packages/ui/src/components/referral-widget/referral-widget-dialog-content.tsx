@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "@refref/ui/components/button";
-import { Input } from "@refref/ui/components/input";
 import { ShareButtons } from "@refref/ui/components/referral-widget/share-buttons";
 import {
   Card,
@@ -34,16 +33,15 @@ export function ReferralWidgetContent({
   };
 
   return (
-    <Card
-      className="border-0 bg-card"
-      style={{
-        borderRadius: `${config.modalBorderRadius}px`,
-      }}
-    >
+    <Card className="border-0 bg-card rounded-lg">
       <CardHeader className="text-center">
         {config.logoUrl && (
           <div className="flex justify-center">
-            <img src={config.logoUrl} alt="Logo" className="h-12 w-auto" />
+            <img
+              src={config.logoUrl}
+              alt={`${config.productName} logo`}
+              className="h-12 w-auto"
+            />
           </div>
         )}
         <CardTitle className="text-xl text-card-foreground">
@@ -57,20 +55,40 @@ export function ReferralWidgetContent({
       <CardContent className="space-y-6">
         {/* Referral Link Section */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground">
+          <label
+            id="referral-link-label"
+            className="text-sm font-medium text-muted-foreground"
+          >
             Your Referral Link
           </label>
-          <div className="flex gap-2">
-            <Input value={config.referralLink} readOnly className="flex-1" />
+          <div className="flex gap-2 items-center">
+            <code
+              aria-labelledby="referral-link-label"
+              className="flex-1 px-3 py-2 border rounded-md bg-muted font-mono text-sm select-all cursor-text overflow-x-auto"
+              onClick={(e) => {
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(e.currentTarget);
+                selection?.removeAllRanges();
+                selection?.addRange(range);
+              }}
+            >
+              {config.referralLink}
+            </code>
             <Button
               onClick={copyToClipboard}
               size="sm"
               className="bg-primary text-primary-foreground"
+              aria-label={
+                copied
+                  ? "Copied to clipboard"
+                  : "Copy referral link to clipboard"
+              }
             >
               {copied ? (
-                <Check className="w-4 h-4" />
+                <Check className="w-4 h-4" aria-hidden="true" />
               ) : (
-                <Copy className="w-4 h-4" />
+                <Copy className="w-4 h-4" aria-hidden="true" />
               )}
             </Button>
           </div>

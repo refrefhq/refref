@@ -6,9 +6,13 @@ import { fileURLToPath } from "url";
 import { createHash } from "crypto";
 import { gzipSync, brotliCompressSync, constants as zlibConstants } from "zlib";
 import chokidar from "chokidar";
+import { execa } from "execa";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Check if production build is requested
+const isProd = process.argv.includes("--prod");
 
 // Paths
 const ROOT_DIR = join(__dirname, "..", "..", "..");
@@ -59,6 +63,38 @@ async function formatBytes(bytes: number): Promise<string> {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
+async function buildPackages(): Promise<void> {
+  console.log(
+    `🔨 Building packages with ${isProd ? "production" : "development"} environment...\n`,
+  );
+
+  const widgetDir = join(ROOT_DIR, "packages", "widget");
+  const attributionDir = join(ROOT_DIR, "packages", "attribution-script");
+  const buildCmd = isProd ? "build:prod" : "build";
+
+  try {
+    // Build widget
+    console.log(`📦 Building widget package (${buildCmd})...`);
+    await execa("pnpm", [buildCmd], {
+      cwd: widgetDir,
+      stdio: "inherit",
+    });
+    console.log("✅ Widget package built successfully\n");
+
+    // Build attribution script
+    console.log(`📦 Building attribution-script package (${buildCmd})...`);
+    await execa("pnpm", [buildCmd], {
+      cwd: attributionDir,
+      stdio: "inherit",
+    });
+    console.log("✅ Attribution-script package built successfully\n");
+  } catch (error) {
+    throw new Error(
+      `Failed to build packages: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
 async function copyScript(config: (typeof SCRIPTS)[0]): Promise<BuildStats> {
   const outputPath = join(PUBLIC_DIR, config.outputName);
 
@@ -104,6 +140,9 @@ async function build() {
   console.log("🚀 Building RefRef assets...\n");
 
   try {
+    // Build packages first (widget with environment-specific config)
+    await buildPackages();
+
     // Ensure public directory exists
     await mkdir(PUBLIC_DIR, { recursive: true });
 

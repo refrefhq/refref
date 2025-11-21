@@ -48,6 +48,38 @@ This is Cloudflare's new unified approach that replaces the separate Pages and W
 - **attribution.latest.js** - Alias to latest attribution version
 - **widget.latest.js** - Alias to latest widget version
 
+## Environment Configuration
+
+### Infisical Setup (Required)
+
+Both the widget and attribution script support environment-specific configuration. These are managed via **Infisical** secrets management.
+
+**Required Environment Variables in Infisical:**
+
+| Package     | Environment | Variable                   | Example Value           |
+| ----------- | ----------- | -------------------------- | ----------------------- |
+| Widget      | `dev`       | `VITE_REFREF_API_ENDPOINT` | `http://localhost:3001` |
+| Widget      | `prod`      | `VITE_REFREF_API_ENDPOINT` | `https://api.refref.ai` |
+| Attribution | `dev`       | `VITE_*`                   | _(add as needed)_       |
+| Attribution | `prod`      | `VITE_*`                   | _(add as needed)_       |
+
+**Setup in Infisical Dashboard:**
+
+1. Go to your RefRef project in Infisical
+2. Navigate to the `dev` environment
+3. Add secrets with `VITE_` prefix (e.g., `VITE_REFREF_API_ENDPOINT=http://localhost:3001`)
+4. Navigate to the `prod` environment
+5. Add the same secrets with production values (e.g., `VITE_REFREF_API_ENDPOINT=https://api.refref.ai`)
+
+**How It Works:**
+
+- The build script automatically builds both packages with the correct environment
+- `pnpm -F @refref/assets build` → builds packages with **dev** environment
+- `pnpm -F @refref/assets build:prod` → builds packages with **prod** environment
+- `pnpm -F @refref/assets deploy:cloudflare` → uses `build:prod` for production deployment
+
+**Note:** All Vite environment variables must be prefixed with `VITE_` to be exposed to client code.
+
 ## Development
 
 ### Local Development Server
@@ -79,8 +111,11 @@ Access scripts at:
 ### Build Assets Manually
 
 ```bash
-# Build assets once (copies bundles to public/)
+# Build assets for development (uses dev environment)
 pnpm -F @refref/assets build
+
+# Build assets for production (uses prod environment)
+pnpm -F @refref/assets build:prod
 
 # Clean generated files
 pnpm -F @refref/assets clean
@@ -90,10 +125,12 @@ pnpm -F @refref/assets clean
 
 The build script will:
 
-1. Copy compiled bundles from packages to `public/`
-2. Name them with version suffix (e.g., `attribution.v1.js`)
-3. Generate checksums for verification
-4. Display build statistics
+1. Build the widget package with environment-specific configuration (dev or prod)
+2. Build the attribution-script package with environment-specific configuration (dev or prod)
+3. Copy compiled bundles from packages to `public/`
+4. Name them with version suffix (e.g., `attribution.v1.js`, `widget.v1.js`)
+5. Generate checksums for verification
+6. Display build statistics with compression ratios
 
 ## Deployment
 
