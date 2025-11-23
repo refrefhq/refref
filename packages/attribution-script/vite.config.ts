@@ -5,6 +5,7 @@ import path from "path";
 
 export default defineConfig(({ mode }) => ({
   configLoader: "runner",
+  envDir: __dirname,
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

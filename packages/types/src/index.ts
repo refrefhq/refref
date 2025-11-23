@@ -10,6 +10,7 @@ export * from "./program-config";
 export * from "./program-template-steps";
 export * from "./program-templates";
 export * from "./widget-config";
+export * from "./widget-css-defaults";
 export * from "./event-config";
 export * from "./reward-config";
 

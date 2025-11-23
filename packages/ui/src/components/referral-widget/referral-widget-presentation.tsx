@@ -1,4 +1,3 @@
-import { Gift, Heart, Star, Zap } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,15 +15,8 @@ export interface ReferralWidgetPresentationProps {
   container?: HTMLElement | null;
 }
 
-const iconMap = {
-  gift: Gift,
-  heart: Heart,
-  star: Star,
-  zap: Zap,
-};
-
 /**
- * Pure UI component for the referral widget, including FAB and Dialog wrapper.
+ * Pure UI component for the referral widget, including trigger button and Dialog wrapper.
  * Renders ReferralWidgetDialogContent inside the Dialog.
  */
 export function ReferralWidgetPresentation({
@@ -33,8 +25,6 @@ export function ReferralWidgetPresentation({
   onOpenChange,
   container,
 }: ReferralWidgetPresentationProps) {
-  const IconComponent = iconMap[config.icon as keyof typeof iconMap] || Gift;
-
   const getPositionStyles = () => {
     switch (config.position) {
       case "bottom-right":
@@ -57,25 +47,6 @@ export function ReferralWidgetPresentation({
 
   return (
     <>
-      {/* Floating Action Button */}
-      {/* <Button
-        className={clsx(
-          "fixed z-50 shadow-lg hover:shadow-xl transition-all duration-200",
-          getPositionStyles(),
-          "inline-flex items-center justify-center"
-        )}
-        onClick={() => onOpenChange(true)}
-        style={{
-          backgroundColor: config.buttonBgColor,
-          color: config.buttonTextColor,
-          borderRadius: `${config.borderRadius}px`,
-        }}
-        aria-label="Open referral widget"
-      >
-        <IconComponent className="w-4 h-4 mr-2" />
-        {config.triggerText}
-      </Button> */}
-
       <ReferralWidgetDialogTrigger
         className={cn(getPositionStyles(), "fixed z-50")}
         config={config}

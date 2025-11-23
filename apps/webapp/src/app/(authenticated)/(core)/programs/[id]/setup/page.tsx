@@ -61,10 +61,14 @@ export default function ProgramSetupPage() {
 
   const stepRef = useRef<StepRef>(null);
 
+  const utils = api.useUtils();
+
   const saveTemplateConfigurationMutation =
     api.program.saveTemplateConfiguration.useMutation({
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         toast.success("Program setup completed successfully!");
+        // Invalidate and refetch the program query to get updated status
+        await utils.program.getById.invalidate(params.id);
       },
       onError: (error) => {
         toast.error(`Program setup failed: ${error.message}`);
@@ -196,9 +200,7 @@ export default function ProgramSetupPage() {
 
         console.log("Submitting template config:", finalInput);
         await saveTemplateConfigurationMutation.mutateAsync(finalInput);
-
-        // Navigate to program page on success
-        router.push(`/programs/${program.id}`);
+        // Navigation happens in the onSuccess callback after query invalidation
       } else {
         // Otherwise, move to the next step
         setActiveStep((prev) => prev + 1);

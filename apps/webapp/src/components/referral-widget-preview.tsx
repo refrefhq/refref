@@ -23,7 +23,6 @@ export default function ReferralWidgetPreview() {
     triggerText: "Refer & Earn",
     buttonBgColor: primaryColor,
     buttonTextColor: containerTextColor,
-    borderRadius: 25,
     icon: "gift" as const,
     title: "Refer friends, get rewards",
     subtitle: "Earn rewards for each referral",
@@ -31,7 +30,6 @@ export default function ReferralWidgetPreview() {
     modalBgColor: containerBgColor,
     accentColor: primaryColor,
     textColor: containerTextColor,
-    modalBorderRadius: 12,
     shareMessage: "Join me and get a reward!",
     enabledPlatforms: {
       facebook: false,
