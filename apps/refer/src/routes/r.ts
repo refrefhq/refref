@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { schema } from "@refref/coredb";
-const { refcode, product } = schema;
+const { refcode, product, reflink } = schema;
 import { eq, and } from "drizzle-orm";
 import { normalizeCode } from "@refref/utils";
 import type { ProgramConfigV1Type } from "@refref/types";
@@ -16,10 +16,10 @@ interface LocalCodeParams {
 
 export default async function referralRedirectRoutes(fastify: FastifyInstance) {
   /**
-   * Handles GET requests to /r/:code (global codes)
+   * Handles GET requests to /r/:code (auto-generated refcodes)
    * Example: /r/abc1234
    *
-   * Global codes are unique across the entire system and don't require product context.
+   * Auto-generated codes are unique across the entire system and don't require product context.
    */
   fastify.get<{ Params: GlobalCodeParams }>(
     "/:code",
@@ -42,10 +42,7 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         // Single optimized query using relations
         // This does a JOIN under the hood: refcode → participant → program
         const result = await request.db.query.refcode.findFirst({
-          where: and(
-            eq(refcode.code, normalizedCode),
-            eq(refcode.global, true),
-          ),
+          where: eq(refcode.code, normalizedCode),
           with: {
             participant: true,
             program: true,
@@ -103,10 +100,10 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
   );
 
   /**
-   * Handles GET requests to /r/:productSlug/:code (local/product-scoped codes)
+   * Handles GET requests to /r/:productSlug/:code (vanity links via reflink table)
    * Example: /r/acme/john-doe
    *
-   * Local codes are unique within a product and require the product slug for disambiguation.
+   * Vanity links are unique within a product and require the product slug for disambiguation.
    * This allows for vanity URLs like /r/acme/ceo or /r/startup/founder
    */
   fastify.get<{ Params: LocalCodeParams }>(
@@ -136,23 +133,27 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
           return reply.code(404).send({ error: "Product not found" });
         }
 
-        // Single optimized query using relations
-        // This does a JOIN under the hood: refcode → participant → program
-        const result = await request.db.query.refcode.findFirst({
+        // Look up the vanity link in the reflink table
+        const reflinkResult = await request.db.query.reflink.findFirst({
           where: and(
-            eq(refcode.code, normalizedCode),
-            eq(refcode.productId, productRecord.id),
-            eq(refcode.global, false),
+            eq(reflink.slug, normalizedCode),
+            eq(reflink.productId, productRecord.id),
           ),
           with: {
-            participant: true,
-            program: true,
+            refcode: {
+              with: {
+                participant: true,
+                program: true,
+              },
+            },
           },
         });
 
-        if (!result || !result.participant) {
-          return reply.code(404).send({ error: "Referral code not found" });
+        if (!reflinkResult || !reflinkResult.refcode || !reflinkResult.refcode.participant) {
+          return reply.code(404).send({ error: "Referral link not found" });
         }
+
+        const result = reflinkResult.refcode;
 
         // Type assertion needed due to Drizzle's type inference limitations with nested relations
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -187,7 +188,7 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
         Object.entries(paramsObj).forEach(([key, value]) => {
           if (value) searchParams.set(key, value);
         });
-        searchParams.set("refcode", normalizedCode);
+        searchParams.set("refcode", result.code);
 
         // Redirect with 307 to the product URL with encoded params
         return reply

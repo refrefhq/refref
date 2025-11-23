@@ -27,7 +27,7 @@ describe("Referral Redirect Endpoint", () => {
     await stopTestServer();
   });
 
-  describe("GET /:code - Global Code Error Cases", () => {
+  describe("GET /:code - Refcode Error Cases", () => {
     it("should return 404 when refcode not found", async () => {
       // Mock database to return null for refcode
       mockDb.query.refcode.findFirst.mockResolvedValueOnce(null);
@@ -48,7 +48,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_123",
         programId: "prg_123",
         productId: "prd_123",
-        global: true,
         participant: null, // No participant found in relation
       });
 
@@ -68,7 +67,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_123",
         programId: "prg_123",
         productId: "prd_123",
-        global: true,
         participant: {
           id: "prt_123",
           productId: "prd_123",
@@ -96,7 +94,7 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /:code - Global Code Success Cases", () => {
+  describe("GET /:code - Refcode Success Cases", () => {
     it("should redirect with encoded params when all data is present", async () => {
       // Mock complete happy path with nested data (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
@@ -105,7 +103,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_123",
         programId: "prg_123",
         productId: "prd_123",
-        global: true,
         participant: {
           id: "prt_123",
           productId: "prd_123",
@@ -142,7 +139,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_456",
         programId: "prg_456",
         productId: "prd_456",
-        global: true,
         participant: {
           id: "prt_456",
           productId: "prd_456",
@@ -179,7 +175,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_789",
         programId: "prg_789",
         productId: "prd_789",
-        global: true,
         participant: {
           id: "prt_789",
           productId: "prd_789",
@@ -214,7 +209,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_case",
         programId: "prg_case",
         productId: "prd_case",
-        global: true,
         participant: {
           id: "prt_case",
           productId: "prd_case",
@@ -240,7 +234,7 @@ describe("Referral Redirect Endpoint", () => {
     });
   });
 
-  describe("GET /:productSlug/:code - Local Code Cases", () => {
+  describe("GET /:productSlug/:code - Reflink (Vanity URL) Cases", () => {
     it("should return 404 when product not found", async () => {
       // Mock product lookup to return null
       mockDb.query.product.findFirst.mockResolvedValueOnce(null);
@@ -253,7 +247,7 @@ describe("Referral Redirect Endpoint", () => {
       expect(body.error).toBe("Product not found");
     });
 
-    it("should return 404 when local refcode not found", async () => {
+    it("should return 404 when reflink not found", async () => {
       // Mock product lookup
       mockDb.query.product.findFirst.mockResolvedValueOnce({
         id: "prd_acme",
@@ -261,18 +255,18 @@ describe("Referral Redirect Endpoint", () => {
         url: "https://acme.example.com",
       });
 
-      // Mock refcode lookup to return null
-      mockDb.query.refcode.findFirst.mockResolvedValueOnce(null);
+      // Mock reflink lookup to return null
+      mockDb.query.reflink.findFirst.mockResolvedValueOnce(null);
 
       const response = await apiContext.get("/acme/nonexistent");
 
       expect(response.status()).toBe(404);
 
       const body = await response.json();
-      expect(body.error).toBe("Referral code not found");
+      expect(body.error).toBe("Referral link not found");
     });
 
-    it("should redirect with local code when all data is present", async () => {
+    it("should redirect with vanity URL when all data is present", async () => {
       // Mock product lookup
       mockDb.query.product.findFirst.mockResolvedValueOnce({
         id: "prd_acme",
@@ -280,25 +274,30 @@ describe("Referral Redirect Endpoint", () => {
         url: "https://acme.example.com",
       });
 
-      // Mock refcode lookup
-      mockDb.query.refcode.findFirst.mockResolvedValueOnce({
-        id: "rc_local",
-        code: "john-doe",
-        participantId: "prt_john",
-        programId: "prg_acme",
+      // Mock reflink lookup with nested refcode
+      mockDb.query.reflink.findFirst.mockResolvedValueOnce({
+        id: "rl_vanity",
+        slug: "john-doe",
+        refcodeId: "rc_local",
         productId: "prd_acme",
-        global: false,
-        participant: {
-          id: "prt_john",
+        refcode: {
+          id: "rc_local",
+          code: "abc1234",
+          participantId: "prt_john",
+          programId: "prg_acme",
           productId: "prd_acme",
-          name: "John Doe",
-          email: "john@acme.com",
-        },
-        program: {
-          id: "prg_acme",
-          config: {
-            brandConfig: {
-              landingPageUrl: "https://acme.example.com",
+          participant: {
+            id: "prt_john",
+            productId: "prd_acme",
+            name: "John Doe",
+            email: "john@acme.com",
+          },
+          program: {
+            id: "prg_acme",
+            config: {
+              brandConfig: {
+                landingPageUrl: "https://acme.example.com",
+              },
             },
           },
         },
@@ -311,7 +310,7 @@ describe("Referral Redirect Endpoint", () => {
       const location = response.headers()["location"];
       expect(location).toBeDefined();
       expect(location).toContain("https://acme.example.com");
-      expect(location).toContain("refcode=john-doe");
+      expect(location).toContain("refcode=abc1234");
       expect(location).toContain("name=");
       expect(location).toContain("email=");
     });
@@ -326,7 +325,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_encode",
         programId: "prg_encode",
         productId: "prd_encode",
-        global: true,
         participant: {
           id: "prt_encode",
           productId: "prd_encode",
@@ -379,7 +377,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_special",
         programId: "prg_special",
         productId: "prd_special",
-        global: true,
         participant: {
           id: "prt_special",
           productId: "prd_special",
@@ -424,7 +421,6 @@ describe("Referral Redirect Endpoint", () => {
         participantId: "prt_perf",
         programId: "prg_perf",
         productId: "prd_perf",
-        global: true,
         participant: {
           id: "prt_perf",
           productId: "prd_perf",

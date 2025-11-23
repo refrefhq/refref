@@ -8,6 +8,13 @@
       "when": 1763471717017,
       "tag": "0000_flashy_infant_terrible",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1763895779098,
+      "tag": "0001_flaky_madelyne_pryor",
+      "breakpoints": true
     }
   ]
 }

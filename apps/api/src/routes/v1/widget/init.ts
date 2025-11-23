@@ -206,7 +206,6 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
                   participantId: participantRecord.id,
                   programId: activeProgram.id,
                   productId: productId,
-                  global: true,
                 })
                 .onConflictDoNothing()
                 .returning();
@@ -266,26 +265,8 @@ export default async function widgetInitRoutes(fastify: FastifyInstance) {
           });
         }
 
-        // Build referral URL based on code type
-        let referralUrl: string;
-        if (refcodeRecord.global) {
-          // Global code: /:code
-          referralUrl = `${referralHostUrl}/${refcodeRecord.code}`;
-        } else {
-          // Local code: /:productSlug/:code (need product slug)
-          const productData = await request.db.query.product.findFirst({
-            where: (product, { eq }) => eq(product.id, productId),
-          });
-
-          if (!productData?.slug) {
-            return reply.code(500).send({
-              error: "Internal Server Error",
-              message: "Product slug not configured for local refcode",
-            });
-          }
-
-          referralUrl = `${referralHostUrl}/${productData.slug}/${refcodeRecord.code}`;
-        }
+        // Build referral URL (all refcodes now use the direct /:code pattern)
+        const referralUrl = `${referralHostUrl}/${refcodeRecord.code}`;
 
         // Return the widget configuration
         const response: WidgetInitResponseType = {

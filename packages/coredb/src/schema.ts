@@ -292,7 +292,7 @@ export const refcode = pgTable(
   "refcode",
   {
     ...baseFields("refcode"),
-    // User-facing code (e.g., "abc1234" for global, "john-doe" for local)
+    // Auto-generated 7-character code (e.g., "abc1234")
     code: text("code").notNull(),
     // Core relationships
     participantId: text("participant_id")
@@ -304,29 +304,48 @@ export const refcode = pgTable(
     productId: text("product_id")
       .notNull()
       .references(() => product.id, { onDelete: "cascade" }),
-    // Code scope: global (unique across system) or local (unique within product)
-    global: boolean("global").notNull().default(false),
   },
   (table) => [
-    // Partial unique index for global codes (WHERE global = true)
-    uniqueIndex("refcode_global_code_unique_idx")
-      .on(table.code)
-      .where(sql`${table.global} = true`),
-    // Partial unique index for local codes (WHERE global = false)
-    uniqueIndex("refcode_local_code_unique_idx")
-      .on(table.code, table.productId)
-      .where(sql`${table.global} = false`),
-    // Index for fast code lookups (hot path for referral redirects)
-    index("refcode_code_idx").on(table.code),
+    // Unique index for globally unique codes
+    uniqueIndex("refcode_code_unique_idx").on(table.code),
     // Index for participant lookups
     index("refcode_participant_id_idx").on(table.participantId),
     // Index for program lookups
     index("refcode_program_id_idx").on(table.programId),
+    // Index for product lookups
+    index("refcode_product_id_idx").on(table.productId),
+  ],
+);
+
+export const reflink = pgTable(
+  "reflink",
+  {
+    ...baseFields("reflink"),
+    // Vanity URL slug (e.g., "john-doe", "ceo", "founder-2024")
+    slug: text("slug").notNull(),
+    // Reference to the underlying refcode
+    refcodeId: text("refcode_id")
+      .notNull()
+      .references(() => refcode.id, { onDelete: "cascade" }),
+    // Product scoping for vanity links
+    productId: text("product_id")
+      .notNull()
+      .references(() => product.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    // Unique vanity slug per product
+    uniqueIndex("reflink_slug_product_unique_idx").on(table.slug, table.productId),
+    // Index for fast slug lookups (hot path for referral redirects)
+    index("reflink_slug_idx").on(table.slug),
+    // Index for refcode lookups
+    index("reflink_refcode_id_idx").on(table.refcodeId),
+    // Index for product lookups
+    index("reflink_product_id_idx").on(table.productId),
   ],
 );
 
 // Relations for refcode
-export const refcodeRelations = relations(refcode, ({ one }) => ({
+export const refcodeRelations = relations(refcode, ({ one, many }) => ({
   participant: one(participant, {
     fields: [refcode.participantId],
     references: [participant.id],
@@ -337,6 +356,19 @@ export const refcodeRelations = relations(refcode, ({ one }) => ({
   }),
   product: one(product, {
     fields: [refcode.productId],
+    references: [product.id],
+  }),
+  reflinks: many(reflink),
+}));
+
+// Relations for reflink
+export const reflinkRelations = relations(reflink, ({ one }) => ({
+  refcode: one(refcode, {
+    fields: [reflink.refcodeId],
+    references: [refcode.id],
+  }),
+  product: one(product, {
+    fields: [reflink.productId],
     references: [product.id],
   }),
 }));

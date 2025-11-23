@@ -1,36 +1,37 @@
 import { Filter } from "bad-words";
 
 /**
- * Refcode utilities for generating and validating referral codes
+ * Refcode and Reflink utilities for generating and validating referral codes
  *
- * RefRef supports two types of referral codes:
+ * RefRef supports two separate but related concepts:
  *
- * 1. **Global Codes**: Auto-generated, globally unique codes
+ * 1. **Refcodes**: Auto-generated, globally unique tracking codes
  *    - Format: 7 characters (numbers + lowercase letters only)
  *    - Example: abc1234
  *    - URL Pattern: REFERRAL_HOST_URL/:code
- *    - Use Case: Default referral codes for participants
+ *    - Use Case: Core referral tracking codes for participants
  *
- * 2. **Local Codes**: User-specified vanity codes, unique within a product
+ * 2. **Reflinks**: Optional vanity URLs that map to refcodes
  *    - Format: 3-50 characters (alphanumeric + hyphens)
  *    - Example: john-doe
- *    - URL Pattern: REFERRAL_HOST_URL/:product_slug/:code
+ *    - URL Pattern: REFERRAL_HOST_URL/:product_slug/:slug
  *    - Use Case: Custom vanity URLs for branding
+ *    - Note: Reflinks are stored separately and point to underlying refcodes
  *
- * Both code types:
+ * Both types:
  * - Are case-insensitive (normalized to lowercase)
  * - Must pass profanity filtering
- * - Are tied to a specific participant and program
+ * - Are tied to a specific product and participant
  */
 
 const filter = new Filter();
 
 /**
- * Character set for global code generation: numbers + lowercase letters
+ * Character set for refcode generation: numbers + lowercase letters
  * Excludes potentially confusing characters (0/O, 1/I/l)
  */
-const GLOBAL_CODE_CHARS = "23456789abcdefghjkmnpqrstuvwxyz";
-const GLOBAL_CODE_LENGTH = 7;
+const REFCODE_CHARS = "23456789abcdefghjkmnpqrstuvwxyz";
+const REFCODE_LENGTH = 7;
 
 /**
  * Validation rules for user-specified vanity codes
@@ -40,9 +41,9 @@ const VANITY_CODE_MAX_LENGTH = 50;
 const VANITY_CODE_PATTERN = /^[a-z0-9-]+$/; // alphanumeric + hyphens only
 
 /**
- * Generates a random global refcode
+ * Generates a random refcode
  *
- * Global codes are:
+ * Refcodes are:
  * - 7 characters long
  * - Contain only numbers (2-9) and lowercase letters (a-z, excluding confusing chars)
  * - Checked for profanity
@@ -52,17 +53,17 @@ const VANITY_CODE_PATTERN = /^[a-z0-9-]+$/; // alphanumeric + hyphens only
  * @returns Generated code or null if all attempts exhausted
  *
  * @example
- * const code = generateGlobalCode();
+ * const code = generateRefcode();
  * // Returns: "abc1234" or null
  */
-export function generateGlobalCode(maxAttempts: number = 5): string | null {
+export function generateRefcode(maxAttempts: number = 5): string | null {
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     let code = "";
 
     // Generate random code
-    for (let i = 0; i < GLOBAL_CODE_LENGTH; i++) {
-      const randomIndex = Math.floor(Math.random() * GLOBAL_CODE_CHARS.length);
-      code += GLOBAL_CODE_CHARS[randomIndex];
+    for (let i = 0; i < REFCODE_LENGTH; i++) {
+      const randomIndex = Math.floor(Math.random() * REFCODE_CHARS.length);
+      code += REFCODE_CHARS[randomIndex];
     }
 
     // Check for profanity
@@ -74,6 +75,9 @@ export function generateGlobalCode(maxAttempts: number = 5): string | null {
   // All attempts exhausted
   return null;
 }
+
+// Keep the old function name for backward compatibility (deprecated)
+export const generateGlobalCode = generateRefcode;
 
 /**
  * Validates a user-specified vanity code
@@ -148,25 +152,28 @@ export function normalizeCode(code: string): string {
 }
 
 /**
- * Checks if a code appears to be a global code based on format
+ * Checks if a code appears to be a refcode based on format
  *
- * Note: This is a heuristic check, not definitive. The actual source of truth
- * is the database `global` field.
+ * Note: This is a heuristic check. Refcodes are exactly 7 characters of
+ * numbers and lowercase letters (after normalization).
  *
  * @param code - The code to check
- * @returns True if code matches global code format
+ * @returns True if code matches refcode format
  *
  * @example
- * isGlobalCodeFormat("abc1234");
+ * isRefcodeFormat("abc1234");
  * // Returns: true
  *
- * isGlobalCodeFormat("john-doe");
+ * isRefcodeFormat("john-doe");
  * // Returns: false
  */
-export function isGlobalCodeFormat(code: string): boolean {
+export function isRefcodeFormat(code: string): boolean {
   const normalizedCode = normalizeCode(code);
   return (
-    normalizedCode.length === GLOBAL_CODE_LENGTH &&
+    normalizedCode.length === REFCODE_LENGTH &&
     /^[a-z0-9]+$/.test(normalizedCode)
   );
 }
+
+// Keep the old function name for backward compatibility (deprecated)
+export const isGlobalCodeFormat = isRefcodeFormat;

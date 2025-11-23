@@ -15,7 +15,6 @@ describe("Referral Attribution Logic", () => {
         participantId: referrerId,
         programId: "prg_1",
         productId: "prd_1",
-        global: true,
       };
 
       const mockNewReferral = {
@@ -124,7 +123,6 @@ describe("Referral Attribution Logic", () => {
         participantId: "participant_referrer",
         programId: "prg_1",
         productId: "prd_1",
-        global: true,
       };
 
       expect(refcode.code).toBe("abc123");
@@ -172,8 +170,8 @@ describe("Referral Attribution Logic", () => {
   });
 
   describe("Product boundary enforcement (P1 Security Fix)", () => {
-    it("should NOT allow cross-product attribution with global codes", async () => {
-      // Scenario: Product A creates a global code, Product B tries to use it
+    it("should NOT allow cross-product attribution with refcodes", async () => {
+      // Scenario: Product A creates a refcode, Product B tries to use it
       const productA = "prd_AAA";
       const productB = "prd_BBB";
       const globalCode = "abc1234";
@@ -185,7 +183,6 @@ describe("Referral Attribution Logic", () => {
         participantId: "participant_A",
         programId: "prg_A",
         productId: productA, // Belongs to Product A
-        global: true,
       };
 
       // When Product B's widget init is called with this code
@@ -216,26 +213,25 @@ describe("Referral Attribution Logic", () => {
       expect(resultForProductA?.productId).toBe(productA);
     });
 
-    it("should enforce product boundary even when global flag is true", () => {
-      // The global flag only means:
-      // 1. The code uses 7-character format
-      // 2. The code is globally unique
+    it("should enforce product boundary for all refcodes", () => {
+      // All refcodes are:
+      // 1. Auto-generated 7-character format
+      // 2. Globally unique
       //
-      // It does NOT mean:
-      // 1. The code can be used across products
-      // 2. Attribution should ignore productId
+      // But they are STILL:
+      // 1. Bound to a specific product
+      // 2. Can only be used for attribution within that product
 
-      const globalRefcode = {
+      const refcodeData = {
         code: "xyz9876",
         productId: "prd_A",
-        global: true, // Global format, but still belongs to a specific product
       };
 
       // The query should ALWAYS check productId
-      expect(globalRefcode.productId).toBeDefined();
-      expect(globalRefcode.productId).toBe("prd_A");
+      expect(refcodeData.productId).toBeDefined();
+      expect(refcodeData.productId).toBe("prd_A");
 
-      // Even though it's global, it can only attribute within Product A
+      // Refcodes can only attribute within their assigned Product
     });
 
     it("should prevent referral creation across product boundaries", async () => {
@@ -252,7 +248,6 @@ describe("Referral Attribution Logic", () => {
         code: "abc1234",
         participantId: participantA.id,
         productId: productA,
-        global: true,
       };
 
       // Product B's new user trying to sign up with Product A's code
@@ -292,20 +287,20 @@ describe("Referral Attribution Logic", () => {
       // Solution: Always enforce product boundary
       // Result: No cross-product attribution
 
-      const vulnerableQuery = {
-        before: "WHERE code = ? AND (global = true OR productId = ?)",
-        problem: "global=true bypasses productId check",
-        vulnerability: "Cross-product attribution",
-      };
-
-      const fixedQuery = {
-        after: "WHERE code = ? AND productId = ?",
+      const correctQuery = {
+        query: "WHERE code = ? AND productId = ?",
         solution: "Always enforce product boundary",
         result: "Multi-tenancy isolation maintained",
       };
 
-      expect(vulnerableQuery.problem).toContain("bypasses productId");
-      expect(fixedQuery.solution).toContain("enforce product boundary");
+      const incorrectQuery = {
+        query: "WHERE code = ? WITHOUT productId check",
+        problem: "Could allow cross-product attribution",
+        vulnerability: "Multi-tenancy breach",
+      };
+
+      expect(incorrectQuery.problem).toContain("cross-product");
+      expect(correctQuery.solution).toContain("enforce product boundary");
     });
   });
 });
