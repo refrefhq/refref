@@ -67,7 +67,7 @@ export const rewardConfigSchema = z.object({
     valueType: z.enum(["fixed", "percentage"]),
     value: z.number().positive(),
     currency: currencySchema,
-  }),
+  }).optional(),
   referee: z.object({
     type: z.literal("discount"),
     valueType: z.enum(["fixed", "percentage"]),
@@ -75,7 +75,7 @@ export const rewardConfigSchema = z.object({
     currency: currencySchema.optional(), // Only for fixed discounts
     minPurchaseAmount: z.number().positive().optional(),
     validityDays: z.number().int().positive().optional(),
-  }),
+  }).optional(),
 });
 
 export type RewardConfigType = z.infer<typeof rewardConfigSchema>;
