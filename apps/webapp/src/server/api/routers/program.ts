@@ -335,12 +335,34 @@ export const programRouter = createTRPCRouter({
 
           const productName = productData?.name || "Our Platform";
 
-          // Generate widget config from template settings
+          // Parse product metadata if available
+          let productMetadata = undefined;
+          if (productData?.metadata) {
+            try {
+              productMetadata = JSON.parse(productData.metadata);
+            } catch (e) {
+              // If metadata is not valid JSON, ignore it
+              console.warn("Failed to parse product metadata:", e);
+            }
+          }
+
+          // Generate widget config from template settings with enhanced logic
           widgetConfig = generateWidgetConfigFromTemplate(
             brandConfig,
             rewardConfig,
             productName,
+            productMetadata,
           );
+
+          // Add product logo and URL if available
+          if (productData?.logo) {
+            widgetConfig.logoUrl = productData.logo;
+          }
+
+          // Use product URL as landing page if brand config doesn't specify one
+          if (!brandConfig?.landingPageUrl && productData?.url) {
+            widgetConfig.referralLink = productData.url; // This will be replaced with actual referral link later
+          }
 
           // Set the referral link (will be populated later by the system)
           widgetConfig.referralLink = "";
