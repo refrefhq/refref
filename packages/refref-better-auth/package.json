@@ -1,0 +1,56 @@
+{
+  "name": "@refref/better-auth",
+  "version": "0.1.0",
+  "description": "Better Auth integration package for RefRef referral tracking",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "unbuild",
+    "dev": "unbuild --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "better-auth": "^1.0.29",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@refref/typescript-config": "workspace:*",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.7.2",
+    "unbuild": "^2.0.0",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "better-auth": ">=1.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "better-auth",
+    "refref",
+    "referral",
+    "tracking",
+    "analytics",
+    "authentication"
+  ],
+  "license": "MIT",
+  "author": "RefRef",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/refref/refref.git",
+    "directory": "packages/refref-better-auth"
+  }
+}
