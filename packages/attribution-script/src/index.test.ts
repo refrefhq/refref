@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 // Helper to clear all cookies
 function clearAllCookies() {
   document.cookie.split(";").forEach((cookie) => {
-    const name = cookie.split("=")[0].trim();
+    const name = cookie.split("=")[0]?.trim() ?? "";
     document.cookie = `${name}=; Max-Age=-1; Path=/`;
   });
 }
@@ -286,7 +286,7 @@ describe("RefRef Attribution Script - End-to-End Tests", () => {
         configurable: true,
       });
 
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation();
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       // Create script with invalid JSON
       const script = createConfigScript(undefined, "{invalid-json}");

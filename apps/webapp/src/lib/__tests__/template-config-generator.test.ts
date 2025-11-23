@@ -53,7 +53,9 @@ describe("Template Config Generator", () => {
 
       expect(result.title).toBe("Share & Earn Together");
       expect(result.shareMessage).toBe("Get 20% off at MyApp!");
-      expect(result.subtitle).toBe("Earn $10 per referral • Friends get 20% off");
+      expect(result.subtitle).toBe(
+        "Earn $10 per referral • Friends get 20% off",
+      );
       expect(result.triggerText).toBe("Refer & Earn");
       expect(result.icon).toBe("gift");
     });
@@ -142,7 +144,9 @@ describe("Template Config Generator", () => {
       );
 
       expect(result.shareMessage).toBe("Get $5 off at ShopApp!");
-      expect(result.subtitle).toBe("Earn 15% per referral • Friends get $5 off");
+      expect(result.subtitle).toBe(
+        "Earn 15% per referral • Friends get $5 off",
+      );
     });
 
     it("should use default values when no rewards configured", () => {

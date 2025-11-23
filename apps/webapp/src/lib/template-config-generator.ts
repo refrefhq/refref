@@ -141,7 +141,9 @@ function generateWidgetSubtitle(
 /**
  * Generates button text based on reward configuration
  */
-function generateTriggerText(rewardConfig: RewardConfigType | undefined): string {
+function generateTriggerText(
+  rewardConfig: RewardConfigType | undefined,
+): string {
   if (!rewardConfig) {
     return "Refer & Earn";
   }
@@ -247,7 +249,9 @@ export function generateWidgetConfigFromTemplate(
   const icon = selectWidgetIcon(rewardConfig);
 
   // Determine enabled platforms based on product metadata
-  const enabledPlatforms = selectPlatformsForAudience(productMetadata?.targetAudience);
+  const enabledPlatforms = selectPlatformsForAudience(
+    productMetadata?.targetAudience,
+  );
 
   return {
     // Widget Button
