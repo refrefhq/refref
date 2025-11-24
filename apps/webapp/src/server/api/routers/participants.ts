@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { schema } from "@/server/db";
-const { participant, referral, refcode, event, product } = schema;
+const { participant, referral, refcode, reflink, event, product } = schema;
 import { and, count, eq, ilike, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/env";
@@ -158,11 +158,15 @@ export const participantsRouter = createTRPCRouter({
       if (refcodeData) {
         const referralHostUrl = env.NEXT_PUBLIC_REFER_URL;
 
-        if (refcodeData.global) {
-          // Global code: /:code
-          referralUrl = `${referralHostUrl}/${refcodeData.code}`;
-        } else {
-          // Local code: /:productSlug/:code
+        // Check if there's a reflink (vanity URL) for this refcode
+        const [reflinkData] = await ctx.db
+          .select()
+          .from(reflink)
+          .where(eq(reflink.refcodeId, refcodeData.id))
+          .limit(1);
+
+        if (reflinkData) {
+          // Vanity URL exists - use /:productSlug/:slug format
           // Need to get product slug
           const [productData] = await ctx.db
             .select({ slug: product.slug })
@@ -171,8 +175,11 @@ export const participantsRouter = createTRPCRouter({
             .limit(1);
 
           if (productData?.slug) {
-            referralUrl = `${referralHostUrl}/${productData.slug}/${refcodeData.code}`;
+            referralUrl = `${referralHostUrl}/${productData.slug}/${reflinkData.slug}`;
           }
+        } else {
+          // No vanity URL - use direct refcode format /:code
+          referralUrl = `${referralHostUrl}/${refcodeData.code}`;
         }
       }
 

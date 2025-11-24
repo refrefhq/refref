@@ -28,6 +28,9 @@ vi.mock("@refref/coredb", async (importOriginal) => {
       product: {
         findFirst: vi.fn().mockResolvedValue(null),
       },
+      reflink: {
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
     },
   };
 

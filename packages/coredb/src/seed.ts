@@ -288,7 +288,6 @@ export const SEED_DATA = {
       participantId: SEED_IDS.PARTICIPANT_1,
       programId: SEED_IDS.PROGRAM_2,
       productId: SEED_IDS.PRODUCT_1,
-      global: true,
     },
     {
       id: SEED_IDS.REFCODE_2,
@@ -296,7 +295,6 @@ export const SEED_DATA = {
       participantId: SEED_IDS.PARTICIPANT_2,
       programId: SEED_IDS.PROGRAM_2,
       productId: SEED_IDS.PRODUCT_1,
-      global: true,
     },
   ],
 
