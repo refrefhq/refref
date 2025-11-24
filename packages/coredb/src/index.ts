@@ -46,5 +46,5 @@ export type DBType = ReturnType<typeof createDb>;
 // Export schema for direct imports
 export * as schema from "./schema.js";
 
-// Export service account utilities
-export * from "./lib/service-account.js";
+// Export organization-level service account utilities
+export * from "./lib/organization-service-account.js";

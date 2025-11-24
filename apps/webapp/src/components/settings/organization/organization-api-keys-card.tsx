@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@refref/ui/components/card";
 import { Key, Plus, Trash2, KeyRound } from "lucide-react";
-import { CreateApiKeyDialog } from "./create-api-key-dialog";
+import { CreateOrgApiKeyDialog } from "./create-org-api-key-dialog";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -23,7 +23,7 @@ import {
 } from "@refref/ui/components/alert-dialog";
 import { DateDisplay } from "@/components/date-display";
 
-export function ProductApiKeysCard() {
+export function OrganizationApiKeysCard() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
 
@@ -71,8 +71,9 @@ export function ProductApiKeysCard() {
                 API Keys
               </CardTitle>
               <CardDescription>
-                Manage API keys for authenticating API requests. These are
-                different from OAuth client credentials.
+                Manage API keys for authenticating API requests to your
+                organization. These keys have full access to all products and
+                programs in your organization.
               </CardDescription>
             </div>
             <Button onClick={() => setIsCreateDialogOpen(true)} size="sm">
@@ -140,7 +141,7 @@ export function ProductApiKeysCard() {
         </CardContent>
       </Card>
 
-      <CreateApiKeyDialog
+      <CreateOrgApiKeyDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />

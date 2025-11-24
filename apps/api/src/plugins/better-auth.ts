@@ -12,20 +12,10 @@ declare module "fastify" {
       permissions: string | null;
       enabled: boolean | null;
       metadata?: {
-        productId?: string;
         organizationId?: string;
         createdBy?: string;
         createdAt?: string;
       };
-    };
-    product?: {
-      id: string;
-      orgId: string | null;
-      name: string;
-      slug: string | null;
-      url: string | null;
-      createdAt: Date;
-      updatedAt: Date;
     };
     organization?: {
       id: string;
@@ -104,18 +94,18 @@ const betterAuthPlugin = fp(
             });
           }
 
-          // Extract productId from API key metadata
+          // Extract organizationId from API key metadata
           const metadata = apiKeyData.metadata;
-          const productId = metadata?.productId;
+          const organizationId = metadata?.organizationId;
 
-          if (!productId) {
+          if (!organizationId) {
             return reply.code(500).send({
               error: "Internal Server Error",
-              message: "API key is missing product context",
+              message: "API key is missing organization context",
             });
           }
 
-          // Validate that the API key has the required permissions for this product
+          // Validate that the API key has the required permissions for this organization
           const permissions =
             typeof apiKeyData.permissions === "string"
               ? JSON.parse(apiKeyData.permissions)
@@ -123,33 +113,27 @@ const betterAuthPlugin = fp(
 
           if (
             !permissions ||
-            !permissions[productId] ||
-            !Array.isArray(permissions[productId])
+            !permissions[organizationId] ||
+            !Array.isArray(permissions[organizationId])
           ) {
             return reply.code(403).send({
               error: "Forbidden",
-              message: "API key does not have permissions for this product",
+              message:
+                "API key does not have permissions for this organization",
             });
           }
 
-          // Fetch product with organization relation for authorization context
-          const productData = await opts.db.query.product.findFirst({
-            where: (product, { eq }) => eq(product.id, productId),
+          // Fetch organization for authorization context
+          const orgData = await opts.db.query.org.findFirst({
+            where: (org, { eq }) => eq(org.id, organizationId),
           });
 
-          if (!productData) {
+          if (!orgData) {
             return reply.code(404).send({
               error: "Not Found",
-              message: "Product not found",
+              message: "Organization not found",
             });
           }
-
-          // Fetch organization relation
-          const orgData = productData.orgId
-            ? await opts.db.query.org.findFirst({
-                where: (org, { eq }) => eq(org.id, productData.orgId!),
-              })
-            : null;
 
           // Attach API key info and context to request
           request.apiKey = {
@@ -161,8 +145,7 @@ const betterAuthPlugin = fp(
             metadata: metadata,
           };
 
-          // Attach product and organization to request for route handlers
-          (request as any).product = productData;
+          // Attach organization to request for route handlers
           (request as any).organization = orgData;
         } catch (error) {
           request.log.error({ error }, "API key verification error");
