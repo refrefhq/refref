@@ -2,28 +2,28 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
-  ensureServiceAccountForProduct,
-  getApiKeysForProduct,
-  validateApiKeyPermission,
+  ensureServiceAccountForOrganization,
+  getApiKeysForOrganization,
+  validateApiKeyPermission as validateOrgApiKeyPermission,
 } from "@refref/coredb";
 import { auth } from "@/lib/auth";
 
 export const apiKeysRouter = createTRPCRouter({
   /**
-   * List all API keys for the active product
+   * List all API keys for the active organization
    */
   list: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.activeProductId) {
+    if (!ctx.activeOrganizationId) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "No active product",
+        message: "No active organization",
       });
     }
 
     // Validate permission
-    const hasPermission = await validateApiKeyPermission(
+    const hasPermission = await validateOrgApiKeyPermission(
       ctx.db,
-      ctx.activeProductId,
+      ctx.activeOrganizationId,
       ctx.userId!,
     );
 
@@ -34,14 +34,17 @@ export const apiKeysRouter = createTRPCRouter({
       });
     }
 
-    // Get API keys for this product
-    const keys = await getApiKeysForProduct(ctx.db, ctx.activeProductId);
+    // Get API keys for this organization
+    const keys = await getApiKeysForOrganization(
+      ctx.db,
+      ctx.activeOrganizationId,
+    );
 
     return keys;
   }),
 
   /**
-   * Create a new API key for the active product
+   * Create a new API key for the active organization
    */
   create: protectedProcedure
     .input(
@@ -56,17 +59,17 @@ export const apiKeysRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.activeProductId) {
+      if (!ctx.activeOrganizationId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "No active product",
+          message: "No active organization",
         });
       }
 
       // Validate permission
-      const hasPermission = await validateApiKeyPermission(
+      const hasPermission = await validateOrgApiKeyPermission(
         ctx.db,
-        ctx.activeProductId,
+        ctx.activeOrganizationId,
         ctx.userId!,
       );
 
@@ -77,10 +80,10 @@ export const apiKeysRouter = createTRPCRouter({
         });
       }
 
-      // Ensure service account exists for this product
-      const serviceAccountId = await ensureServiceAccountForProduct(
+      // Ensure service account exists for this organization
+      const serviceAccountId = await ensureServiceAccountForOrganization(
         ctx.db,
-        ctx.activeProductId,
+        ctx.activeOrganizationId,
       );
 
       // Create the API key using Better Auth
@@ -92,12 +95,11 @@ export const apiKeysRouter = createTRPCRouter({
             input.expiresIn === 0
               ? null
               : (input.expiresIn ?? 60 * 60 * 24 * 365), // Default: 1 year
-          prefix: "prod_refref_key_",
+          prefix: "org_refref_key_",
           permissions: {
-            [ctx.activeProductId]: ["track", "read", "write"],
+            [ctx.activeOrganizationId]: ["full_access"],
           },
           metadata: {
-            productId: ctx.activeProductId,
             organizationId: ctx.activeOrganizationId,
             createdBy: ctx.userId,
             createdAt: new Date().toISOString(),
@@ -133,17 +135,17 @@ export const apiKeysRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.activeProductId) {
+      if (!ctx.activeOrganizationId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "No active product",
+          message: "No active organization",
         });
       }
 
       // Validate permission
-      const hasPermission = await validateApiKeyPermission(
+      const hasPermission = await validateOrgApiKeyPermission(
         ctx.db,
-        ctx.activeProductId,
+        ctx.activeOrganizationId,
         ctx.userId!,
       );
 

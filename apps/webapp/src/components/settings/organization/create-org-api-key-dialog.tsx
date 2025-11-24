@@ -24,15 +24,15 @@ import { toast } from "sonner";
 import { Copy, CheckCircle, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Alert, AlertDescription } from "@refref/ui/components/alert";
 
-interface CreateApiKeyDialogProps {
+interface CreateOrgApiKeyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateApiKeyDialog({
+export function CreateOrgApiKeyDialog({
   open,
   onOpenChange,
-}: CreateApiKeyDialogProps) {
+}: CreateOrgApiKeyDialogProps) {
   const [name, setName] = useState("");
   const [expiresIn, setExpiresIn] = useState("0"); // Never (default)
   const [createdKey, setCreatedKey] = useState<string | null>(null);
@@ -152,6 +152,12 @@ export function CreateApiKeyDialog({
                 </Button>
               </div>
             </div>
+            <Alert>
+              <AlertDescription>
+                This API key has full access to your organization's data,
+                including all products and programs.
+              </AlertDescription>
+            </Alert>
           </div>
 
           <DialogFooter>
@@ -166,9 +172,11 @@ export function CreateApiKeyDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create API Key</DialogTitle>
+          <DialogTitle>Create Organization API Key</DialogTitle>
           <DialogDescription>
-            Create a new API key to authenticate API requests
+            Create a new API key to authenticate API requests to your
+            organization. This key will have full access to all products and
+            programs.
           </DialogDescription>
         </DialogHeader>
 

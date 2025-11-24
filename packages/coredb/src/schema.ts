@@ -334,7 +334,10 @@ export const reflink = pgTable(
   },
   (table) => [
     // Unique vanity slug per product
-    uniqueIndex("reflink_slug_product_unique_idx").on(table.slug, table.productId),
+    uniqueIndex("reflink_slug_product_unique_idx").on(
+      table.slug,
+      table.productId,
+    ),
     // Index for fast slug lookups (hot path for referral redirects)
     index("reflink_slug_idx").on(table.slug),
     // Index for refcode lookups

@@ -62,20 +62,24 @@ export type CurrencyType = z.infer<typeof currencySchema>;
 // Simplified reward configuration for initial implementation
 // Only supporting cash rewards for referrers and discounts for referees
 export const rewardConfigSchema = z.object({
-  referrer: z.object({
-    type: z.literal("cash"),
-    valueType: z.enum(["fixed", "percentage"]),
-    value: z.number().positive(),
-    currency: currencySchema,
-  }).optional(),
-  referee: z.object({
-    type: z.literal("discount"),
-    valueType: z.enum(["fixed", "percentage"]),
-    value: z.number().positive(),
-    currency: currencySchema.optional(), // Only for fixed discounts
-    minPurchaseAmount: z.number().positive().optional(),
-    validityDays: z.number().int().positive().optional(),
-  }).optional(),
+  referrer: z
+    .object({
+      type: z.literal("cash"),
+      valueType: z.enum(["fixed", "percentage"]),
+      value: z.number().positive(),
+      currency: currencySchema,
+    })
+    .optional(),
+  referee: z
+    .object({
+      type: z.literal("discount"),
+      valueType: z.enum(["fixed", "percentage"]),
+      value: z.number().positive(),
+      currency: currencySchema.optional(), // Only for fixed discounts
+      minPurchaseAmount: z.number().positive().optional(),
+      validityDays: z.number().int().positive().optional(),
+    })
+    .optional(),
 });
 
 export type RewardConfigType = z.infer<typeof rewardConfigSchema>;

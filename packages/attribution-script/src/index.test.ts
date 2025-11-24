@@ -286,7 +286,9 @@ describe("RefRef Attribution Script - End-to-End Tests", () => {
         configurable: true,
       });
 
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
 
       // Create script with invalid JSON
       const script = createConfigScript(undefined, "{invalid-json}");

@@ -149,7 +149,11 @@ export default async function referralRedirectRoutes(fastify: FastifyInstance) {
           },
         });
 
-        if (!reflinkResult || !reflinkResult.refcode || !reflinkResult.refcode.participant) {
+        if (
+          !reflinkResult ||
+          !reflinkResult.refcode ||
+          !reflinkResult.refcode.participant
+        ) {
           return reply.code(404).send({ error: "Referral link not found" });
         }
 

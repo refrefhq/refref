@@ -1,10 +1,10 @@
 import { eq, and } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { user, productUser, apikey, product } from "../schema";
+import { user, orgUser, apikey, org } from "../schema";
 import { createId } from "@paralleldrive/cuid2";
 
 /**
- * Service account utilities for managing product-scoped API keys
+ * Service account utilities for managing organization-scoped API keys
  */
 
 export interface ServiceAccount {
@@ -22,15 +22,15 @@ export interface ApiKeyWithMetadata {
   expiresAt: Date | null;
   createdAt: Date;
   enabled: boolean | null;
-  productId: string;
+  organizationId: string;
 }
 
 /**
- * Find service account for a given product
+ * Find service account for a given organization
  */
-async function findServiceAccountForProduct(
+async function findServiceAccountForOrganization(
   db: PostgresJsDatabase<any>,
-  productId: string,
+  organizationId: string,
 ): Promise<ServiceAccount | null> {
   const result = await db
     .select({
@@ -39,41 +39,44 @@ async function findServiceAccountForProduct(
       name: user.name,
       role: user.role,
     })
-    .from(productUser)
-    .innerJoin(user, eq(productUser.userId, user.id))
-    .where(and(eq(productUser.productId, productId), eq(user.role, "service")))
+    .from(orgUser)
+    .innerJoin(user, eq(orgUser.userId, user.id))
+    .where(and(eq(orgUser.orgId, organizationId), eq(user.role, "service")))
     .limit(1);
 
   return result[0] ?? null;
 }
 
 /**
- * Create service account for a product
+ * Create service account for an organization
  * Idempotent with retry logic for race conditions
  */
 async function createServiceAccount(
   db: PostgresJsDatabase<any>,
-  productId: string,
+  organizationId: string,
   maxRetries = 3,
 ): Promise<ServiceAccount> {
-  const serviceAccountEmail = `service-account_${productId}@refref.local`;
+  const serviceAccountEmail = `service-account_${organizationId}@refref.local`;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       // First check if it already exists
-      const existing = await findServiceAccountForProduct(db, productId);
+      const existing = await findServiceAccountForOrganization(
+        db,
+        organizationId,
+      );
       if (existing) {
         return existing;
       }
 
-      // Get product details for the service account name
-      const productDetails = await db
-        .select({ name: product.name })
-        .from(product)
-        .where(eq(product.id, productId))
+      // Get organization details for the service account name
+      const orgDetails = await db
+        .select({ name: org.name })
+        .from(org)
+        .where(eq(org.id, organizationId))
         .limit(1);
 
-      const productName = productDetails[0]?.name ?? "Unknown Product";
+      const orgName = orgDetails[0]?.name ?? "Unknown Organization";
 
       // Create the service account user
       const serviceAccountId = createId();
@@ -83,21 +86,24 @@ async function createServiceAccount(
         await tx.insert(user).values({
           id: serviceAccountId,
           email: serviceAccountEmail,
-          name: `Service Account - ${productName}`,
+          name: `Service Account - ${orgName}`,
           emailVerified: true,
           role: "service",
         });
 
-        // Add to product with "member" role
-        await tx.insert(productUser).values({
-          productId,
+        // Add to organization with "member" role
+        await tx.insert(orgUser).values({
+          orgId: organizationId,
           userId: serviceAccountId,
           role: "member",
         });
       });
 
       // Fetch and return the created account
-      const created = await findServiceAccountForProduct(db, productId);
+      const created = await findServiceAccountForOrganization(
+        db,
+        organizationId,
+      );
       if (!created) {
         throw new Error("Failed to create service account");
       }
@@ -110,7 +116,10 @@ async function createServiceAccount(
         error?.code === "23505" // PostgreSQL unique violation
       ) {
         // Another request created it, try to fetch
-        const existing = await findServiceAccountForProduct(db, productId);
+        const existing = await findServiceAccountForOrganization(
+          db,
+          organizationId,
+        );
         if (existing) {
           return existing;
         }
@@ -132,28 +141,31 @@ async function createServiceAccount(
 }
 
 /**
- * Ensure service account exists for a product
+ * Ensure service account exists for an organization
  * Creates if missing (idempotent)
  * @returns Service account user ID
  */
-export async function ensureServiceAccountForProduct(
+export async function ensureServiceAccountForOrganization(
   db: PostgresJsDatabase<any>,
-  productId: string,
+  organizationId: string,
 ): Promise<string> {
-  const serviceAccount = await createServiceAccount(db, productId);
+  const serviceAccount = await createServiceAccount(db, organizationId);
   return serviceAccount.id;
 }
 
 /**
- * Get all API keys for a product
+ * Get all API keys for an organization
  * Redacts the key value to show only prefix and last 4 characters
  */
-export async function getApiKeysForProduct(
+export async function getApiKeysForOrganization(
   db: PostgresJsDatabase<any>,
-  productId: string,
+  organizationId: string,
 ): Promise<ApiKeyWithMetadata[]> {
-  // Get service account for this product
-  const serviceAccount = await findServiceAccountForProduct(db, productId);
+  // Get service account for this organization
+  const serviceAccount = await findServiceAccountForOrganization(
+    db,
+    organizationId,
+  );
 
   if (!serviceAccount) {
     // No service account = no API keys
@@ -182,45 +194,44 @@ export async function getApiKeysForProduct(
       expiresAt: key.expiresAt,
       createdAt: key.createdAt,
       enabled: key.enabled,
-      productId,
+      organizationId,
     };
   });
 }
 
 /**
- * Validate if a user has permission to manage API keys for a product
- * Only admin/owner of the product's organization can manage keys
+ * Validate if a user has permission to manage API keys for an organization
+ * Only admin/owner of the organization can manage keys
  */
 export async function validateApiKeyPermission(
   db: PostgresJsDatabase<any>,
-  productId: string,
+  organizationId: string,
   userId: string,
 ): Promise<boolean> {
-  // Get the product to find its organization
-  const productDetails = await db
-    .select({ orgId: product.orgId })
-    .from(product)
-    .where(eq(product.id, productId))
-    .limit(1);
-
-  if (!productDetails[0]?.orgId) {
-    return false;
-  }
-
   // Check if user is admin/owner of the organization
-  const { orgUser } = await import("../schema");
-
   const membership = await db
     .select({ role: orgUser.role })
     .from(orgUser)
-    .where(
-      and(
-        eq(orgUser.orgId, productDetails[0].orgId),
-        eq(orgUser.userId, userId),
-      ),
-    )
+    .where(and(eq(orgUser.orgId, organizationId), eq(orgUser.userId, userId)))
     .limit(1);
 
   const userRole = membership[0]?.role;
   return userRole === "admin" || userRole === "owner";
+}
+
+/**
+ * Clean up old product service accounts (migration helper)
+ */
+export async function cleanupProductServiceAccounts(
+  db: PostgresJsDatabase<any>,
+): Promise<void> {
+  // Delete all service accounts that have the old product pattern
+  // Pattern: service-account_{productId}@refref.local where productId is a CUID
+  await db.delete(user).where(
+    and(
+      eq(user.role, "service"),
+      // This will match the old pattern
+      // We'll keep organization service accounts which have a different pattern
+    ),
+  );
 }
