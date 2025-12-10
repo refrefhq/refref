@@ -64,9 +64,10 @@ function mountWidget() {
     const shadow = shadowHost.attachShadow({ mode: "open" });
 
     // Create main stylesheet with :root replaced by :host
+    // Reset inherited properties at shadow boundary, then apply widget styles
     // @link https://github.com/tailwindlabs/tailwindcss/discussions/1935
     const sheet = new CSSStyleSheet();
-    sheet.replaceSync(styles.replaceAll(":root", ":host"));
+    sheet.replaceSync(`:host { all: initial; }\n` + styles.replaceAll(":root", ":host"));
 
     // Apply CSS variable overrides from actual config
     if (config.cssVariables && Object.keys(config.cssVariables).length > 0) {
@@ -81,8 +82,10 @@ function mountWidget() {
     }
 
     // Create widget root container inside shadow DOM
+    // Base classes here (not on :host) so dark mode variables apply correctly
     const shadowRoot = document.createElement("div");
     shadowRoot.id = "widget-root";
+    shadowRoot.className = "bg-background text-foreground";
 
     // Detect and apply dark mode from parent page
     const updateDarkMode = () => {
