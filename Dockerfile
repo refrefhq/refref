@@ -13,7 +13,7 @@ COPY apps/webapp/package.json ./apps/webapp/
 COPY packages/attribution-script/package.json ./packages/attribution-script/
 COPY packages/coredb/package.json ./packages/coredb/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
-COPY packages/referral-widget/package.json ./packages/referral-widget/
+COPY packages/widget/package.json ./packages/widget/
 COPY packages/types/package.json ./packages/types/
 COPY packages/typescript-config/package.json ./packages/typescript-config/
 COPY packages/ui/package.json ./packages/ui/

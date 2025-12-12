@@ -87,10 +87,9 @@ temp/
 *.tgz
 *.tar.gz
 
-# Documentation
+# Documentation (top-level only)
 README.md
-*.md
-docs/
+/docs/
 
 # Fly.io
 fly.toml
@@ -102,7 +101,6 @@ fly.toml
 # Apps not needed for api/refer builds
 apps/www
 apps/assets
-apps/webapp
 
 # Infisical
 .infisical/

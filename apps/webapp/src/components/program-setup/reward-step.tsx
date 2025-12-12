@@ -57,7 +57,6 @@ export const RewardStep = forwardRef<
   RewardStepProps
 >(({ programId }, ref) => {
   const form = useForm<RewardStepData>({
-    // @ts-expect-error - Zod v4 type compatibility issue with @hookform/resolvers
     resolver: zodResolver(rewardStepSchema),
     defaultValues: {
       referrerReward: {
