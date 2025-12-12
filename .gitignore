@@ -11,6 +11,8 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+version.py
+push-to-dockerhub.ps1
 
 # Testing
 coverage
