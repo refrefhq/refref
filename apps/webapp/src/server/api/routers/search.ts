@@ -32,9 +32,14 @@ const settingsPages = [
     href: `/settings/product/general`,
   },
   {
+    id: "product-secrets-settings",
+    name: "Product Secrets",
+    href: "/settings/product/secrets",
+  },
+  {
     id: "api-settings",
-    name: "API & Secrets",
-    href: "/settings/product/api",
+    name: "API",
+    href: "/settings/organization/api-keys",
   },
 ];
 

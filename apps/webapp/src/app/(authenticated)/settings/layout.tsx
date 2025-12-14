@@ -49,6 +49,11 @@ const SidebarItems = [
         href: "/settings/organization/members",
         icon: IconUsers,
       },
+      {
+        label: "API",
+        href: "/settings/organization/api-keys",
+        icon: IconKey,
+      },
     ],
   },
   {
@@ -59,7 +64,11 @@ const SidebarItems = [
         href: "/settings/product/general",
         icon: IconBuilding,
       },
-      { label: "API & Secrets", href: "/settings/product/api", icon: IconKey },
+      {
+        label: "Secrets",
+        href: "/settings/product/secrets",
+        icon: IconKey,
+      },
     ],
   },
 ];
