@@ -1,7 +1,7 @@
 "use client";
 import React, { forwardRef, useImperativeHandle } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { z } from "zod";
 import {
   FormControl,
@@ -57,7 +57,7 @@ export const RewardStep = forwardRef<
   RewardStepProps
 >(({ programId }, ref) => {
   const form = useForm<RewardStepData>({
-    resolver: zodResolver(rewardStepSchema),
+    resolver: standardSchemaResolver(rewardStepSchema),
     defaultValues: {
       referrerReward: {
         enabled: true,
