@@ -220,6 +220,35 @@ export async function validateApiKeyPermission(
 }
 
 /**
+ * Delete an API key for an organization
+ * Verifies the key belongs to the organization's service account before deletion
+ * @returns true if deleted, false if not found or doesn't belong to organization
+ */
+export async function deleteApiKeyForOrganization(
+  db: PostgresJsDatabase<any>,
+  organizationId: string,
+  keyId: string,
+): Promise<boolean> {
+  // Get service account for this organization
+  const serviceAccount = await findServiceAccountForOrganization(
+    db,
+    organizationId,
+  );
+
+  if (!serviceAccount) {
+    return false;
+  }
+
+  // Delete the key only if it belongs to the organization's service account
+  const result = await db
+    .delete(apikey)
+    .where(and(eq(apikey.id, keyId), eq(apikey.userId, serviceAccount.id)))
+    .returning({ id: apikey.id });
+
+  return result.length > 0;
+}
+
+/**
  * Clean up old product service accounts (migration helper)
  */
 export async function cleanupProductServiceAccounts(

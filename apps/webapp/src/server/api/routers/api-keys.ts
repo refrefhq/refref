@@ -5,6 +5,7 @@ import {
   ensureServiceAccountForOrganization,
   getApiKeysForOrganization,
   validateApiKeyPermission as validateOrgApiKeyPermission,
+  deleteApiKeyForOrganization,
 } from "@refref/coredb";
 import { auth } from "@/lib/auth";
 
@@ -156,12 +157,20 @@ export const apiKeysRouter = createTRPCRouter({
         });
       }
 
-      // Delete the API key using Better Auth
-      await auth.api.deleteApiKey({
-        body: {
-          keyId: input.keyId,
-        },
-      });
+      // Delete the API key directly from the database
+      // (Better Auth's deleteApiKey requires ownership match, but keys belong to service account)
+      const deleted = await deleteApiKeyForOrganization(
+        ctx.db,
+        ctx.activeOrganizationId,
+        input.keyId,
+      );
+
+      if (!deleted) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "API key not found or does not belong to this organization",
+        });
+      }
 
       return { success: true };
     }),

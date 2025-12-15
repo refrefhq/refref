@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { Copy, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-} from "@refref/ui/components/card";
+import { Card, CardContent, CardFooter } from "@refref/ui/components/card";
 import { Button } from "@refref/ui/components/button";
 import { Input } from "@refref/ui/components/input";
 import { Label } from "@refref/ui/components/label";

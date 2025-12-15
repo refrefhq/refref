@@ -67,7 +67,9 @@ function mountWidget() {
     // Reset inherited properties at shadow boundary, then apply widget styles
     // @link https://github.com/tailwindlabs/tailwindcss/discussions/1935
     const sheet = new CSSStyleSheet();
-    sheet.replaceSync(`:host { all: initial; }\n` + styles.replaceAll(":root", ":host"));
+    sheet.replaceSync(
+      `:host { all: initial; }\n` + styles.replaceAll(":root", ":host"),
+    );
 
     // Apply CSS variable overrides from actual config
     if (config.cssVariables && Object.keys(config.cssVariables).length > 0) {
