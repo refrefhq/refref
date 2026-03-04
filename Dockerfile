@@ -31,6 +31,11 @@ RUN pnpm install --frozen-lockfile --filter @refref/webapp...
 # Build the webapp application (with placeholder env vars for build time)
 ENV DATABASE_URL="postgresql://placeholder"
 ENV BETTER_AUTH_SECRET="placeholder-secret-for-build"
+
+# NEXT_PUBLIC_* vars must be available at build time for Next.js client bundle
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+
 RUN pnpm build --filter @refref/webapp...
 
 # Production stage

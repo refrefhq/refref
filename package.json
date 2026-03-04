@@ -22,7 +22,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@babel/core": "7.28.5"
+      "@babel/core": "7.28.5",
+      "next": ">=16.0.10"
     }
   },
   "dependencies": {
