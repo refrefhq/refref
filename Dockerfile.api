@@ -51,9 +51,8 @@ COPY pnpm-workspace.yaml ./
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 
-# Copy built packages
+# Copy package source (needed for workspace linking)
 COPY --from=base /app/packages/ ./packages/
-COPY --from=base /app/apps/api/dist/ ./apps/api/dist/
 COPY --from=base /app/apps/api/package.json ./apps/api/package.json
 
 # Copy ca-certificates from build stage
@@ -61,6 +60,10 @@ COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod
+
+# Copy built artifacts AFTER install to prevent pnpm from overwriting them
+COPY --from=base /app/packages/ ./packages/
+COPY --from=base /app/apps/api/dist/ ./apps/api/dist/
 
 # Set working directory to api app
 WORKDIR /app/apps/api
