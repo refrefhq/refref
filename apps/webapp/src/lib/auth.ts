@@ -20,7 +20,7 @@ export const auth = getAuth({
       }
     : undefined,
   logger,
-  posthog,
+  posthog: env.NEXT_PUBLIC_POSTHOG_KEY ? posthog : undefined,
   trustedOrigins: [env.NEXT_PUBLIC_APP_URL],
   emailFrom: env.NOTIFICATIONS_EMAIL_FROM,
 });
