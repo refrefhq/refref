@@ -51,19 +51,13 @@ COPY pnpm-workspace.yaml ./
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 
-# Copy package source (needed for workspace linking)
-COPY --from=base /app/packages/ ./packages/
-COPY --from=base /app/apps/api/package.json ./apps/api/package.json
+# Copy everything from builder (node_modules, built packages, built api)
+# Using full install (not --prod) because tsx is needed at runtime to handle
+# extensionless ESM imports in compiled workspace packages
+COPY --from=base /app/ ./
 
 # Copy ca-certificates from build stage
 COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-
-# Install only production dependencies
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy built artifacts AFTER install to prevent pnpm from overwriting them
-COPY --from=base /app/packages/ ./packages/
-COPY --from=base /app/apps/api/dist/ ./apps/api/dist/
 
 # Set working directory to api app
 WORKDIR /app/apps/api
@@ -71,5 +65,7 @@ WORKDIR /app/apps/api
 # Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["pnpm", "start"]
+# Start with tsx to handle extensionless ESM imports in workspace packages
+# (tsc compiles with moduleResolution:"bundler" which emits extensionless
+# imports, but Node.js ESM strict resolution rejects them)
+CMD ["pnpm", "tsx", "dist/index.js"]
