@@ -55,6 +55,7 @@ COPY pnpm-lock.yaml ./
 COPY --from=base /app/packages/ ./packages/
 COPY --from=base /app/apps/api/dist/ ./apps/api/dist/
 COPY --from=base /app/apps/api/package.json ./apps/api/package.json
+COPY --from=base /app/apps/api/openapi.yaml ./apps/api/openapi.yaml
 
 # Copy ca-certificates from build stage
 COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/

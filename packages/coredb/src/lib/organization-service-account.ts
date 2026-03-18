@@ -1,6 +1,6 @@
 import { eq, and } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { user, orgUser, apikey, org } from "../schema";
+import { user, orgUser, apikey, org } from "../schema.js";
 import { createId } from "@paralleldrive/cuid2";
 
 /**
