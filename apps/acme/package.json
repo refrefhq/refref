@@ -4,7 +4,7 @@
   "private": true,
   "description": "Test application for RefRef integration testing and demos",
   "scripts": {
-    "dev": "next dev --port 3003",
+    "dev": "portless refref-acme -- next dev",
     "build": "next build",
     "start": "next start --port 3003"
   },

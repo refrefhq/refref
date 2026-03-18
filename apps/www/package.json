@@ -6,7 +6,7 @@
     "build": "pnpm fetch-content && pnpm build:docs && pnpm lint && next build && pnpm build:sitemap",
     "build:sitemap": "pnpm exec tsx ./scripts/generate-sitemap.mts",
     "build:docs": "node ./scripts/generate-docs.mjs",
-    "dev": "infisical run --env=dev -- next dev || next dev",
+    "dev": "portless refref-www -- infisical run --env=dev -- next dev || portless refref-www -- next dev",
     "start": "next start",
     "postinstall": "fumadocs-mdx",
     "serve": "serve out -p 3000",

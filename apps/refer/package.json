@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "infisical run --env=dev -- tsx watch src/index.ts || tsx watch src/index.ts",
+    "dev": "portless refref-refer -- infisical run --env=dev -- tsx watch src/index.ts || portless refref-refer -- tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "infisical run --env=dev -- vitest run || vitest run",

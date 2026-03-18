@@ -11,7 +11,7 @@
     "db:push": "pnpm -F @refref/coredb db:push",
     "db:studio": "pnpm -F @refref/coredb db:studio",
     "db:seed": "pnpm -F @refref/coredb db:seed",
-    "dev": "infisical run --env=dev -- next dev --turbo || next dev --turbo",
+    "dev": "portless refref-webapp -- infisical run --env=dev -- next dev --turbo || portless refref-webapp -- next dev --turbo",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "lint": "next lint",

@@ -4,6 +4,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "infisical run --env=dev -- turbo run dev || turbo run dev",
+    "portless:list": "portless list",
+    "portless:proxy": "portless proxy start",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "type:check": "turbo run type:check",

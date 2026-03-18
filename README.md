@@ -55,7 +55,7 @@ cd refref
 docker-compose up
 ```
 
-That's it! 🎉 The webapp portal will be available at http://localhost:3000
+That's it! 🎉 The webapp portal will be available at http://localhost:3000.
 
 Docker Compose automatically handles:
 
@@ -73,6 +73,7 @@ If you prefer running RefRef locally without Docker:
 - Node.js 20+
 - pnpm 10.15.0
 - PostgreSQL database
+- [portless](https://github.com/vercel-labs/portless) (`npm install -g portless`)
 
 #### Installation
 
@@ -96,7 +97,17 @@ pnpm -F @refref/webapp db:seed
 pnpm dev
 ```
 
-The webapp will be available at http://localhost:3000
+Each app gets a stable `.localhost` URL via [portless](https://github.com/vercel-labs/portless):
+
+| App    | URL                                 |
+| ------ | ----------------------------------- |
+| Webapp | http://refref-webapp.localhost:1355 |
+| WWW    | http://refref-www.localhost:1355    |
+| API    | http://refref-api.localhost:1355    |
+| Refer  | http://refref-refer.localhost:1355  |
+| Acme   | http://refref-acme.localhost:1355   |
+
+> Portless is a global CLI tool (`npm install -g portless`). The proxy auto-starts when you run `pnpm dev`. To bypass portless, set `PORTLESS=0 pnpm dev`.
 
 ### Environment Variables
 
@@ -109,7 +120,7 @@ The webapp will be available at http://localhost:3000
 
 - `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - For Google OAuth authentication
 - `RESEND_API_KEY` - For sending emails via Resend
-- `BETTER_AUTH_URL` - Authentication URL (defaults to http://localhost:3000)
+- `BETTER_AUTH_URL` - Authentication URL (defaults to http://refref-webapp.localhost:1355)
 
 ### Development Commands
 
