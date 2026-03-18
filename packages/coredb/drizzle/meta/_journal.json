@@ -15,6 +15,13 @@
       "when": 1763895779098,
       "tag": "0001_flaky_madelyne_pryor",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773868898031,
+      "tag": "0002_charming_ikaris",
+      "breakpoints": true
     }
   ]
 }

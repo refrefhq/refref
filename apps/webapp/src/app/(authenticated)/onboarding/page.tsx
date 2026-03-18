@@ -18,6 +18,7 @@ import {
 import { ProductInfoStep } from "@/components/onboarding/product-info-step";
 import { AppTypeStep } from "@/components/onboarding/app-type-step";
 import { PaymentProviderStep } from "@/components/onboarding/payment-provider-step";
+import { UseCaseStep } from "@/components/onboarding/use-case-step";
 import {
   OnboardingFormValues,
   useOnboardingForm,
@@ -25,6 +26,7 @@ import {
 import { onboardingSchema } from "@/lib/validations/onboarding";
 import z from "zod";
 import { appTypes } from "@/lib/validations/onboarding";
+import { useCases } from "@/lib/validations/onboarding";
 import { paymentProviders } from "@/lib/validations/onboarding";
 
 const steps = [
@@ -34,10 +36,14 @@ const steps = [
   },
   {
     id: 2,
-    title: "App Type",
+    title: "Use Case",
   },
   {
     id: 3,
+    title: "App Type",
+  },
+  {
+    id: 4,
     title: "Payment Provider",
   },
 ];
@@ -63,6 +69,7 @@ export default function OnboardingPage() {
       productName: "",
       productUrl: "",
       appType: "saas",
+      useCase: [],
       paymentProvider: "stripe",
       otherPaymentProvider: "",
     } as z.input<typeof onboardingSchema>,
@@ -80,6 +87,7 @@ export default function OnboardingPage() {
         name: value.productName,
         url,
         appType: value.appType,
+        useCase: value.useCase,
         paymentProvider: value.paymentProvider,
         otherPaymentProvider: value.otherPaymentProvider,
       });
@@ -198,6 +206,18 @@ export default function OnboardingPage() {
                 />
               )}
               {currentStep === 2 && (
+                <UseCaseStep
+                  form={form}
+                  fields={{ useCase: "useCase" }}
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
+                  isFirstStep={false}
+                  isLastStep={false}
+                  isSubmitting={createProduct.isPending}
+                  submitButtonRef={submitButtonRef}
+                />
+              )}
+              {currentStep === 3 && (
                 <AppTypeStep
                   form={form}
                   fields={{ appType: "appType" }}
@@ -209,7 +229,7 @@ export default function OnboardingPage() {
                   submitButtonRef={submitButtonRef}
                 />
               )}
-              {currentStep === 3 && (
+              {currentStep === 4 && (
                 <PaymentProviderStep
                   form={form}
                   fields={{

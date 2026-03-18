@@ -9,6 +9,14 @@ export const appTypes = [
   "other",
 ] as const;
 
+export const useCases = ["referrals", "affiliates"] as const;
+
+export const useCaseDescriptions: Record<(typeof useCases)[number], string> = {
+  referrals: "Let customers invite friends from inside your product.",
+  affiliates:
+    "Manage partner and creator referrals with links, attribution, and payouts.",
+};
+
 export const paymentProviders = [
   "stripe",
   "chargebee",
@@ -37,6 +45,9 @@ export const onboardingSchema = z
     appType: z.enum(appTypes, {
       message: "Please select an app type",
     }),
+    useCase: z
+      .array(z.enum(useCases))
+      .min(1, "Please select at least one option"),
     paymentProvider: z.enum(paymentProviders, {
       message: "Please select a payment provider",
     }),
@@ -72,6 +83,10 @@ export const appTypeSchema = onboardingSchema.pick({
   appType: true,
 });
 
+export const useCaseSchema = onboardingSchema.pick({
+  useCase: true,
+});
+
 export const paymentProviderSchema = onboardingSchema
   .pick({ paymentProvider: true, otherPaymentProvider: true })
   .refine(
@@ -92,11 +107,13 @@ export const paymentProviderSchema = onboardingSchema
 
 export type ProductInfoFormData = z.infer<typeof productInfoSchema>;
 export type AppTypeFormData = z.infer<typeof appTypeSchema>;
+export type UseCaseFormData = z.infer<typeof useCaseSchema>;
 export type PaymentProviderFormData = z.infer<typeof paymentProviderSchema>;
 export type OnboardingFormData = z.infer<typeof onboardingSchema>;
 
 // Type helpers for optional fields
 export type AppType = (typeof appTypes)[number];
+export type UseCase = (typeof useCases)[number];
 export type PaymentProvider = (typeof paymentProviders)[number];
 
 export const appTypeLabels: Record<(typeof appTypes)[number], string> = {
@@ -106,6 +123,11 @@ export const appTypeLabels: Record<(typeof appTypes)[number], string> = {
   marketplace: "Marketplace",
   content_platform: "Content Platform",
   other: "Other",
+};
+
+export const useCaseLabels: Record<(typeof useCases)[number], string> = {
+  referrals: "Customer Referrals",
+  affiliates: "Affiliate Program",
 };
 
 export const paymentProviderLabels: Record<

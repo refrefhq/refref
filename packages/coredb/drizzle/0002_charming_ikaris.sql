@@ -1,0 +1,1 @@
+ALTER TABLE "product" ADD COLUMN "use_case" text;

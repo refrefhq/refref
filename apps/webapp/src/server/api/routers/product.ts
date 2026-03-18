@@ -11,7 +11,11 @@ import { createId, init } from "@paralleldrive/cuid2";
 import { randomBytes } from "crypto";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { appTypes, paymentProviders } from "@/lib/validations/onboarding";
+import {
+  appTypes,
+  useCases,
+  paymentProviders,
+} from "@/lib/validations/onboarding";
 import { and, eq } from "drizzle-orm";
 
 const slugGenerator = init({
@@ -30,6 +34,7 @@ export const createProductWithOnboardingSchema = z
     name: z.string().min(1, "Name is required").max(100, "Name is too long"),
     url: z.string().min(1, "URL is required"),
     appType: z.enum(appTypes),
+    useCase: z.array(z.enum(useCases)).min(1),
     paymentProvider: z.enum(paymentProviders),
     otherPaymentProvider: z.string().optional(),
   })
@@ -130,12 +135,13 @@ export const productRouter = createTRPCRouter({
           slug: slugGenerator(),
           orgId: activeOrgId,
           appType: input.appType,
+          useCase: input.useCase.join(","),
           paymentProvider:
             input.paymentProvider === "other"
               ? input.otherPaymentProvider || "other"
               : input.paymentProvider,
           onboardingCompleted: true,
-          onboardingStep: 4,
+          onboardingStep: 5,
         })
         .returning();
 

@@ -4,13 +4,18 @@ import { createFormHookContexts, createFormHook } from "@tanstack/react-form";
 import { Input } from "@refref/ui/components/input";
 import { Label } from "@refref/ui/components/label";
 import { RadioGroup, RadioGroupItem } from "@refref/ui/components/radio-group";
-import type { appTypes, paymentProviders } from "@/lib/validations/onboarding";
+import type {
+  appTypes,
+  useCases,
+  paymentProviders,
+} from "@/lib/validations/onboarding";
 
 // Define form values type
 export type OnboardingFormValues = {
   productName: string;
   productUrl: string;
   appType: (typeof appTypes)[number] | undefined;
+  useCase: (typeof useCases)[number][];
   paymentProvider: (typeof paymentProviders)[number] | undefined;
   otherPaymentProvider: string | undefined;
 };

@@ -121,6 +121,7 @@ export const product = pgTable("product", {
   url: text("url"),
   metadata: text("metadata"),
   appType: text("app_type"),
+  useCase: text("use_case"),
   paymentProvider: text("payment_provider"),
   onboardingCompleted: boolean("onboarding_completed").default(false),
   onboardingStep: integer("onboarding_step").default(1),
