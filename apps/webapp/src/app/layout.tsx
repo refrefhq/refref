@@ -42,6 +42,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           src={`${env.NEXT_PUBLIC_ASSETS_URL}/attribution.v1.js`}
+          crossOrigin="anonymous"
           strategy="afterInteractive"
         />
         <Script
@@ -56,6 +57,7 @@ export default function RootLayout({
         <Script
           suppressHydrationWarning
           src={`${env.NEXT_PUBLIC_ASSETS_URL}/widget.v1.js`}
+          crossOrigin="anonymous"
           strategy="afterInteractive"
         />
       </head>

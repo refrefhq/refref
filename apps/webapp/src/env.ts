@@ -56,6 +56,7 @@ export const env = createEnv({
           : [],
       ),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string().default("https://us.i.posthog.com"),
     NEXT_PUBLIC_POSTHOG_ENABLED: z
       .enum(["true", "false"])
       .default("false")
@@ -89,6 +90,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_ENABLED_SOCIAL_AUTH,
     NOTIFICATIONS_EMAIL_FROM: process.env.NOTIFICATIONS_EMAIL_FROM,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_POSTHOG_ENABLED: process.env.NEXT_PUBLIC_POSTHOG_ENABLED,
   },
   /**

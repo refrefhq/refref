@@ -10,7 +10,7 @@ import { logger } from "@/lib/logger";
 // Initialize PostHog client singleton
 const posthogClient = env.NEXT_PUBLIC_POSTHOG_KEY
   ? new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
-      host: "https://us.posthog.com",
+      host: env.NEXT_PUBLIC_POSTHOG_HOST,
       flushAt: 1,
       flushInterval: 0,
     })
