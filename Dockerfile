@@ -2,7 +2,7 @@
 FROM node:24-alpine AS builder
 
 # Enable pnpm
-RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
 
 # Set working directory
 WORKDIR /app
@@ -11,12 +11,16 @@ WORKDIR /app
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
 COPY apps/webapp/package.json ./apps/webapp/
 COPY packages/attribution-script/package.json ./packages/attribution-script/
+COPY packages/auth/package.json ./packages/auth/
 COPY packages/coredb/package.json ./packages/coredb/
+COPY packages/email-templates/package.json ./packages/email-templates/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
-COPY packages/widget/package.json ./packages/widget/
+COPY packages/id/package.json ./packages/id/
 COPY packages/types/package.json ./packages/types/
 COPY packages/typescript-config/package.json ./packages/typescript-config/
 COPY packages/ui/package.json ./packages/ui/
+COPY packages/utils/package.json ./packages/utils/
+COPY packages/widget/package.json ./packages/widget/
 
 # Install dependencies only for webapp app and its dependencies
 RUN pnpm install --frozen-lockfile --filter @refref/webapp... --ignore-scripts
@@ -37,7 +41,7 @@ RUN pnpm build --filter @refref/webapp...
 FROM node:24-alpine AS runner
 
 # Enable pnpm
-RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
 
 WORKDIR /app
 

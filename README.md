@@ -64,6 +64,12 @@ Docker Compose automatically handles:
 - Initial data seeding
 - Webapp portal configuration
 
+To configure optional services (Google OAuth, email), pass environment variables:
+
+```bash
+GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=xxx RESEND_API_KEY=xxx docker-compose up
+```
+
 ### Local Development Setup
 
 If you prefer running RefRef locally without Docker:
@@ -71,7 +77,7 @@ If you prefer running RefRef locally without Docker:
 #### Prerequisites
 
 - Node.js 20+
-- pnpm 10.15.0
+- pnpm 10.23.0
 - PostgreSQL database
 - [portless](https://github.com/vercel-labs/portless) (`npm install -g portless`)
 
@@ -87,11 +93,14 @@ cp apps/webapp/.env.example apps/webapp/.env
 # Edit .env and add your database URL and auth secret
 # Generate auth secret with: openssl rand -base64 32
 
+# Export DATABASE_URL for database commands
+export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/refref"
+
 # Push database schema
-pnpm -F @refref/webapp db:push
+pnpm -F @refref/coredb db:push
 
 # (Optional) Seed with template data
-pnpm -F @refref/webapp db:seed
+pnpm -F @refref/coredb db:seed
 
 # Start development server
 pnpm dev
@@ -138,7 +147,7 @@ pnpm lint
 pnpm format
 
 # Type checking
-pnpm check-types
+pnpm type:check
 
 # Database commands
 pnpm -F @refref/coredb db:push     # Push schema changes
@@ -184,11 +193,9 @@ pnpm -F @refref/coredb db:seed     # Seed with templates
 - 🧑🏼‍🎨 [Shadcn](https://ui.shadcn.com/)
 - 🔒 [Better-Auth](https://better-auth.com/)
 - 🧘‍♂️ [Zod](https://zod.dev/)
-- 🐞 [Jest](https://jestjs.io/)
+- 🐞 [Vitest](https://vitest.dev/)
 - 🗄️ [PostgreSQL](https://www.postgresql.org/)
 - 📚 [Fumadocs](https://github.com/fuma-nama/fumadocs)
-- 🐂 [BullMQ](https://github.com/OptimalBits/bullmq)
-- 🗃️ [Redis](https://redis.io/)
 - 💽 [Drizzle](https://drizzle.dev/)
 - 🌀 [Turborepo](https://turbo.build/)
 
