@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { createDb, schema } from "@refref/coredb";
+import { describe, it, expect } from "vitest";
+import { calculateRewardAmount } from "@refref/types";
 import type {
   RewardRuleConfigV1Type,
   EventMetadataV1Type,
@@ -111,6 +111,62 @@ describe("Reward Calculation Logic", () => {
     });
   });
 
+  // Reward rules created through the program setup flow stored the unit as
+  // "percentage" (the spelling used by rewardConfigSchema.valueType) rather
+  // than "percent". Those rules must still be paid out as percentages.
+  describe("Legacy 'percentage' unit", () => {
+    const legacyPercentConfig = (
+      amount: number,
+    ): RewardRuleConfigV1Type["reward"] =>
+      ({
+        type: "cash",
+        unit: "percentage",
+        amount,
+      }) as unknown as RewardRuleConfigV1Type["reward"];
+
+    it("should calculate percentage of order amount", () => {
+      const eventMetadata: EventMetadataV1Type = {
+        schemaVersion: 1,
+        source: "api",
+        orderAmount: 500,
+        orderId: "order_789",
+      };
+
+      const result = calculateRewardAmount(
+        legacyPercentConfig(10),
+        eventMetadata,
+      );
+
+      // 10% of 500 = 50, not a flat 10
+      expect(result).toBe(50);
+    });
+
+    it("should not pay the percentage value out as a flat amount", () => {
+      const eventMetadata: EventMetadataV1Type = {
+        schemaVersion: 1,
+        source: "api",
+        orderAmount: 500,
+        orderId: "order_789",
+      };
+
+      const result = calculateRewardAmount(
+        legacyPercentConfig(10),
+        eventMetadata,
+      );
+
+      expect(result).not.toBe(10);
+    });
+
+    it("should return 0 when orderAmount is missing", () => {
+      const result = calculateRewardAmount(legacyPercentConfig(10), {
+        schemaVersion: 1,
+        source: "api",
+      });
+
+      expect(result).toBe(0);
+    });
+  });
+
   describe("Reward metadata creation", () => {
     it("should NOT include coupon codes (external systems handle this)", () => {
       const metadata: any = {
@@ -125,26 +181,3 @@ describe("Reward Calculation Logic", () => {
     });
   });
 });
-
-// Helper function extracted from reward-engine.ts for testing
-function calculateRewardAmount(
-  rewardConfig: RewardRuleConfigV1Type["reward"],
-  eventMetadata?: EventMetadataV1Type,
-): number {
-  const baseAmount = rewardConfig.amount;
-
-  if (rewardConfig.unit === "fixed") {
-    return baseAmount;
-  }
-
-  if (rewardConfig.unit === "percent") {
-    // For percentage rewards, calculate based on order amount if available
-    if (eventMetadata?.orderAmount) {
-      return (eventMetadata.orderAmount * baseAmount) / 100;
-    }
-    // If orderAmount is not available for a percentage reward, the value is 0
-    return 0;
-  }
-
-  return baseAmount;
-}

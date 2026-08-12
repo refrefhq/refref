@@ -9,6 +9,7 @@ const {
   referral,
 } = schema;
 import { eq, and, desc } from "drizzle-orm";
+import { calculateRewardAmount, normalizeRewardUnit } from "@refref/types";
 import type {
   RewardRuleConfigV1Type,
   EventMetadataV1Type,
@@ -154,7 +155,7 @@ export async function processEventForRewards(db: DbType, eventId: string) {
           rewardMetadata.validUntil = validUntil.toISOString();
 
           // Add min purchase amount if percentage discount
-          if (ruleConfig.reward.unit === "percent") {
+          if (normalizeRewardUnit(ruleConfig.reward.unit) === "percent") {
             rewardMetadata.minPurchaseAmount = 50; // Default minimum
           }
         }
@@ -207,31 +208,6 @@ export async function processEventForRewards(db: DbType, eventId: string) {
 
     throw error;
   }
-}
-
-/**
- * Calculate reward amount based on rule configuration and event metadata
- */
-function calculateRewardAmount(
-  rewardConfig: RewardRuleConfigV1Type["reward"],
-  eventMetadata?: EventMetadataV1Type,
-): number {
-  const baseAmount = rewardConfig.amount;
-
-  if (rewardConfig.unit === "fixed") {
-    return baseAmount;
-  }
-
-  if (rewardConfig.unit === "percent") {
-    // For percentage rewards, calculate based on order amount if available
-    if (eventMetadata?.orderAmount) {
-      return (eventMetadata.orderAmount * baseAmount) / 100;
-    }
-    // Default to the percentage value itself if no order amount
-    return baseAmount;
-  }
-
-  return baseAmount;
 }
 
 /**

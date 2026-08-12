@@ -5,6 +5,7 @@ import {
   programTemplateRewardStepSchemaV2,
   ProgramTemplateRewardStepV2Type,
   RewardRuleConfigV1Type,
+  normalizeRewardUnit,
 } from "@refref/types";
 import { toast } from "sonner";
 import { StickySaveBarRelative } from "@/components/sticky-save-bar";
@@ -62,14 +63,18 @@ function convertRewardRulesToFormData(
     referrerReward: {
       enabled: !!referrerRule && (referrerRule.isActive ?? true),
       valueType:
-        referrerRule?.config.reward.unit === "percent" ? "percentage" : "fixed",
+        normalizeRewardUnit(referrerRule?.config.reward.unit) === "percent"
+          ? "percentage"
+          : "fixed",
       value: referrerRule?.config.reward.amount ?? 10,
       currency: validateCurrency(referrerRule?.config.reward.currency),
     },
     refereeReward: {
       enabled: !!refereeRule && (refereeRule.isActive ?? true),
       valueType:
-        refereeRule?.config.reward.unit === "percent" ? "percentage" : "fixed",
+        normalizeRewardUnit(refereeRule?.config.reward.unit) === "percent"
+          ? "percentage"
+          : "fixed",
       value: refereeRule?.config.reward.amount ?? 20,
       currency: validateCurrency(refereeRule?.config.reward.currency),
       minPurchaseAmount: refereeRule?.config.reward.minPurchaseAmount ?? 50,

@@ -23,6 +23,7 @@ import {
   defaultWidgetConfig,
   getAllProgramTemplates,
   getProgramTemplateById,
+  normalizeRewardUnit,
 } from "@refref/types";
 import { TRPCError } from "@trpc/server";
 import {
@@ -279,7 +280,7 @@ export const programRouter = createTRPCRouter({
                 reward: {
                   type: "cash" as const,
                   amount: rewardConfig.referrer.value,
-                  unit: rewardConfig.referrer.valueType as "fixed" | "percent",
+                  unit: normalizeRewardUnit(rewardConfig.referrer.valueType),
                   currency: rewardConfig.referrer.currency,
                 },
               },
@@ -304,7 +305,7 @@ export const programRouter = createTRPCRouter({
                 reward: {
                   type: "discount" as const,
                   amount: rewardConfig.referee.value,
-                  unit: rewardConfig.referee.valueType as "fixed" | "percent",
+                  unit: normalizeRewardUnit(rewardConfig.referee.valueType),
                   currency: rewardConfig.referee.currency,
                   minPurchaseAmount: rewardConfig.referee.minPurchaseAmount,
                   validityDays: rewardConfig.referee.validityDays,
