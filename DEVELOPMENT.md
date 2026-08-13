@@ -449,11 +449,9 @@ curl -s -o /dev/null -D - -X POST "http://localhost:3002/refer/invite/$CODE" \
 # location: http://localhost:3000/auth/sign-up?lt=<TOKEN>
 ```
 
-> **Gotcha:** use a *different* email domain for the referee. The self-referral
-> guard rejects a shared **custom** domain — referrer `priya@example.com` and
-> referee `arjun@example.com` is blocked as `same_domain`. Shared free providers
-> (`gmail.com`, `outlook.com`, …) are allowed. See
-> [apps/refer/src/lib/abuse.ts](apps/refer/src/lib/abuse.ts).
+> **Gotcha:** the referee's address must differ from the referrer's. Only an
+> exact match is blocked (`same_email`) — colleagues on a shared company domain
+> are allowed. See [apps/refer/src/lib/abuse.ts](apps/refer/src/lib/abuse.ts).
 
 ### Recipe 3 — Abuse controls
 
@@ -570,8 +568,8 @@ docker exec refref-db psql -U postgres -d refref -c \
 
 ### Form submission rejected with "This email address can't be used"
 
-Self-referral detection. Give the referee an address on a different domain, or a
-free provider. See Recipe 2.
+Self-referral detection: the referee entered the referrer's own email address.
+Any other address is accepted, including one on the same domain.
 
 ### Referral link 404s
 

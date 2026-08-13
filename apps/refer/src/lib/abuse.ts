@@ -35,31 +35,6 @@ export const DISPOSABLE_DOMAINS = new Set<string>([
   "byom.de",
 ]);
 
-/** Common free consumer providers — a shared domain here is NOT self-referral. */
-export const FREE_EMAIL_PROVIDERS = new Set<string>([
-  "gmail.com",
-  "googlemail.com",
-  "yahoo.com",
-  "yahoo.com.au",
-  "ymail.com",
-  "outlook.com",
-  "hotmail.com",
-  "live.com",
-  "live.com.au",
-  "msn.com",
-  "icloud.com",
-  "me.com",
-  "aol.com",
-  "proton.me",
-  "protonmail.com",
-  "gmx.com",
-  "mail.com",
-  "bigpond.com",
-  "bigpond.net.au",
-  "optusnet.com.au",
-  "iinet.net.au",
-]);
-
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
@@ -84,12 +59,12 @@ export function isDisposableEmail(
   return DISPOSABLE_DOMAINS.has(domain) || extraDomains.has(domain);
 }
 
-export type SelfReferralReason = "same_email" | "same_domain" | null;
+export type SelfReferralReason = "same_email" | null;
 
 /**
- * Detect obvious self-referral: the referee using the referrer's own address,
- * or the referrer's *custom* (non-free) email domain. Sharing gmail.com is not
- * treated as self-referral. IP-based self-referral is handled at the proxy.
+ * Detect obvious self-referral: the referee using the referrer's own address.
+ * Colleagues on a shared company domain are legitimate referrals, so only an
+ * exact address match is blocked. IP-based self-referral is handled at the proxy.
  */
 export function selfReferralReason(
   refereeEmail: string,
@@ -98,19 +73,7 @@ export function selfReferralReason(
   if (!referrer.email) return null;
   const referee = normalizeEmail(refereeEmail);
   const ref = normalizeEmail(referrer.email);
-  if (referee === ref) return "same_email";
-
-  const refereeDomain = emailDomain(referee);
-  const refDomain = emailDomain(ref);
-  if (
-    refereeDomain &&
-    refDomain &&
-    refereeDomain === refDomain &&
-    !FREE_EMAIL_PROVIDERS.has(refDomain)
-  ) {
-    return "same_domain";
-  }
-  return null;
+  return referee === ref ? "same_email" : null;
 }
 
 /** Parse a comma/space separated env list of extra disposable domains. */

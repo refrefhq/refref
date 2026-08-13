@@ -40,10 +40,10 @@ describe("selfReferralReason", () => {
       "same_email",
     );
   });
-  it("blocks a shared custom domain", () => {
+  it("does NOT block a shared custom domain", () => {
     expect(
       selfReferralReason("friend@corp.com", { email: "me@corp.com" }),
-    ).toBe("same_domain");
+    ).toBeNull();
   });
   it("does NOT block a shared free provider", () => {
     expect(
