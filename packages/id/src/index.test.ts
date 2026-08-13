@@ -58,6 +58,12 @@ describe("@refref/id", () => {
         ["event", "evt"],
         ["org", "org"],
         ["orgUser", "ou"],
+        ["reflink", "rl"],
+        ["referralLead", "rld"],
+        ["handoffToken", "hto"],
+        ["webhookEndpoint", "whe"],
+        ["webhookDelivery", "whd"],
+        ["webhookEvent", "wev"],
       ];
 
       it.each(entityTests)(
@@ -97,9 +103,9 @@ describe("@refref/id", () => {
       expect(validTypes).toContain("program");
     });
 
-    it("should return all 21 entity types", () => {
+    it("should return all 27 entity types", () => {
       const validTypes = getValidEntityTypes();
-      expect(validTypes.length).toBe(21);
+      expect(validTypes.length).toBe(27);
     });
   });
 

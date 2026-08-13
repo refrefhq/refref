@@ -433,3 +433,223 @@ export const referralRelations = relations(referral, ({ one }) => ({
     references: [participant.id],
   }),
 }));
+
+// ===========================================================================
+// Welfie referral fork additions
+// ---------------------------------------------------------------------------
+// These tables are additive (never modify upstream tables) so the fork stays
+// easy to rebase onto refrefhq/refref. They power the self-hosted referee
+// form, the single-use signup hand-off, and the outbound webhook dispatcher.
+// ===========================================================================
+
+/**
+ * A lead captured by the public referee form BEFORE the friend has a Welfie
+ * account. This is deliberately a new table rather than an extension of
+ * `referral`, because `referral.externalId` is NOT NULL (it is the referee's
+ * Welfie user id) and does not exist yet at form-submission time. When the
+ * friend later signs up, the lead is reconciled and a real `referral` row is
+ * created, linked back here via `qualifiedReferralId`.
+ */
+export const referralLead = pgTable(
+  "referral_lead",
+  {
+    ...baseFields("referralLead"),
+    programId: text("program_id")
+      .notNull()
+      .references(() => program.id, { onDelete: "cascade" }),
+    productId: text("product_id")
+      .notNull()
+      .references(() => product.id, { onDelete: "cascade" }),
+    // The referrer whose code was used.
+    referrerParticipantId: text("referrer_participant_id")
+      .notNull()
+      .references(() => participant.id, { onDelete: "cascade" }),
+    // Traceability back to the exact code row that was resolved.
+    refcodeId: text("refcode_id").references(() => refcode.id, {
+      onDelete: "set null",
+    }),
+    code: text("code").notNull(),
+    // Referee-supplied fields (kept minimal by policy: email + first name).
+    email: text("email").notNull(),
+    firstName: text("first_name"),
+    // Lifecycle: pending -> qualified | expired | rejected.
+    status: text("status").notNull().default("pending"),
+    emailVerified: boolean("email_verified").notNull().default(false),
+    // Consent is stored as versioned text + timestamp, not a bare boolean.
+    consentVersion: text("consent_version"),
+    consentAt: timestamp("consent_at"),
+    // Attribution context.
+    landingUrl: text("landing_url"),
+    utm: jsonb("utm").$type<Record<string, string>>(),
+    ip: text("ip"),
+    userAgent: text("user_agent"),
+    // Set when the lead is reconciled at signup.
+    qualifiedReferralId: text("qualified_referral_id").references(
+      () => referral.id,
+      { onDelete: "set null" },
+    ),
+    // "handoff_token" | "email_reconciliation" — for attribution disputes.
+    matchedBy: text("matched_by"),
+    qualifiedAt: timestamp("qualified_at"),
+  },
+  (table) => [
+    index("referral_lead_email_idx").on(table.email),
+    index("referral_lead_status_idx").on(table.status),
+    index("referral_lead_code_idx").on(table.code),
+    index("referral_lead_program_id_idx").on(table.programId),
+    index("referral_lead_referrer_idx").on(table.referrerParticipantId),
+    index("referral_lead_created_at_idx").on(table.createdAt),
+  ],
+);
+
+/**
+ * Single-use, short-lived opaque tokens for the signup redirect. We store only
+ * the SHA-256 hash of the token; the plaintext lives solely in the redirect URL
+ * and is exchanged server-side by welfie-backend.
+ */
+export const handoffToken = pgTable(
+  "handoff_token",
+  {
+    ...baseFields("handoffToken"),
+    tokenHash: text("token_hash").notNull(),
+    leadId: text("lead_id")
+      .notNull()
+      .references(() => referralLead.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at").notNull(),
+    consumedAt: timestamp("consumed_at"),
+  },
+  (table) => [
+    uniqueIndex("handoff_token_hash_unique_idx").on(table.tokenHash),
+    index("handoff_token_lead_id_idx").on(table.leadId),
+    index("handoff_token_expires_at_idx").on(table.expiresAt),
+  ],
+);
+
+/**
+ * Outbound webhook endpoint configuration, per product. `secret` is the active
+ * HMAC signing key; `secondarySecret` supports rotation with overlap (the
+ * receiver accepts both while a rotation is in flight).
+ */
+export const webhookEndpoint = pgTable(
+  "webhook_endpoint",
+  {
+    ...baseFields("webhookEndpoint"),
+    productId: text("product_id")
+      .notNull()
+      .references(() => product.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    secret: text("secret").notNull(),
+    secondarySecret: text("secondary_secret"),
+    isActive: boolean("is_active").notNull().default(true),
+    // Subscribed event types, e.g. ["referral.created","referral.qualified"].
+    eventTypes: jsonb("event_types")
+      .$type<string[]>()
+      .notNull()
+      .default(["referral.created", "referral.qualified"]),
+  },
+  (table) => [
+    index("webhook_endpoint_product_id_idx").on(table.productId),
+    index("webhook_endpoint_is_active_idx").on(table.isActive),
+  ],
+);
+
+/**
+ * Outbound delivery log AND dead-letter queue. One row per (event -> endpoint).
+ * `eventId` is the idempotency key that travels to the receiver; `dedupeKey`
+ * guards against enqueuing the same logical event twice (e.g. a double form
+ * submit). The webhook worker polls this table.
+ */
+export const webhookDelivery = pgTable(
+  "webhook_delivery",
+  {
+    ...baseFields("webhookDelivery"),
+    // Idempotency key sent to the receiver as the payload `event_id`.
+    eventId: text("event_id").notNull(),
+    // Optional application-level dedupe key (not sent to the receiver).
+    dedupeKey: text("dedupe_key"),
+    endpointId: text("endpoint_id").references(() => webhookEndpoint.id, {
+      onDelete: "set null",
+    }),
+    productId: text("product_id")
+      .notNull()
+      .references(() => product.id, { onDelete: "cascade" }),
+    eventType: text("event_type").notNull(),
+    payload: jsonb("payload").notNull().$type<Record<string, unknown>>(),
+    attempts: integer("attempts").notNull().default(0),
+    maxAttempts: integer("max_attempts").notNull().default(8),
+    // pending | delivering | delivered | failed | dead_letter
+    lastStatus: text("last_status").notNull().default("pending"),
+    lastError: text("last_error"),
+    lastResponseCode: integer("last_response_code"),
+    nextRetryAt: timestamp("next_retry_at").defaultNow(),
+    deliveredAt: timestamp("delivered_at"),
+  },
+  (table) => [
+    uniqueIndex("webhook_delivery_event_id_unique_idx").on(table.eventId),
+    uniqueIndex("webhook_delivery_dedupe_key_unique_idx").on(table.dedupeKey),
+    index("webhook_delivery_status_idx").on(table.lastStatus),
+    index("webhook_delivery_next_retry_at_idx").on(table.nextRetryAt),
+    index("webhook_delivery_event_type_idx").on(table.eventType),
+  ],
+);
+
+// --- Relations for the fork tables ---
+
+export const referralLeadRelations = relations(
+  referralLead,
+  ({ one, many }) => ({
+    program: one(program, {
+      fields: [referralLead.programId],
+      references: [program.id],
+    }),
+    product: one(product, {
+      fields: [referralLead.productId],
+      references: [product.id],
+    }),
+    referrer: one(participant, {
+      fields: [referralLead.referrerParticipantId],
+      references: [participant.id],
+    }),
+    refcode: one(refcode, {
+      fields: [referralLead.refcodeId],
+      references: [refcode.id],
+    }),
+    qualifiedReferral: one(referral, {
+      fields: [referralLead.qualifiedReferralId],
+      references: [referral.id],
+    }),
+    handoffTokens: many(handoffToken),
+  }),
+);
+
+export const handoffTokenRelations = relations(handoffToken, ({ one }) => ({
+  lead: one(referralLead, {
+    fields: [handoffToken.leadId],
+    references: [referralLead.id],
+  }),
+}));
+
+export const webhookEndpointRelations = relations(
+  webhookEndpoint,
+  ({ one, many }) => ({
+    product: one(product, {
+      fields: [webhookEndpoint.productId],
+      references: [product.id],
+    }),
+    deliveries: many(webhookDelivery),
+  }),
+);
+
+export const webhookDeliveryRelations = relations(
+  webhookDelivery,
+  ({ one }) => ({
+    endpoint: one(webhookEndpoint, {
+      fields: [webhookDelivery.endpointId],
+      references: [webhookEndpoint.id],
+    }),
+    product: one(product, {
+      fields: [webhookDelivery.productId],
+      references: [product.id],
+    }),
+  }),
+);
