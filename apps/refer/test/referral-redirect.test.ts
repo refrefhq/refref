@@ -59,8 +59,8 @@ describe("Referral Redirect Endpoint", () => {
       expect(body.error).toBe("Referral code not found");
     });
 
-    it("should return 500 when product URL not configured", async () => {
-      // Mock database to return nested data with no landing page URL (relational query)
+    it("should redirect to the invite form even with no landing page URL", async () => {
+      // The invite form is the destination now, so brandConfig is irrelevant here.
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
         id: "rc_123",
         code: "abc1234",
@@ -85,17 +85,15 @@ describe("Referral Redirect Endpoint", () => {
 
       const response = await apiContext.get("/abc1234");
 
-      expect(response.status()).toBe(500);
-
-      const body = await response.json();
-      expect(body.error).toBe(
-        "Landing page URL not configured for this program",
+      expect(response.status()).toBe(307);
+      expect(response.headers()["location"]).toMatch(
+        /\/invite\/abc1234(\?|$)/,
       );
     });
   });
 
   describe("GET /:code - Refcode Success Cases", () => {
-    it("should redirect with encoded params when all data is present", async () => {
+    it("should redirect to the personalised invite form", async () => {
       // Mock complete happy path with nested data (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
         id: "rc_happy",
@@ -125,10 +123,10 @@ describe("Referral Redirect Endpoint", () => {
 
       const location = response.headers()["location"];
       expect(location).toBeDefined();
-      expect(location).toContain("https://example.com");
-      expect(location).toContain("refcode=abc1234");
-      expect(location).toContain("name="); // Base64 encoded name
-      expect(location).toContain("participantId="); // Base64 encoded participant ID
+      expect(location).toMatch(/\/invite\/abc1234(\?|$)/);
+      // Referrer details are resolved from the code by the form, so they are
+      // no longer leaked into the redirect URL.
+      expect(location).not.toContain("participantId=");
     });
 
     it("should handle missing optional fields gracefully", async () => {
@@ -161,13 +159,11 @@ describe("Referral Redirect Endpoint", () => {
 
       const location = response.headers()["location"];
       expect(location).toBeDefined();
-      expect(location).toContain("https://minimal.example.com");
-      expect(location).toContain("refcode=xyz5678");
-      // Should not include empty encoded params
+      expect(location).toMatch(/\/invite\/xyz5678(\?|$)/);
       expect(location).not.toContain("name=");
     });
 
-    it("should preserve existing query params in product URL", async () => {
+    it("should forward utm params to the invite form", async () => {
       // Mock with nested data (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
         id: "rc_query",
@@ -191,14 +187,17 @@ describe("Referral Redirect Endpoint", () => {
         },
       });
 
-      const response = await apiContext.get("/def9012");
+      const response = await apiContext.get(
+        "/def9012?utm_source=whatsapp&utm_campaign=spring",
+      );
 
       expect(response.status()).toBe(307);
 
       const location = response.headers()["location"];
       expect(location).toBeDefined();
-      // Should handle existing query params correctly
-      expect(location).toContain("refcode=def9012");
+      expect(location).toContain("/invite/def9012?");
+      expect(location).toContain("utm_source=whatsapp");
+      expect(location).toContain("utm_campaign=spring");
     });
 
     it("should handle case-insensitive codes", async () => {
@@ -230,7 +229,7 @@ describe("Referral Redirect Endpoint", () => {
 
       expect(response.status()).toBe(307);
       const location = response.headers()["location"];
-      expect(location).toContain("refcode=abc1234"); // normalized to lowercase
+      expect(location).toMatch(/\/invite\/abc1234(\?|$)/); // normalized to lowercase
     });
   });
 
@@ -309,15 +308,13 @@ describe("Referral Redirect Endpoint", () => {
 
       const location = response.headers()["location"];
       expect(location).toBeDefined();
-      expect(location).toContain("https://acme.example.com");
-      expect(location).toContain("refcode=abc1234");
-      expect(location).toContain("name=");
-      expect(location).toContain("email=");
+      // The vanity slug resolves to its underlying refcode before the hand-off.
+      expect(location).toMatch(/\/invite\/abc1234(\?|$)/);
     });
   });
 
-  describe("GET /:code - Parameter Encoding", () => {
-    it("should base64 encode participant details", async () => {
+  describe("GET /:code - Redirect Target", () => {
+    it("should not leak participant details into the redirect URL", async () => {
       // Mock with nested data (relational query)
       mockDb.query.refcode.findFirst.mockResolvedValueOnce({
         id: "rc_encode",
@@ -345,28 +342,11 @@ describe("Referral Redirect Endpoint", () => {
 
       expect(response.status()).toBe(307);
 
-      const location = response.headers()["location"];
-      const url = new URL(location!);
-
-      // Verify base64 encoding
-      const nameParam = url.searchParams.get("name");
-      const participantIdParam = url.searchParams.get("participantId");
-
-      expect(nameParam).toBeDefined();
-      expect(participantIdParam).toBeDefined();
-
-      // Decode and verify
-      if (nameParam) {
-        const decodedName = Buffer.from(nameParam, "base64").toString("utf-8");
-        expect(decodedName).toBe("Test User");
-      }
-
-      if (participantIdParam) {
-        const decodedId = Buffer.from(participantIdParam, "base64").toString(
-          "utf-8",
-        );
-        expect(decodedId).toBe("prt_encode");
-      }
+      const location = response.headers()["location"]!;
+      expect(location).toMatch(/\/invite\/enc0123(\?|$)/);
+      expect(location).not.toContain("name=");
+      expect(location).not.toContain("email=");
+      expect(location).not.toContain("participantId=");
     });
 
     it("should handle special characters in participant data", async () => {
@@ -396,19 +376,11 @@ describe("Referral Redirect Endpoint", () => {
       const response = await apiContext.get("/spc4567");
 
       expect(response.status()).toBe(307);
-
-      const location = response.headers()["location"];
-      expect(location).toBeDefined();
-
-      const url = new URL(location!);
-      const nameParam = url.searchParams.get("name");
-
-      // Should handle special characters through base64 encoding
-      expect(nameParam).toBeDefined();
-      if (nameParam) {
-        const decodedName = Buffer.from(nameParam, "base64").toString("utf-8");
-        expect(decodedName).toBe("John O'Brien & Co.");
-      }
+      // The name is rendered by the invite page, not encoded into the URL, so
+      // special characters cannot break the redirect.
+      expect(response.headers()["location"]).toMatch(
+        /\/invite\/spc4567(\?|$)/,
+      );
     });
   });
 

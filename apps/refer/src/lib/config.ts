@@ -7,6 +7,8 @@ import { parseExtraDisposableDomains } from "./abuse.js";
 export interface ReferConfig {
   /** Path prefix the app is mounted under at the proxy, e.g. "/refer". */
   basePath: string;
+  /** Public origin that serves /:code redirects, used to build referral links. */
+  referralHostUrl: string;
   /** Where the friend is sent after submitting, e.g. https://welfie.com/signup */
   signupUrl: string;
   /** Consent copy version stored with each lead. */
@@ -32,9 +34,17 @@ function normalizeBasePath(raw: string | undefined): string {
   return p;
 }
 
+function stripTrailingSlash(raw: string): string {
+  const v = raw.trim();
+  return v.endsWith("/") ? v.slice(0, -1) : v;
+}
+
 export function loadReferConfig(env: NodeJS.ProcessEnv = process.env): ReferConfig {
   return {
     basePath: normalizeBasePath(env.REFER_BASE_PATH),
+    referralHostUrl: stripTrailingSlash(
+      env.REFERRAL_HOST_URL || "http://localhost:3002",
+    ),
     signupUrl: env.WELFIE_SIGNUP_URL || "https://welfie.com/signup",
     consentVersion: env.REFERRAL_CONSENT_VERSION || "privacy-2026-08",
     privacyPolicyUrl:

@@ -73,7 +73,19 @@ const submitSchema = z.object({
     .max(80)
     .optional()
     .transform((v) => (v ? v : undefined)),
+  lastName: z
+    .string()
+    .trim()
+    .max(80)
+    .optional()
+    .transform((v) => (v ? v : undefined)),
   email: z.string().trim().max(254),
+  phone: z
+    .string()
+    .trim()
+    .max(32)
+    .optional()
+    .transform((v) => (v ? v : undefined)),
   consent: z.string().optional(),
   consent_version: z.string().max(120).optional(),
   company: z.string().optional(), // honeypot
@@ -145,7 +157,15 @@ export default function inviteRoutes(config?: ReferConfig) {
         const utm = collectUtm(request.body as Record<string, unknown>);
         const actionPath = `${cfg.basePath}/invite/${encodeURIComponent(normalized)}`;
 
-        const rerender = (error: string, values?: { email?: string; firstName?: string }) =>
+        const rerender = (
+          error: string,
+          values?: {
+            email?: string;
+            firstName?: string;
+            lastName?: string;
+            phone?: string;
+          },
+        ) =>
           reply.code(400).type("text/html").send(
             renderInvitePage({
               referrerName: result.participant!.name ?? null,
@@ -175,15 +195,18 @@ export default function inviteRoutes(config?: ReferConfig) {
 
         const email = normalizeEmail(data.email);
         const firstName = data.firstName;
+        const lastName = data.lastName;
+        const phone = data.phone;
+        const sticky = { email, firstName, lastName, phone };
 
         if (!looksLikeEmail(email)) {
-          return rerender("Please enter a valid email address.", { firstName });
+          return rerender("Please enter a valid email address.", {
+            ...sticky,
+            email: undefined,
+          });
         }
         if (data.consent !== "yes") {
-          return rerender(
-            "Please agree to the privacy policy to continue.",
-            { email, firstName },
-          );
+          return rerender("Please agree to the privacy policy to continue.", sticky);
         }
 
         // CAPTCHA (only enforced when a secret is configured).
@@ -193,16 +216,13 @@ export default function inviteRoutes(config?: ReferConfig) {
           request.ip,
         );
         if (!captchaOk) {
-          return rerender("Verification failed. Please try again.", {
-            email,
-            firstName,
-          });
+          return rerender("Verification failed. Please try again.", sticky);
         }
 
         if (isDisposableEmail(email, cfg.extraDisposableDomains)) {
           return rerender(
             "Please use a permanent, non-disposable email address.",
-            { firstName },
+            { ...sticky, email: undefined },
           );
         }
 
@@ -216,7 +236,7 @@ export default function inviteRoutes(config?: ReferConfig) {
           );
           return rerender(
             "This email address can't be used with this referral link.",
-            { firstName },
+            { ...sticky, email: undefined },
           );
         }
 
@@ -250,6 +270,8 @@ export default function inviteRoutes(config?: ReferConfig) {
               code: normalized,
               email,
               firstName: firstName ?? null,
+              lastName: lastName ?? null,
+              phone: phone ?? null,
               status: "pending",
               emailVerified: false,
               consentVersion: data.consent_version || cfg.consentVersion,
@@ -283,6 +305,8 @@ export default function inviteRoutes(config?: ReferConfig) {
           referee: {
             email,
             first_name: firstName ?? null,
+            last_name: lastName ?? null,
+            phone: phone ?? null,
             email_verified: false,
             form_fields: {},
           },

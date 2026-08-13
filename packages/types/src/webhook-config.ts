@@ -59,6 +59,8 @@ export const referralCreatedPayloadSchema = z.object({
   referee: z.object({
     email: z.string().email(),
     first_name: z.string().nullable().optional(),
+    last_name: z.string().nullable().optional(),
+    phone: z.string().nullable().optional(),
     email_verified: z.boolean(),
     form_fields: z.record(z.string(), z.unknown()).default({}),
   }),

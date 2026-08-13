@@ -7,6 +7,7 @@ import { createDb } from "@refref/coredb";
 import healthRoutes from "./routes/health.js";
 import referralRedirectRoutes from "./routes/r.js";
 import inviteRoutes from "./routes/invite.js";
+import joinRoutes from "./routes/join.js";
 import { loadReferConfig } from "./lib/config.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -71,12 +72,16 @@ export async function buildApp(): Promise<FastifyInstance> {
   // Register health check routes
   await app.register(healthRoutes);
 
-  // Register referral redirect routes (/:id)
-  await app.register(referralRedirectRoutes);
+  // Register referral redirect routes (/:code -> invite form)
+  await app.register(referralRedirectRoutes(referConfig));
 
   // Register the public invite page + form under the configured base path
   // (e.g. "/refer"), matching how it is exposed at the reverse proxy.
   await app.register(inviteRoutes(referConfig), { prefix: referConfig.basePath });
+
+  // Register the public self-serve page where an unauthenticated visitor can
+  // claim their own referral link.
+  await app.register(joinRoutes(referConfig), { prefix: referConfig.basePath });
 
   return app;
 }

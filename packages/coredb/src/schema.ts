@@ -469,9 +469,11 @@ export const referralLead = pgTable(
       onDelete: "set null",
     }),
     code: text("code").notNull(),
-    // Referee-supplied fields (kept minimal by policy: email + first name).
+    // Referee-supplied fields.
     email: text("email").notNull(),
     firstName: text("first_name"),
+    lastName: text("last_name"),
+    phone: text("phone"),
     // Lifecycle: pending -> qualified | expired | rejected.
     status: text("status").notNull().default("pending"),
     emailVerified: boolean("email_verified").notNull().default(false),
