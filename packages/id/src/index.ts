@@ -26,6 +26,12 @@ const ENTITY_PREFIXES = {
   reflink: "rl",
   referral: "ref",
   event: "evt",
+  // Welfie referral fork additions
+  referralLead: "rld",
+  handoffToken: "hto",
+  webhookEndpoint: "whe",
+  webhookDelivery: "whd",
+  webhookEvent: "wev",
 } as const;
 
 /**

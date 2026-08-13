@@ -9,6 +9,8 @@ import jwtAuthPlugin from "./plugins/jwt-auth.js";
 import widgetInitRoutes from "./routes/v1/widget/init.js";
 import trackRoutes from "./routes/v1/track.js";
 import programsRoutes from "./routes/v1/programs.js";
+import handoffRoutes from "./routes/v1/handoff.js";
+import { runWebhookWorker } from "@refref/webhooks";
 
 export async function buildApp(): Promise<FastifyInstance> {
   // Validate required environment variables
@@ -66,9 +68,26 @@ export async function buildApp(): Promise<FastifyInstance> {
 
       // Programs routes
       await fastify.register(programsRoutes, { prefix: "/programs" });
+
+      // Internal hand-off token exchange (API-key auth; keep off public ingress)
+      await fastify.register(handoffRoutes, { prefix: "/handoff" });
     },
     { prefix: "/v1" },
   );
+
+  // Optionally run the outbound webhook dispatcher inside the API process.
+  // In production you may prefer the standalone worker (see src/worker.ts).
+  if (process.env.WEBHOOK_WORKER_ENABLED === "true") {
+    const intervalMs = Number(process.env.WEBHOOK_WORKER_INTERVAL_MS) || 5000;
+    const stop = runWebhookWorker(db, intervalMs, {
+      logger: {
+        info: (o, m) => app.log.info(o, m),
+        error: (o, m) => app.log.error(o, m),
+      },
+    });
+    app.addHook("onClose", async () => stop());
+    app.log.info(`Webhook worker started (interval ${intervalMs}ms)`);
+  }
 
   return app;
 }

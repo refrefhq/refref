@@ -43,5 +43,34 @@ services:
         pnpm start
       "
 
+  refer:
+    build:
+      context: .
+      dockerfile: Dockerfile.refer
+    container_name: refref-refer
+    ports:
+      - "3002:3002"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/refref
+      # The image ships prod deps only, so pino-pretty is absent and the logger
+      # must stay in JSON mode.
+      NODE_ENV: production
+      PORT: 3002
+      HOST: 0.0.0.0
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      REFER_BASE_PATH: ${REFER_BASE_PATH:-/refer}
+      # Must be the origin this container is reachable on, since /:code is
+      # served at the root and the /join page hands these links out.
+      REFERRAL_HOST_URL: ${REFERRAL_HOST_URL:-http://localhost:3002}
+      WELFIE_SIGNUP_URL: ${WELFIE_SIGNUP_URL:-http://localhost:3000/auth/sign-up}
+      REFERRAL_CONSENT_VERSION: ${REFERRAL_CONSENT_VERSION:-privacy-2026-08}
+      PRIVACY_POLICY_URL: ${PRIVACY_POLICY_URL:-http://localhost:3000/privacy}
+      HANDOFF_TTL_MINUTES: ${HANDOFF_TTL_MINUTES:-10}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      TURNSTILE_SECRET: ${TURNSTILE_SECRET:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:

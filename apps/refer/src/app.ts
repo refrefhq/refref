@@ -1,10 +1,14 @@
 import Fastify, { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
+import formbody from "@fastify/formbody";
 import { coredbPlugin } from "@refref/utils";
 import { createDb } from "@refref/coredb";
 import healthRoutes from "./routes/health.js";
 import referralRedirectRoutes from "./routes/r.js";
+import inviteRoutes from "./routes/invite.js";
+import joinRoutes from "./routes/join.js";
+import { loadReferConfig } from "./lib/config.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
   // Validate required environment variables
@@ -17,6 +21,9 @@ export async function buildApp(): Promise<FastifyInstance> {
   const db = createDb(databaseUrl);
 
   const app = Fastify({
+    // The app always runs behind the reverse proxy, so trust X-Forwarded-* to
+    // get the real client IP for rate limiting and attribution.
+    trustProxy: true,
     logger: {
       level: process.env.LOG_LEVEL || "info",
       transport:
@@ -32,6 +39,8 @@ export async function buildApp(): Promise<FastifyInstance> {
           : undefined,
     },
   });
+
+  const referConfig = loadReferConfig();
 
   // Register CORS plugin with permissive settings for public endpoints
   await app.register(cors, {
@@ -54,14 +63,25 @@ export async function buildApp(): Promise<FastifyInstance> {
     },
   });
 
+  // Parse application/x-www-form-urlencoded bodies (the referee form posts these)
+  await app.register(formbody);
+
   // Register coredb plugin with database instance
   await app.register(coredbPlugin, { db });
 
   // Register health check routes
   await app.register(healthRoutes);
 
-  // Register referral redirect routes (/:id)
-  await app.register(referralRedirectRoutes);
+  // Register referral redirect routes (/:code -> invite form)
+  await app.register(referralRedirectRoutes(referConfig));
+
+  // Register the public invite page + form under the configured base path
+  // (e.g. "/refer"), matching how it is exposed at the reverse proxy.
+  await app.register(inviteRoutes(referConfig), { prefix: referConfig.basePath });
+
+  // Register the public self-serve page where an unauthenticated visitor can
+  // claim their own referral link.
+  await app.register(joinRoutes(referConfig), { prefix: referConfig.basePath });
 
   return app;
 }

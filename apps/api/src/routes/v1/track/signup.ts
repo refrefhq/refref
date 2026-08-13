@@ -1,11 +1,46 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { schema } from "@refref/coredb";
-const { participant, referral, refcode } = schema;
+const { participant, referral, refcode, rewardRule } = schema;
 import { eq, and } from "drizzle-orm";
-import { type EventMetadataV1Type } from "@refref/types";
+import {
+  type EventMetadataV1Type,
+  type RewardRuleConfigV1Type,
+  type ReferralQualifiedPayload,
+} from "@refref/types";
 import { createEvent } from "../../../services/events.js";
 import { normalizeCode } from "@refref/utils";
+import { enqueueWebhook } from "@refref/webhooks";
+import { reconcileSignup } from "../../../services/referral-lead.js";
+
+/**
+ * Derive the referrer reward summary for the qualified webhook. Reward release
+ * is gated on manual approval in v1, so status is always reported as
+ * "pending_approval" regardless of the rule's disbursal type.
+ */
+async function deriveRewardSummary(
+  db: FastifyRequest["db"],
+  programId: string,
+): Promise<ReferralQualifiedPayload["reward"]> {
+  const rules = await db
+    .select()
+    .from(rewardRule)
+    .where(
+      and(eq(rewardRule.programId, programId), eq(rewardRule.isActive, true)),
+    );
+  const referrerRule = rules.find(
+    (r) => (r.config as RewardRuleConfigV1Type)?.participantType === "referrer",
+  );
+  if (!referrerRule) return null;
+  const c = referrerRule.config as RewardRuleConfigV1Type;
+  return {
+    id: null,
+    type: c.reward.type,
+    amount: Number(c.reward.amount) || 0,
+    currency: c.reward.currency || "AUD",
+    status: "pending_approval",
+  };
+}
 
 // Signup event request schema (no eventType discriminator needed)
 const signupRequestSchema = z.object({
@@ -17,6 +52,9 @@ const signupRequestSchema = z.object({
     refcode: z.string().optional(),
     email: z.string().email().optional(),
     name: z.string().optional(),
+    // Optional deterministic hand-off matching (from the referee form flow).
+    handoffToken: z.string().optional(),
+    leadId: z.string().optional(),
   }),
 });
 
@@ -118,6 +156,59 @@ export default async function signupTrackRoutes(fastify: FastifyInstance) {
           referralId: result.referralId,
           metadata: result.metadata,
         });
+
+        // Reconcile any pending referee lead into "qualified" and emit the
+        // referral.qualified webhook. Best-effort: a hiccup here must never fail
+        // the signup tracking itself (the event is already recorded).
+        try {
+          const qualified = await reconcileSignup(request.db, {
+            productId: body.productId,
+            email: body.payload.email,
+            leadId: body.payload.leadId,
+            handoffToken: body.payload.handoffToken,
+            referralId: result.referralId,
+            refereeExternalId: body.payload.userId,
+            windowDays: Number(process.env.ATTRIBUTION_WINDOW_DAYS) || 30,
+          });
+
+          if (qualified) {
+            const reward = await deriveRewardSummary(
+              request.db,
+              qualified.programId,
+            );
+            const qualifiedPayload: Omit<
+              ReferralQualifiedPayload,
+              "event_id"
+            > = {
+              event: "referral.qualified",
+              occurred_at: new Date().toISOString(),
+              program_id: qualified.programId,
+              referral: {
+                id: result.referralId ?? qualified.leadId,
+                code: qualified.code,
+                status: "qualified",
+              },
+              referee: {
+                email: qualified.email,
+                external_id: body.payload.userId,
+              },
+              reward,
+              matched_by: qualified.matchedBy,
+            };
+
+            await enqueueWebhook(request.db, {
+              productId: body.productId,
+              eventType: "referral.qualified",
+              payload: qualifiedPayload as unknown as Record<string, unknown>,
+              dedupeKey: `qualified:${qualified.leadId}`,
+            });
+          }
+        } catch (err) {
+          request.log.error(
+            { err },
+            "referral qualification reconcile failed",
+          );
+        }
 
         return reply.send({
           success: true,
